@@ -73,4 +73,5 @@ Sprint 1 now supports the core private original-quality flow:
 
 - `awesome-codex-skills` appears as a modified gitlink in local status and is intentionally not part of app checkpoints.
 - Browser upload currently sends original bytes through `upload-original-file` as base64 JSON for Sprint 1 reliability.
+- `create-upload-session` prepares metadata and Drive folders, then returns the server-side upload function target instead of creating an unused Google resumable session.
 - This is acceptable for the current proof flow, but larger production uploads should return to resumable/direct upload or chunked upload.

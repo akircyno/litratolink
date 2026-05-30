@@ -90,6 +90,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Google login creates `user_profiles`.
 - Profile creation normalizes email casing and refreshes `last_active_at`.
 - Album creation creates `albums` and admin `album_members`.
+- `create-upload-session` prepares DB records and Drive folders for the server-side upload path.
 - Original upload works through `upload-original-file`.
 - Failed upload paths are marked as `failed` instead of being left as `uploading`.
 - Legacy `complete-upload` also verifies final size against the original upload metadata.

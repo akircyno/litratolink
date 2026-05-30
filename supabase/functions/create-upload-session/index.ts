@@ -1,7 +1,7 @@
 import { handleCors } from "../_shared/cors.ts";
 import { error, success } from "../_shared/response.ts";
 import { getUserFromRequest } from "../_shared/auth.ts";
-import { createResumableUploadSession, getOrCreateDriveFolder } from "../_shared/googleDrive.ts";
+import { getOrCreateDriveFolder } from "../_shared/googleDrive.ts";
 import { canUploadToAlbum } from "../_shared/permissions.ts";
 import { createSafeStorageFilename, getAlbumOriginalsPath } from "../_shared/storagePaths.ts";
 import { supabaseAdmin } from "../_shared/supabaseAdmin.ts";
@@ -154,20 +154,13 @@ Deno.serve(async (req) => {
       throw new Error("Failed to update storage object path.");
     }
 
-    const uploadUrl = await createResumableUploadSession({
-      filename: storageFilename,
-      mimeType,
-      parentFolderId: originalsFolder.id,
-      fileSizeBytes,
-    });
-
     return success({
       media_file_id: mediaFile.id,
       storage_object_id: storageObject.id,
-      upload_url: uploadUrl,
-      upload_method: "PUT",
+      upload_url: "upload-original-file",
+      upload_method: "POST",
       required_headers: {
-        "Content-Type": mimeType,
+        "Content-Type": "application/json",
       },
     }, 201);
   } catch (uploadError) {
