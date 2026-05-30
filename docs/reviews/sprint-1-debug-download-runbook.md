@@ -7,8 +7,8 @@ Use this when download fails.
 3. Confirm album is not deleted.
 4. Confirm the user is an active album member.
 5. Confirm `storage_objects.provider_file_id` is present.
-6. Confirm `get-download-access` returns a Drive media URL and access token.
-7. Confirm Flutter downloads from the original Drive media URL.
+6. Confirm `download-original-file` is deployed.
+7. Confirm the Edge Function returns the original bytes with file metadata headers.
 8. Confirm saved file path is logged.
 9. Compare downloaded size with expected original size.
 10. If sizes differ, inspect for partial download or wrong Drive file ID.

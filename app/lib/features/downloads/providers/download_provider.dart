@@ -2,9 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../albums/models/media_file.dart';
 import '../data/download_repository.dart';
-import '../models/download_access.dart';
+import '../models/downloaded_file.dart';
 
-final downloadControllerProvider = NotifierProvider<DownloadController, DownloadState>(
+final downloadControllerProvider =
+    NotifierProvider<DownloadController, DownloadState>(
   DownloadController.new,
 );
 
@@ -45,12 +46,13 @@ class DownloadController extends Notifier<DownloadState> {
     state = const DownloadState(isDownloading: true);
 
     try {
-      final downloadedFile = await ref.read(downloadRepositoryProvider).downloadOriginal(
-            file: file,
-            onProgress: (progress) {
-              state = state.copyWith(progress: progress.clamp(0, 1));
-            },
-          );
+      final downloadedFile =
+          await ref.read(downloadRepositoryProvider).downloadOriginal(
+                file: file,
+                onProgress: (progress) {
+                  state = state.copyWith(progress: progress.clamp(0, 1));
+                },
+              );
 
       state = state.copyWith(
         progress: 1,

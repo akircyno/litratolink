@@ -7,7 +7,7 @@ import '../../../core/errors/app_error.dart';
 import '../../../core/services/edge_function_service.dart';
 import '../../../core/utils/quality_test_log.dart';
 import '../../albums/models/media_file.dart';
-import '../models/download_access.dart';
+import '../models/downloaded_file.dart';
 
 final downloadRepositoryProvider = Provider<DownloadRepository>((ref) {
   return DownloadRepository(

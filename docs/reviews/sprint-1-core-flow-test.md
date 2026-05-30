@@ -1,14 +1,15 @@
 # Sprint 1 Core Flow Test
 
-Status: pending live Supabase and Google Drive setup.
+Status: passed live Supabase and Google Drive smoke test.
 
 ## Local Checks
 
-- Flutter static analysis: pending latest full run.
-- Flutter widget tests: pending latest full run.
+- Flutter static analysis: passed.
+- Flutter widget tests: passed.
+- Flutter web release build: passed.
 - No app-side compression, resize, or conversion path found.
-- Upload flow is wired as: select original file, call `create-upload-session`, PUT original bytes to Google upload URL, call `complete-upload`.
-- Download flow is wired as: call `get-download-access`, download original bytes, save locally.
+- Upload flow is wired as: select original file, call `create-upload-session`, send original bytes to `upload-original-file`, and let the Edge Function upload to Google Drive.
+- Download flow is wired as: call `download-original-file`, let the Edge Function fetch original bytes from Google Drive, then save locally/browser downloads.
 
 ## Live Test Checklist
 
@@ -29,6 +30,10 @@ Status: pending live Supabase and Google Drive setup.
 15. Compare original and downloaded file size.
 16. Confirm non-member access is blocked.
 
-## Current Blocker
+## Live Result
 
-Supabase project, Edge Function secrets, Google OAuth, and Google Drive credentials must be configured before this test can be executed end to end.
+- Google login created `user_profiles`.
+- Album creation created `albums` and Admin membership.
+- `IMG_3778.JPG` uploaded successfully as a completed media file.
+- Download Original completed through the browser download flow.
+- Stale pending upload test rows were removed from `media_files` and `storage_objects`.

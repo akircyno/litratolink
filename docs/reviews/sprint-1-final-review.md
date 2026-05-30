@@ -13,7 +13,7 @@
 - `test-google-drive-connection`
 - `create-upload-session`
 - `complete-upload`
-- `get-download-access`
+- `download-original-file`
 - Album listing and album details
 - File selection metadata
 - Upload progress flow
@@ -21,7 +21,7 @@
 - Download original flow
 - Debug quality logging
 
-## Pending Live Setup
+## Live Setup Completed
 
 - Supabase project migration
 - Supabase URL and anon key in `app/.env`
@@ -36,14 +36,13 @@
 
 ## Security Concerns
 
-- Sprint 1 download returns a short-lived Google access token for proof speed. Use backend proxy streaming before production.
 - Direct authenticated album insert is allowed by SQL policy per prompt, but app uses `create-album` for atomic Admin membership creation.
 
 ## Quality Concerns
 
 - Exact checksum verification is not implemented yet.
-- Live original/downloaded quality comparison is pending.
+- First live original/downloaded size comparison passed; checksum equality is still pending.
 
 ## Next Recommended Step
 
-Set up Supabase and Google Drive, deploy Edge Functions, then execute the live test reports in this folder.
+Build the invite and album member management flow next.

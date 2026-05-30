@@ -1,6 +1,6 @@
 # Sprint 1 Original Quality Test
 
-Status: pending live upload/download test files.
+Status: first live upload/download smoke test passed.
 
 ## Files To Test
 
@@ -40,3 +40,10 @@ Debug-only quality logging records:
 ## Pass Condition
 
 Downloaded file size and MIME type should match the original metadata. Best case later is checksum equality.
+
+## Live Result
+
+- `IMG_3778.JPG` uploaded successfully as the original file.
+- Stored metadata reported `image/jpeg`.
+- Browser download completed at roughly the expected original size.
+- SHA-256 checksum comparison is still a later hardening step.
