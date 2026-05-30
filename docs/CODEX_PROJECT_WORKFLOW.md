@@ -104,6 +104,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Invite form clears after a successful invite and keeps the email after errors.
 - Invite form can update the role of an existing active member.
 - Admins can also update another member's role from the member row menu.
+- Admins can remove another member from the member row menu after confirmation.
 - Invite controller auto-disposes so old invite messages do not leak between album screens.
 - Upload and download controllers auto-dispose so progress state resets between files/screens.
 - Viewer upload controls are blocked in the Flutter UI.
@@ -121,7 +122,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 
 ## Current Pause State
 
-- Invite / album members is implemented and deployed.
+- Invite / album members is implemented and deployed, including add, role update, and member removal.
 - Local checks passed:
   - `flutter analyze`
   - `flutter test`
@@ -129,11 +130,12 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Verified with an unregistered email:
   - App shows `Ask this person to sign in to LitratoLink once before inviting them.`
 - Still useful to test with a second real registered account before expanding roles deeper.
+- Still useful to test removing and re-adding a second registered account from the Admin UI.
 - Save All is implemented for completed album files, but should be manually tested with more than one file.
 
 ## Next Product Step
 
-Continue the Invite / Album Members feature:
+Continue the Invite / Album Members feature QA:
 
 1. Admin opens Album Details.
 2. App shows member list.
@@ -142,5 +144,7 @@ Continue the Invite / Album Members feature:
 5. Edge Function validates admin permission and adds/restores membership.
 6. App refreshes members and album counts.
 7. Test a second real registered account.
-8. Confirm role-specific access in later prompts.
-9. Manually test Save All with multiple completed files.
+8. Admin removes the second account from the member row menu.
+9. Confirm removed account loses album access after refresh/sign-in.
+10. Re-add the second account and confirm role-specific access.
+11. Manually test Save All with multiple completed files.

@@ -87,4 +87,26 @@ class InviteMemberController extends Notifier<InviteMemberState> {
       state = InviteMemberState(errorMessage: error.toString());
     }
   }
+
+  Future<void> remove({
+    required String albumId,
+    required AlbumMember member,
+  }) async {
+    state = const InviteMemberState(isSending: true);
+
+    try {
+      await ref.read(albumRepositoryProvider).removeAlbumMember(
+            albumId: albumId,
+            userId: member.userId,
+          );
+
+      ref.invalidate(albumMembersProvider(albumId));
+      ref.invalidate(albumListProvider);
+      state = InviteMemberState(
+        successMessage: '${member.title} was removed from this album.',
+      );
+    } catch (error) {
+      state = InviteMemberState(errorMessage: error.toString());
+    }
+  }
 }

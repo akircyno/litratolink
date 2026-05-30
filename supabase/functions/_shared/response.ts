@@ -12,6 +12,7 @@ export type ApiErrorCode =
   | "DOWNLOAD_FAILED"
   | "STORAGE_FULL"
   | "USER_NOT_FOUND"
+  | "MEMBER_NOT_FOUND"
   | "ALREADY_EXISTS"
   | "SERVER_ERROR";
 

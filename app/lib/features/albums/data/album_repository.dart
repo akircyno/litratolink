@@ -160,6 +160,19 @@ class AlbumRepository {
     );
   }
 
+  Future<void> removeAlbumMember({
+    required String albumId,
+    required String userId,
+  }) async {
+    await edgeFunctionService.callFunction<Object?>(
+      'remove-album-member',
+      body: {
+        'album_id': albumId,
+        'user_id': userId,
+      },
+    );
+  }
+
   Future<Map<String, int>> _countRowsByAlbum(
     String table,
     List<String> albumIds, {

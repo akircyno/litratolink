@@ -272,9 +272,9 @@ class AlbumDetailsScreen extends ConsumerWidget {
                       for (final member in members) ...[
                         _MemberRow(
                           member: member,
-                          canEditRole: isAdmin &&
-                              currentProfile?.id != member.userId &&
-                              member.email?.isNotEmpty == true,
+                          canManageMember:
+                              isAdmin && currentProfile?.id != member.userId,
+                          canEditRole: member.email?.isNotEmpty == true,
                           isSaving: inviteState.isSending,
                           onRoleSelected: (role) {
                             final email = member.email;
@@ -287,6 +287,12 @@ class AlbumDetailsScreen extends ConsumerWidget {
                                   role: role,
                                 );
                           },
+                          onRemoveSelected: () => _confirmRemoveMember(
+                            context,
+                            ref,
+                            album: album,
+                            member: member,
+                          ),
                         ),
                         const SizedBox(height: 8),
                       ],
@@ -319,6 +325,43 @@ class AlbumDetailsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _confirmRemoveMember(
+    BuildContext context,
+    WidgetRef ref, {
+    required Album album,
+    required AlbumMember member,
+  }) async {
+    final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Remove member?'),
+            content: Text('Remove ${member.title} from ${album.name}?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.maroon,
+                  foregroundColor: AppColors.white,
+                ),
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                child: const Text('Remove'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!confirmed || !context.mounted) return;
+
+    await ref.read(inviteMemberControllerProvider.notifier).remove(
+          albumId: album.id,
+          member: member,
+        );
   }
 }
 
@@ -388,15 +431,19 @@ class _FileMetadataRow extends StatelessWidget {
 class _MemberRow extends StatelessWidget {
   const _MemberRow({
     required this.member,
+    this.canManageMember = false,
     this.canEditRole = false,
     this.isSaving = false,
     this.onRoleSelected,
+    this.onRemoveSelected,
   });
 
   final AlbumMember member;
+  final bool canManageMember;
   final bool canEditRole;
   final bool isSaving;
   final ValueChanged<String>? onRoleSelected;
+  final VoidCallback? onRemoveSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -439,24 +486,37 @@ class _MemberRow extends StatelessWidget {
             ),
           ),
           RoleChip(label: member.roleLabel, selected: true),
-          if (canEditRole) ...[
+          if (canManageMember) ...[
             const SizedBox(width: 4),
             PopupMenuButton<String>(
               enabled: !isSaving,
-              tooltip: 'Change role',
+              tooltip: 'Manage member',
               icon: const Icon(
                 Icons.more_horiz,
                 color: AppColors.mutedInk,
                 size: 18,
               ),
-              onSelected: (role) {
-                if (role == normalizedRole) return;
-                onRoleSelected?.call(role);
+              onSelected: (value) {
+                if (value == 'remove') {
+                  onRemoveSelected?.call();
+                  return;
+                }
+
+                if (value == normalizedRole) return;
+                onRoleSelected?.call(value);
               },
-              itemBuilder: (context) => const [
-                PopupMenuItem(value: 'admin', child: Text('Admin')),
-                PopupMenuItem(value: 'contributor', child: Text('Contributor')),
-                PopupMenuItem(value: 'viewer', child: Text('Viewer')),
+              itemBuilder: (context) => [
+                if (canEditRole) ...const [
+                  PopupMenuItem(value: 'admin', child: Text('Admin')),
+                  PopupMenuItem(
+                      value: 'contributor', child: Text('Contributor')),
+                  PopupMenuItem(value: 'viewer', child: Text('Viewer')),
+                  PopupMenuDivider(),
+                ],
+                const PopupMenuItem(
+                  value: 'remove',
+                  child: Text('Remove member'),
+                ),
               ],
             ),
           ],

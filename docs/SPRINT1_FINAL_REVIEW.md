@@ -19,6 +19,7 @@ Sprint 1 now supports the core private original-quality flow:
 - Admins can invite existing LitratoLink users by email and role.
 - Admins can update an existing member's role from the same invite form.
 - Admins can update another member's role from the member row menu.
+- Admins can remove another member from the member row menu after confirmation.
 - Unregistered invite emails show a friendly action message.
 
 ## Verified Locally
@@ -49,6 +50,7 @@ Sprint 1 now supports the core private original-quality flow:
 - `upload-original-file`
 - `download-original-file`
 - `invite-album-member`
+- `remove-album-member`
 
 ## Security Review
 
@@ -69,6 +71,9 @@ Sprint 1 now supports the core private original-quality flow:
 - Confirm Viewer can open/download but cannot upload.
 - Invite or update that account as Contributor.
 - Confirm Contributor can upload.
+- Remove the second account from the Admin UI.
+- Confirm the removed account loses album access after refresh/sign-in.
+- Re-add the second account and confirm access returns.
 - Confirm non-member album/file access is blocked from a second account.
 - Test Save All with at least two completed files.
 - Compare downloaded file properties in Windows against the original file.

@@ -32,6 +32,9 @@ Use this checklist when manually verifying the Sprint 1 original-quality flow.
 - Confirm Contributor can upload.
 - Confirm the Admin can use the invite form to change an existing member's role.
 - Confirm the Admin can use the member row menu to change an existing member's role.
+- Confirm the Admin can remove another member from the member row menu.
+- Confirm a removed member no longer sees the album after refresh/sign-in.
+- Re-add the removed member and confirm access returns with the chosen role.
 - Confirm only Admin can invite members.
 
 ## Save All
