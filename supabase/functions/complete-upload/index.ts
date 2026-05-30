@@ -66,19 +66,31 @@ Deno.serve(async (req) => {
     return error("FORBIDDEN", "You do not have permission to complete this upload.", 403);
   }
 
+  if (!["pending", "uploading"].includes(mediaFile.upload_status)) {
+    return error("UPLOAD_FAILED", "This upload is no longer waiting for completion.", 400);
+  }
+
+  if (finalFileSizeBytes !== mediaFile.file_size_bytes) {
+    await markUploadFailed(mediaFileId);
+    return error("UPLOAD_FAILED", "Upload size did not match. Please try again.", 400);
+  }
+
   try {
     const metadata = await getDriveFileMetadata(providerFileId);
     const googleSize = parseGoogleDriveSize(metadata.size);
 
     if (googleSize !== null && googleSize !== finalFileSizeBytes) {
+      await markUploadFailed(mediaFileId);
       return error("UPLOAD_FAILED", "Upload size did not match. Please try again.", 400);
     }
 
     if (metadata.mimeType !== mediaFile.mime_type) {
+      await markUploadFailed(mediaFileId);
       return error("UPLOAD_FAILED", "Uploaded file type did not match. Please try again.", 400);
     }
   } catch (driveError) {
     console.error("complete-upload Google Drive confirmation failed", driveError);
+    await markUploadFailed(mediaFileId);
     return error("STORAGE_ERROR", "Could not confirm the uploaded file. Please try again.", 500);
   }
 
@@ -93,6 +105,7 @@ Deno.serve(async (req) => {
 
   if (storageUpdateError) {
     console.error("complete-upload storage update failed", storageUpdateError.message);
+    await markUploadFailed(mediaFileId);
     return error("SERVER_ERROR", "Could not save the upload. Please try again.", 500);
   }
 
@@ -110,6 +123,7 @@ Deno.serve(async (req) => {
 
   if (mediaUpdateError || !completedFile) {
     console.error("complete-upload media update failed", mediaUpdateError?.message);
+    await markUploadFailed(mediaFileId);
     return error("SERVER_ERROR", "Could not finish the upload. Please try again.", 500);
   }
 
@@ -119,6 +133,17 @@ Deno.serve(async (req) => {
     uploaded_at: completedFile.uploaded_at,
   });
 });
+
+async function markUploadFailed(mediaFileId: string) {
+  const { error: updateError } = await supabaseAdmin
+    .from("media_files")
+    .update({ upload_status: "failed" })
+    .eq("id", mediaFileId);
+
+  if (updateError) {
+    console.error("complete-upload failed status update failed", updateError.message);
+  }
+}
 
 function isProviderFileId(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0 && value.trim().length <= 256;
