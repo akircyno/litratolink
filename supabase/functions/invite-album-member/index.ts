@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
 
   const { data: existingMember, error: existingError } = await supabaseAdmin
     .from("album_members")
-    .select("id, is_active")
+    .select("id, role, is_active")
     .eq("album_id", albumId)
     .eq("user_id", invitedProfile.id)
     .maybeSingle();
@@ -89,7 +89,28 @@ Deno.serve(async (req) => {
   }
 
   if (existingMember?.is_active) {
-    return error("ALREADY_EXISTS", "This person is already in the album.", 409);
+    if (existingMember.role === role) {
+      return error("ALREADY_EXISTS", "This person already has that role.", 409);
+    }
+
+    const { data: updatedMember, error: updateError } = await supabaseAdmin
+      .from("album_members")
+      .update({
+        role,
+        invited_by: user.id,
+      })
+      .eq("id", existingMember.id)
+      .select(
+        "album_id, user_id, role, joined_at, profile:user_profiles!album_members_user_id_fkey(email, display_name, avatar_url)",
+      )
+      .single();
+
+    if (updateError || !updatedMember) {
+      console.error("invite-album-member role update failed", updateError?.message);
+      return error("SERVER_ERROR", "Could not update this member. Please try again.", 500);
+    }
+
+    return success({ member: mapMember(updatedMember), action: "updated" });
   }
 
   if (existingMember) {
@@ -113,7 +134,7 @@ Deno.serve(async (req) => {
       return error("SERVER_ERROR", "Could not invite this person. Please try again.", 500);
     }
 
-    return success({ member: mapMember(restoredMember) });
+    return success({ member: mapMember(restoredMember), action: "restored" });
   }
 
   const { data: member, error: memberError } = await supabaseAdmin
@@ -134,7 +155,7 @@ Deno.serve(async (req) => {
     return error("SERVER_ERROR", "Could not invite this person. Please try again.", 500);
   }
 
-  return success({ member: mapMember(member) }, 201);
+  return success({ member: mapMember(member), action: "added" }, 201);
 });
 
 function isValidEmail(value: unknown): value is string {

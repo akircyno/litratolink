@@ -81,7 +81,7 @@ class InviteMemberController extends Notifier<InviteMemberState> {
       ref.invalidate(albumMembersProvider(albumId));
       ref.invalidate(albumListProvider);
       state = InviteMemberState(
-        successMessage: '${member.title} was added as ${member.roleLabel}.',
+        successMessage: '${member.title} is now ${member.roleLabel}.',
       );
     } catch (error) {
       state = InviteMemberState(errorMessage: error.toString());

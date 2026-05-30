@@ -77,7 +77,7 @@ class _InviteFormState extends State<InviteForm> {
         ),
         const SizedBox(height: 16),
         AppButton(
-          label: widget.isSending ? 'Adding...' : 'Add Member',
+          label: widget.isSending ? 'Saving...' : 'Add or Update Member',
           icon: Icons.send_outlined,
           onPressed: widget.isSending
               ? null
@@ -110,7 +110,7 @@ class _InviteFormState extends State<InviteForm> {
         ],
         const SizedBox(height: 8),
         const Text(
-          'Admins can add members. Viewers can only view and download originals.',
+          'Admins can add members or update roles. Viewers can only view and download originals.',
           style: TextStyle(color: AppColors.mutedInk, fontSize: 12),
         ),
       ],
