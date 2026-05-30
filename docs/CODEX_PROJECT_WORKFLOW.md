@@ -103,6 +103,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Upload and download controllers auto-dispose so progress state resets between files/screens.
 - Viewer upload controls are blocked in the Flutter UI.
 - Save All screen uses real album files and downloads originals through `download-original-file`.
+- Save All fetches album files itself and uses Album Details data only as a fallback.
 - File Preview shows a tester-friendly downloaded-size vs expected-original-size check.
 - Download permission/file errors are mapped to friendly app messages instead of raw Dio errors.
 - Activity tab is driven by real album data instead of fake placeholder notifications.

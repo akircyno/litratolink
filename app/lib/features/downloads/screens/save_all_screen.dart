@@ -10,6 +10,7 @@ import '../../../core/widgets/app_screen.dart';
 import '../../../core/widgets/save_all_ring.dart';
 import '../../albums/models/album.dart';
 import '../../albums/models/media_file.dart';
+import '../../albums/providers/album_provider.dart';
 import '../data/download_repository.dart';
 
 class SaveAllArgs {
@@ -58,7 +59,10 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
       );
     }
 
-    final totalFiles = files.length;
+    final filesAsync = ref.watch(albumMediaFilesProvider(album.id));
+    final resolvedFiles = filesAsync.asData?.value ?? files;
+    final isLoadingFiles = filesAsync.isLoading && resolvedFiles.isEmpty;
+    final totalFiles = resolvedFiles.length;
     final headline = isComplete
         ? 'All originals saved'
         : isSaving
@@ -97,21 +101,38 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
                   const SizedBox(height: 18),
                   AppProgressBar(value: progress),
                   const SizedBox(height: 16),
-                  if (files.isEmpty)
+                  if (isLoadingFiles)
+                    const Padding(
+                      padding: EdgeInsets.all(20),
+                      child:
+                          CircularProgressIndicator(color: AppColors.softGold),
+                    )
+                  else if (resolvedFiles.isEmpty)
                     const AppEmptyState(
                       title: 'No completed files',
                       message:
                           'Upload completed originals before using Save All.',
                     )
                   else
-                    for (var index = 0; index < files.length; index++) ...[
+                    for (var index = 0;
+                        index < resolvedFiles.length;
+                        index++) ...[
                       _SaveFileRow(
-                        file: files[index],
+                        file: resolvedFiles[index],
                         status: _statusFor(index),
                         state: _rowStateFor(index),
                       ),
-                      if (index < files.length - 1) const SizedBox(height: 10),
+                      if (index < resolvedFiles.length - 1)
+                        const SizedBox(height: 10),
                     ],
+                  if (filesAsync.hasError && resolvedFiles.isNotEmpty) ...[
+                    const SizedBox(height: 14),
+                    const Text(
+                      'Showing files already loaded from the album screen.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.mutedInk, fontSize: 12),
+                    ),
+                  ],
                   if (errorMessage != null) ...[
                     const SizedBox(height: 14),
                     Text(
@@ -131,9 +152,9 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
                             ? 'Save Again'
                             : 'Save All Originals',
                     icon: isComplete ? Icons.refresh : Icons.download,
-                    onPressed: isSaving || files.isEmpty
+                    onPressed: isSaving || resolvedFiles.isEmpty
                         ? null
-                        : () => _saveAll(files),
+                        : () => _saveAll(resolvedFiles),
                   ),
                 ],
               ),
