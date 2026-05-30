@@ -22,6 +22,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Fonts:
   - Headings: General Sans
   - Body/UI: Inter
+- Letter spacing should stay at 0 for readable compact mobile text.
 - Core components:
   - Album Card
   - Gallery Grid

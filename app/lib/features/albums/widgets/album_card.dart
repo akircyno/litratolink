@@ -30,7 +30,8 @@ class AlbumCard extends StatelessWidget {
                 end: Alignment.bottomRight,
                 colors: album.coverColors,
               ),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
             ),
             child: Stack(
               children: [
@@ -49,10 +50,13 @@ class AlbumCard extends StatelessWidget {
                   top: 10,
                   right: 10,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
                     decoration: BoxDecoration(
                       color: AppColors.white.withValues(alpha: 0.20),
-                      border: Border.all(color: AppColors.white.withValues(alpha: 0.30), width: 0.5),
+                      border: Border.all(
+                          color: AppColors.white.withValues(alpha: 0.30),
+                          width: 0.5),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -60,7 +64,6 @@ class AlbumCard extends StatelessWidget {
                       style: const TextStyle(
                         color: AppColors.white,
                         fontSize: 10,
-                        letterSpacing: 0.5,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -73,15 +76,15 @@ class AlbumCard extends StatelessWidget {
                   child: Text(
                     album.name,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: AppColors.white,
-                          shadows: const [
-                            Shadow(
-                              color: Colors.black26,
-                              offset: Offset(0, 1),
-                              blurRadius: 4,
-                            ),
-                          ],
+                      color: AppColors.white,
+                      shadows: const [
+                        Shadow(
+                          color: Colors.black26,
+                          offset: Offset(0, 1),
+                          blurRadius: 4,
                         ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -94,15 +97,23 @@ class AlbumCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.photo_outlined, color: AppColors.softGold, size: 14),
+                    const Icon(Icons.photo_outlined,
+                        color: AppColors.softGold, size: 14),
                     const SizedBox(width: 4),
-                    Text('${album.fileCount} files', style: const TextStyle(color: AppColors.mutedInk, fontSize: 12)),
+                    Text('${album.fileCount} files',
+                        style: const TextStyle(
+                            color: AppColors.mutedInk, fontSize: 12)),
                     const SizedBox(width: 12),
-                    const Icon(Icons.group_outlined, color: AppColors.softGold, size: 14),
+                    const Icon(Icons.group_outlined,
+                        color: AppColors.softGold, size: 14),
                     const SizedBox(width: 4),
-                    Text('${album.memberCount} members', style: const TextStyle(color: AppColors.mutedInk, fontSize: 12)),
+                    Text('${album.memberCount} members',
+                        style: const TextStyle(
+                            color: AppColors.mutedInk, fontSize: 12)),
                     const Spacer(),
-                    Text(album.updatedLabel, style: const TextStyle(color: AppColors.mutedInk, fontSize: 11)),
+                    Text(album.updatedLabel,
+                        style: const TextStyle(
+                            color: AppColors.mutedInk, fontSize: 11)),
                   ],
                 ),
               ],

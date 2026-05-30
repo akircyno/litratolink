@@ -33,11 +33,13 @@ class RoleChip extends StatelessWidget {
       labelStyle: TextStyle(
         color: foreground,
         fontSize: 10,
-        letterSpacing: 0.5,
         fontWeight: FontWeight.w500,
       ),
       backgroundColor: background,
-      side: BorderSide(color: selected ? foreground.withValues(alpha: 0.28) : AppColors.creamLine),
+      side: BorderSide(
+          color: selected
+              ? foreground.withValues(alpha: 0.28)
+              : AppColors.creamLine),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
     );
   }
