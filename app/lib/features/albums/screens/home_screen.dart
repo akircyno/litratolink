@@ -227,28 +227,171 @@ class _AlbumsTab extends ConsumerWidget {
   }
 }
 
-class _InvitesTab extends StatelessWidget {
+class _InvitesTab extends ConsumerWidget {
   const _InvitesTab();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final albumsAsync = ref.watch(albumListProvider);
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
       children: [
-        Text('Invites', style: Theme.of(context).textTheme.headlineLarge),
-        const SizedBox(height: 8),
-        const Text(
-          'Invite people with the right level of access. Viewer is safest by default.',
-          style: TextStyle(color: AppColors.mutedInk, height: 1.4),
+        const LitratoHeader(
+          title: 'Invites',
+          subtitle: 'Manage album access',
+          showAvatar: false,
         ),
         const SizedBox(height: 14),
-        const AppCard(
-          child: Text(
-            'Open an album to add members and choose their role.',
-            style: TextStyle(color: AppColors.mutedInk, height: 1.4),
+        albumsAsync.when(
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: CircularProgressIndicator(color: AppColors.softGold),
+            ),
           ),
+          error: (error, _) => AlbumEmptyState(
+            title: 'Invites unavailable',
+            message: error.toString(),
+            actionLabel: 'Try Again',
+            onAction: () => ref.invalidate(albumListProvider),
+          ),
+          data: (albums) {
+            if (albums.isEmpty) {
+              return AlbumEmptyState(
+                title: 'No albums yet',
+                message:
+                    'Create an album before inviting people to a private space.',
+                actionLabel: 'Create Album',
+                onAction: () =>
+                    Navigator.pushNamed(context, AppRoutes.createAlbum),
+              );
+            }
+
+            final adminAlbums =
+                albums.where((album) => album.canManageMembers).toList();
+            final sharedAlbums =
+                albums.where((album) => !album.canManageMembers).toList();
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (adminAlbums.isEmpty)
+                  const AppCard(
+                    child: Text(
+                      'Only Admins can add members or change roles.',
+                      style: TextStyle(color: AppColors.mutedInk, height: 1.4),
+                    ),
+                  )
+                else ...[
+                  Text('Albums you manage',
+                      style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 10),
+                  for (final album in adminAlbums) ...[
+                    _InviteAlbumRow(
+                      album: album,
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        AppRoutes.albumDetails,
+                        arguments: album,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ],
+                if (sharedAlbums.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Text('Your access',
+                      style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 10),
+                  for (final album in sharedAlbums) ...[
+                    _InviteAlbumRow(
+                      album: album,
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        AppRoutes.albumDetails,
+                        arguments: album,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ],
+              ],
+            );
+          },
         ),
       ],
+    );
+  }
+}
+
+class _InviteAlbumRow extends StatelessWidget {
+  const _InviteAlbumRow({
+    required this.album,
+    required this.onTap,
+  });
+
+  final Album album;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.maroonFaint,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.group_add_outlined,
+              color: AppColors.maroon,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  album.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '${album.memberCount} members - Your role: ${album.role}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style:
+                      const TextStyle(color: AppColors.mutedInk, fontSize: 11),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            album.canManageMembers ? 'Manage' : 'View',
+            style: const TextStyle(
+              color: AppColors.softGold,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(width: 4),
+          const Icon(Icons.chevron_right, color: AppColors.softGold, size: 18),
+        ],
+      ),
     );
   }
 }
