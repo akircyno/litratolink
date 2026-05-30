@@ -1,0 +1,141 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/errors/app_error.dart';
+import '../../../core/services/edge_function_service.dart';
+import '../../../core/services/supabase_service.dart';
+import '../models/album.dart';
+import '../models/album_member.dart';
+import '../models/media_file.dart';
+
+final albumRepositoryProvider = Provider<AlbumRepository>((ref) {
+  return AlbumRepository(
+    ref.watch(supabaseServiceProvider),
+    ref.watch(edgeFunctionServiceProvider),
+  );
+});
+
+class AlbumRepository {
+  const AlbumRepository(this.supabaseService, this.edgeFunctionService);
+
+  final SupabaseService supabaseService;
+  final EdgeFunctionService edgeFunctionService;
+
+  Future<List<Album>> fetchMyAlbums() async {
+    if (!supabaseService.isConfigured || supabaseService.currentSession == null) {
+      return const [];
+    }
+
+    final userId = supabaseService.currentSession!.user.id;
+
+    try {
+      final membershipRows = await supabaseService.client
+          .from('album_members')
+          .select('album_id, user_id, role')
+          .eq('user_id', userId)
+          .eq('is_active', true);
+
+      final memberships = (membershipRows as List)
+          .map((row) => AlbumMember.fromJson(Map<String, dynamic>.from(row as Map)))
+          .where((member) => member.albumId.isNotEmpty)
+          .toList();
+
+      if (memberships.isEmpty) return const [];
+
+      final albumIds = memberships.map((member) => member.albumId).toList();
+      final albumRows = await supabaseService.client
+          .from('albums')
+          .select('id, name, description, updated_at')
+          .inFilter('id', albumIds)
+          .eq('is_deleted', false)
+          .order('updated_at', ascending: false);
+
+      final memberCounts = await _countRowsByAlbum('album_members', albumIds, activeMembersOnly: true);
+      final fileCounts = await _countRowsByAlbum('media_files', albumIds, completedMediaOnly: true);
+      final roleByAlbum = {
+        for (final member in memberships) member.albumId: member.role,
+      };
+
+      return (albumRows as List).map((row) {
+        final album = Map<String, dynamic>.from(row as Map);
+        final albumId = album['id']?.toString() ?? '';
+
+        return Album.fromData(
+          album: album,
+          role: roleByAlbum[albumId] ?? 'viewer',
+          fileCount: fileCounts[albumId] ?? 0,
+          memberCount: memberCounts[albumId] ?? 1,
+        );
+      }).toList();
+    } catch (_) {
+      throw const AppError('Could not load your albums. Please try again.');
+    }
+  }
+
+  Future<Album> createAlbum({
+    required String name,
+    String? description,
+  }) {
+    return edgeFunctionService.callFunction<Album>(
+      'create-album',
+      body: {
+        'name': name,
+        'description': description,
+      },
+      parser: (data) => Album.fromCreateResponse(Map<String, dynamic>.from(data as Map)),
+    );
+  }
+
+  Future<List<MediaFile>> fetchAlbumMediaFiles(String albumId) async {
+    if (!supabaseService.isConfigured || supabaseService.currentSession == null) {
+      return const [];
+    }
+
+    try {
+      final rows = await supabaseService.client
+          .from('media_files')
+          .select('id, original_filename, file_type, mime_type, file_size_bytes, uploaded_at')
+          .eq('album_id', albumId)
+          .eq('upload_status', 'completed')
+          .eq('is_deleted', false)
+          .isFilter('permanently_deleted_at', null)
+          .order('uploaded_at', ascending: false);
+
+      return (rows as List)
+          .map((row) => MediaFile.fromJson(Map<String, dynamic>.from(row as Map)))
+          .toList();
+    } catch (_) {
+      throw const AppError('Could not load album files. Please try again.');
+    }
+  }
+
+  Future<Map<String, int>> _countRowsByAlbum(
+    String table,
+    List<String> albumIds, {
+    bool activeMembersOnly = false,
+    bool completedMediaOnly = false,
+  }) async {
+    var query = supabaseService.client.from(table).select('album_id').inFilter('album_id', albumIds);
+
+    if (activeMembersOnly) {
+      query = query.eq('is_active', true);
+    }
+
+    if (completedMediaOnly) {
+      query = query
+          .eq('upload_status', 'completed')
+          .eq('is_deleted', false)
+          .isFilter('permanently_deleted_at', null);
+    }
+
+    final rows = await query;
+    final counts = <String, int>{};
+
+    for (final row in rows as List) {
+      final albumId = (row as Map)['album_id']?.toString();
+      if (albumId == null) continue;
+      counts[albumId] = (counts[albumId] ?? 0) + 1;
+    }
+
+    return counts;
+  }
+}

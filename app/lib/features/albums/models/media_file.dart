@@ -1,0 +1,62 @@
+class MediaFile {
+  const MediaFile({
+    required this.id,
+    required this.originalFilename,
+    required this.fileType,
+    required this.mimeType,
+    required this.fileSizeLabel,
+    required this.uploaderName,
+    required this.uploadedLabel,
+    required this.isVideo,
+  });
+
+  final String id;
+  final String originalFilename;
+  final String fileType;
+  final String mimeType;
+  final String fileSizeLabel;
+  final String uploaderName;
+  final String uploadedLabel;
+  final bool isVideo;
+
+  factory MediaFile.fromJson(Map<String, dynamic> json) {
+    final fileType = json['file_type']?.toString() ?? 'photo';
+    final size = int.tryParse(json['file_size_bytes']?.toString() ?? '');
+    final uploadedAt = DateTime.tryParse(json['uploaded_at']?.toString() ?? '');
+
+    return MediaFile(
+      id: json['id']?.toString() ?? '',
+      originalFilename: json['original_filename']?.toString() ?? 'Original file',
+      fileType: _formatFileType(fileType),
+      mimeType: json['mime_type']?.toString() ?? '',
+      fileSizeLabel: _formatFileSize(size),
+      uploaderName: 'Member',
+      uploadedLabel: _uploadedLabel(uploadedAt),
+      isVideo: fileType == 'video',
+    );
+  }
+
+  static String _formatFileType(String value) {
+    if (value.isEmpty) return 'Photo';
+    return '${value[0].toUpperCase()}${value.substring(1).toLowerCase()}';
+  }
+
+  static String _formatFileSize(int? bytes) {
+    if (bytes == null || bytes <= 0) return 'Original';
+    final mb = bytes / (1024 * 1024);
+    if (mb < 1) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    return '${mb.toStringAsFixed(1)} MB';
+  }
+
+  static String _uploadedLabel(DateTime? uploadedAt) {
+    if (uploadedAt == null) return 'Recently';
+
+    final difference = DateTime.now().difference(uploadedAt);
+    if (difference.inMinutes < 2) return 'Just now';
+    if (difference.inHours < 1) return '${difference.inMinutes}m ago';
+    if (difference.inDays < 1) return '${difference.inHours}h ago';
+    if (difference.inDays == 1) return 'Yesterday';
+
+    return '${difference.inDays}d ago';
+  }
+}
