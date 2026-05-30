@@ -18,8 +18,13 @@ Deno.serve(async (req) => {
     return error("UNAUTHENTICATED", "Please log in to continue.", 401);
   }
 
-  const mediaFileId = req.headers.get("x-media-file-id");
-  const storageObjectId = req.headers.get("x-storage-object-id");
+  const uploadBody = await readUploadBody(req);
+
+  if (!uploadBody) {
+    return error("INVALID_REQUEST", "Please send valid original file data.", 400);
+  }
+
+  const { mediaFileId, storageObjectId, fileBytes } = uploadBody;
 
   if (!isUuid(mediaFileId) || !isUuid(storageObjectId)) {
     return error("INVALID_REQUEST", "Please send valid upload identifiers.", 400);
@@ -70,8 +75,6 @@ Deno.serve(async (req) => {
   if (!storageObject?.provider_folder_id || !storageObject?.storage_path) {
     return error("STORAGE_ERROR", "Storage is not ready for this upload.", 500);
   }
-
-  const fileBytes = new Uint8Array(await req.arrayBuffer());
 
   if (fileBytes.byteLength !== mediaFile.file_size_bytes) {
     return error("UPLOAD_FAILED", "Upload size did not match. Please try again.", 400);
@@ -154,4 +157,52 @@ function parseGoogleDriveSize(size: string | undefined) {
   if (!Number.isFinite(parsed)) return null;
 
   return parsed;
+}
+
+async function readUploadBody(req: Request) {
+  const contentType = req.headers.get("content-type")?.toLowerCase() ?? "";
+
+  if (contentType.includes("application/json")) {
+    try {
+      const body = await req.json();
+      const mediaFileId = typeof body.media_file_id === "string" ? body.media_file_id : null;
+      const storageObjectId = typeof body.storage_object_id === "string"
+        ? body.storage_object_id
+        : null;
+      const encodedFile = typeof body.file_data_base64 === "string"
+        ? body.file_data_base64
+        : null;
+
+      if (!mediaFileId || !storageObjectId || !encodedFile) return null;
+
+      return {
+        mediaFileId,
+        storageObjectId,
+        fileBytes: decodeBase64Bytes(encodedFile),
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  const mediaFileId = req.headers.get("x-media-file-id");
+  const storageObjectId = req.headers.get("x-storage-object-id");
+  if (!mediaFileId || !storageObjectId) return null;
+
+  return {
+    mediaFileId,
+    storageObjectId,
+    fileBytes: new Uint8Array(await req.arrayBuffer()),
+  };
+}
+
+function decodeBase64Bytes(value: string) {
+  const binary = atob(value);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let index = 0; index < binary.length; index++) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+
+  return bytes;
 }

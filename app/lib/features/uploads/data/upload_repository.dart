@@ -1,4 +1,5 @@
-import 'package:dio/dio.dart';
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/errors/app_error.dart';
@@ -10,15 +11,13 @@ import '../models/upload_session.dart';
 final uploadRepositoryProvider = Provider<UploadRepository>((ref) {
   return UploadRepository(
     ref.watch(edgeFunctionServiceProvider),
-    Dio(),
   );
 });
 
 class UploadRepository {
-  const UploadRepository(this.edgeFunctionService, this.dio);
+  const UploadRepository(this.edgeFunctionService);
 
   final EdgeFunctionService edgeFunctionService;
-  final Dio dio;
 
   Future<CompletedUpload> uploadOriginalFile({
     required String albumId,
@@ -50,38 +49,22 @@ class UploadRepository {
           UploadSession.fromJson(Map<String, dynamic>.from(data as Map)),
     );
 
-    final response = await dio.post<Map<String, dynamic>>(
-      '${edgeFunctionService.supabaseService.env.supabaseUrl}/functions/v1/upload-original-file',
-      data: bytes,
-      options: Options(
-        contentType: file.mimeType,
-        responseType: ResponseType.json,
-        headers: {
-          'Authorization':
-              'Bearer ${edgeFunctionService.supabaseService.currentSession?.accessToken}',
-          'apikey': edgeFunctionService.supabaseService.env.supabaseAnonKey,
-          'x-media-file-id': session.mediaFileId,
-          'x-storage-object-id': session.storageObjectId,
-        },
-      ),
-      onSendProgress: (sent, total) {
-        if (total <= 0) return;
-        onProgress(sent / total);
-      },
-    );
+    onProgress(0.15);
 
-    final payload = response.data;
-    if (payload == null || payload['success'] != true) {
-      throw AppError(
-        payload?['message']?.toString() ??
-            'Could not upload to Google Drive. Please try again.',
-        code: payload?['error_code']?.toString(),
-      );
-    }
+    final completed = await edgeFunctionService.call<CompletedUpload>(
+      'upload-original-file',
+      body: {
+        'media_file_id': session.mediaFileId,
+        'storage_object_id': session.storageObjectId,
+        'file_data_base64': base64Encode(bytes),
+        'file_size_bytes': file.sizeBytes,
+      },
+      parser: (data) =>
+          CompletedUpload.fromJson(Map<String, dynamic>.from(data as Map)),
+    );
 
     onProgress(1);
 
-    return CompletedUpload.fromJson(
-        Map<String, dynamic>.from(payload['data'] as Map));
+    return completed;
   }
 }
