@@ -107,6 +107,14 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
                       child:
                           CircularProgressIndicator(color: AppColors.softGold),
                     )
+                  else if (filesAsync.hasError && resolvedFiles.isEmpty)
+                    AppEmptyState(
+                      title: 'Files unavailable',
+                      message: filesAsync.error.toString(),
+                      actionLabel: 'Try Again',
+                      onAction: () =>
+                          ref.invalidate(albumMediaFilesProvider(album.id)),
+                    )
                   else if (resolvedFiles.isEmpty)
                     const AppEmptyState(
                       title: 'No completed files',
