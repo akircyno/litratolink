@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
 import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/app_empty_state.dart';
 import '../../../core/widgets/app_screen.dart';
 import '../models/upload_file.dart';
 import '../providers/upload_provider.dart';
@@ -13,7 +14,8 @@ class UploadProgressScreen extends ConsumerStatefulWidget {
   const UploadProgressScreen({super.key});
 
   @override
-  ConsumerState<UploadProgressScreen> createState() => _UploadProgressScreenState();
+  ConsumerState<UploadProgressScreen> createState() =>
+      _UploadProgressScreenState();
 }
 
 class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
@@ -46,6 +48,20 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
     final file = uploadArgs?.file;
     final album = uploadArgs?.album;
 
+    if (file == null || album == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Upload')),
+        body: const AppScreen(
+          children: [
+            AppEmptyState(
+              title: 'Upload unavailable',
+              message: 'Start uploads from an album with a selected file.',
+            ),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
       body: AppScreen(
         padding: EdgeInsets.zero,
@@ -61,29 +77,45 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
               children: [
                 Row(
                   children: [
-                    Container(
-                      width: 28,
-                      height: 28,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: AppColors.white.withValues(alpha: 0.10),
-                        borderRadius: BorderRadius.circular(8),
+                    InkWell(
+                      onTap: uploadState.isUploading
+                          ? null
+                          : () => Navigator.pop(context),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        width: 28,
+                        height: 28,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.white.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.close,
+                            color: AppColors.white, size: 14),
                       ),
-                      child: const Icon(Icons.close, color: AppColors.white, size: 14),
                     ),
                     const SizedBox(width: 8),
-                    Text('Cancel', style: TextStyle(color: AppColors.white.withValues(alpha: 0.70), fontSize: 13)),
+                    Text('Cancel',
+                        style: TextStyle(
+                            color: AppColors.white.withValues(alpha: 0.70),
+                            fontSize: 13)),
                   ],
                 ),
                 const SizedBox(height: 14),
                 Text(
                   'Uploading to',
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: AppColors.warmCream),
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineLarge
+                      ?.copyWith(color: AppColors.warmCream),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  album?.name ?? 'Album',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(color: AppColors.goldLight),
+                  album.name,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: AppColors.goldLight),
                 ),
               ],
             ),
@@ -94,22 +126,30 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    file == null ? 'No file selected' : '1 file selected',
-                    style: const TextStyle(color: AppColors.mutedInk, fontSize: 12),
+                    '1 file selected',
+                    style: const TextStyle(
+                        color: AppColors.mutedInk, fontSize: 12),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppColors.goldFaint,
-                    border: Border.all(color: AppColors.softGold.withValues(alpha: 0.30), width: 0.5),
+                    border: Border.all(
+                        color: AppColors.softGold.withValues(alpha: 0.30),
+                        width: 0.5),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Row(
                     children: [
                       Icon(Icons.star, color: AppColors.softGold, size: 10),
                       SizedBox(width: 4),
-                      Text('Original quality', style: TextStyle(color: AppColors.softGold, fontSize: 10, fontWeight: FontWeight.w500)),
+                      Text('Original quality',
+                          style: TextStyle(
+                              color: AppColors.softGold,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500)),
                     ],
                   ),
                 ),
@@ -117,23 +157,22 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          if (file != null)
-            SizedBox(
-              height: 60,
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                scrollDirection: Axis.horizontal,
-                children: [
-                  _SelectedThumb(isVideo: file.fileType == 'video'),
-                ],
-              ),
+          SizedBox(
+            height: 60,
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              scrollDirection: Axis.horizontal,
+              children: [
+                _SelectedThumb(isVideo: file.fileType == 'video'),
+              ],
             ),
+          ),
           const SizedBox(height: 14),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: UploadProgressCard(
-              name: file?.name ?? 'No file selected',
-              size: file?.sizeLabel ?? '--',
+              name: file.name,
+              size: file.sizeLabel,
               progress: uploadState.progress,
               status: uploadState.completedUpload != null
                   ? 'Done'
@@ -141,7 +180,9 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
                       ? 'Failed'
                       : '${(uploadState.progress * 100).round()}%',
               done: uploadState.completedUpload != null,
-              waiting: !uploadState.isUploading && uploadState.completedUpload == null && uploadState.errorMessage == null,
+              waiting: !uploadState.isUploading &&
+                  uploadState.completedUpload == null &&
+                  uploadState.errorMessage == null,
             ),
           ),
           if (uploadState.errorMessage != null)
@@ -150,7 +191,10 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
               child: Text(
                 uploadState.errorMessage!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.maroon, fontSize: 12, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                    color: AppColors.maroon,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700),
               ),
             ),
           if (uploadState.completedUpload != null)
@@ -159,7 +203,10 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
               child: Text(
                 'Upload complete. The original file is now in the album.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.maroon, fontSize: 12, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                    color: AppColors.maroon,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700),
               ),
             ),
           Padding(
@@ -167,7 +214,8 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.info_outline, color: AppColors.maroon, size: 14),
+                const Icon(Icons.info_outline,
+                    color: AppColors.maroon, size: 14),
                 const SizedBox(width: 6),
                 Flexible(
                   child: Text(
@@ -175,7 +223,10 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
                         ? 'Uploading original bytes. Keep this screen open.'
                         : 'Files are uploaded in original quality. No compression.',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.maroon, fontSize: 12, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                        color: AppColors.maroon,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500),
                   ),
                 ),
               ],
@@ -185,17 +236,23 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: AppButton(
-              label: uploadState.errorMessage == null ? 'Back to Album' : 'Try Again',
-              icon: uploadState.errorMessage == null ? Icons.check : Icons.refresh,
-              onPressed: uploadState.errorMessage == null
-                  ? () => Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        AppRoutes.albumDetails,
-                        ModalRoute.withName(AppRoutes.home),
-                        arguments: album,
-                      )
-                  : file == null || album == null
-                      ? null
+              label: uploadState.isUploading
+                  ? 'Uploading...'
+                  : uploadState.errorMessage == null
+                      ? 'Back to Album'
+                      : 'Try Again',
+              icon: uploadState.errorMessage == null
+                  ? Icons.check
+                  : Icons.refresh,
+              onPressed: uploadState.isUploading
+                  ? null
+                  : uploadState.errorMessage == null
+                      ? () => Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            AppRoutes.albumDetails,
+                            ModalRoute.withName(AppRoutes.home),
+                            arguments: album,
+                          )
                       : () {
                           ref.read(uploadControllerProvider.notifier).upload(
                                 albumId: album.id,

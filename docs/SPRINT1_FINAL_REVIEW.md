@@ -15,6 +15,7 @@ Sprint 1 now supports the core private original-quality flow:
 - Album, media, and member reads refresh when the signed-in profile changes.
 - Original files download through the `download-original-file` Edge Function.
 - File Preview displays a downloaded-size vs expected-original-size quality check.
+- Upload progress keeps users on the upload screen until the active upload finishes or fails.
 - Save All uses real album files and downloads originals through the same backend path.
 - Invites tab uses real album data and links Admins to member management.
 - Profile tab uses the signed-in account and real album totals instead of placeholder content.

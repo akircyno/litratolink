@@ -94,6 +94,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - `create-upload-session` prepares DB records and Drive folders for the server-side upload path.
 - Original upload works through `upload-original-file`.
 - Failed upload paths are marked as `failed` instead of being left as `uploading`.
+- Upload progress blocks the Back to Album action while original bytes are still uploading.
 - Legacy `complete-upload` also verifies final size against the original upload metadata.
 - Download Original works through `download-original-file`.
 - Album details show uploaded media and current members.
