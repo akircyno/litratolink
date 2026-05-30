@@ -24,15 +24,21 @@ class EdgeFunctionService {
 
     final session = supabaseService.currentSession;
     if (session == null) {
-      throw const AppError('Please log in to continue.', code: 'UNAUTHENTICATED');
+      throw const AppError('Please log in to continue.',
+          code: 'UNAUTHENTICATED');
     }
 
-    final response = await supabaseService.client.functions.invoke(
-      functionName,
-      body: body,
-      headers: {'Authorization': 'Bearer ${session.accessToken}'},
-      method: HttpMethod.post,
-    );
+    final FunctionResponse response;
+    try {
+      response = await supabaseService.client.functions.invoke(
+        functionName,
+        body: body,
+        headers: {'Authorization': 'Bearer ${session.accessToken}'},
+        method: HttpMethod.post,
+      );
+    } on FunctionException catch (error) {
+      throw _appErrorFromFunctionException(error);
+    }
 
     final payload = response.data;
     if (payload is! Map) {
@@ -42,15 +48,40 @@ class EdgeFunctionService {
 
     final success = payload['success'] == true;
     if (!success) {
-      throw AppError(
-        payload['message']?.toString() ?? 'Something went wrong. Please try again.',
-        code: payload['error_code']?.toString(),
-      );
+      throw _appErrorFromPayload(payload);
     }
 
     final data = payload['data'];
     if (parser != null) return parser(data);
     return data as T;
+  }
+
+  AppError _appErrorFromFunctionException(FunctionException error) {
+    final details = error.details;
+    if (details is Map) {
+      return _appErrorFromPayload(
+        details,
+        fallback:
+            error.reasonPhrase ?? 'Something went wrong. Please try again.',
+      );
+    }
+
+    final message = details?.toString().trim();
+    return AppError(
+      message == null || message.isEmpty
+          ? error.reasonPhrase ?? 'Something went wrong. Please try again.'
+          : message,
+    );
+  }
+
+  AppError _appErrorFromPayload(
+    Map payload, {
+    String fallback = 'Something went wrong. Please try again.',
+  }) {
+    return AppError(
+      payload['message']?.toString() ?? fallback,
+      code: payload['error_code']?.toString(),
+    );
   }
 
   Future<T> call<T>(

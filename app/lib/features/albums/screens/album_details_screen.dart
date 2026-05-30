@@ -3,8 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
+import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_screen.dart';
+import '../../../core/widgets/invite_form.dart';
+import '../../../core/widgets/role_chip.dart';
 import '../models/album.dart';
+import '../models/album_member.dart';
 import '../models/media_file.dart';
 import '../providers/album_provider.dart';
 import '../widgets/album_empty_state.dart';
@@ -35,8 +39,13 @@ class AlbumDetailsScreen extends ConsumerWidget {
 
     final album = routeAlbum;
     final filesAsync = ref.watch(albumMediaFilesProvider(album.id));
+    final membersAsync = ref.watch(albumMembersProvider(album.id));
+    final inviteState = ref.watch(inviteMemberControllerProvider);
     final loadedFiles = filesAsync.asData?.value;
     final visibleFileCount = loadedFiles?.length ?? album.fileCount;
+    final loadedMembers = membersAsync.asData?.value;
+    final visibleMemberCount = loadedMembers?.length ?? album.memberCount;
+    final isAdmin = album.role.toLowerCase() == 'admin';
 
     return Scaffold(
       appBar: AppBar(
@@ -98,7 +107,7 @@ class AlbumDetailsScreen extends ConsumerWidget {
                         label: '$visibleFileCount files'),
                     _HeaderMeta(
                         icon: Icons.group_outlined,
-                        label: '${album.memberCount} members'),
+                        label: '$visibleMemberCount members'),
                     _HeaderMeta(
                         icon: Icons.verified_user_outlined,
                         label: 'Your role: ${album.role}'),
@@ -227,6 +236,59 @@ class AlbumDetailsScreen extends ConsumerWidget {
                     ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Members', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 10),
+                membersAsync.when(
+                  loading: () => const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child:
+                          CircularProgressIndicator(color: AppColors.softGold),
+                    ),
+                  ),
+                  error: (error, _) => AlbumEmptyState(
+                    title: 'Members unavailable',
+                    message: error.toString(),
+                    actionLabel: 'Try Again',
+                    onAction: () =>
+                        ref.invalidate(albumMembersProvider(album.id)),
+                  ),
+                  data: (members) => Column(
+                    children: [
+                      for (final member in members) ...[
+                        _MemberRow(member: member),
+                        const SizedBox(height: 8),
+                      ],
+                    ],
+                  ),
+                ),
+                if (isAdmin) ...[
+                  const SizedBox(height: 10),
+                  AppCard(
+                    child: InviteForm(
+                      isSending: inviteState.isSending,
+                      successMessage: inviteState.successMessage,
+                      errorMessage: inviteState.errorMessage,
+                      onInvite: (email, role) {
+                        return ref
+                            .read(inviteMemberControllerProvider.notifier)
+                            .invite(
+                              albumId: album.id,
+                              email: email,
+                              role: role,
+                            );
+                      },
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
           const SizedBox(height: 24),
         ],
       ),
@@ -292,6 +354,56 @@ class _FileMetadataRow extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _MemberRow extends StatelessWidget {
+  const _MemberRow({required this.member});
+
+  final AlbumMember member;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 18,
+            backgroundColor: AppColors.maroonFaint,
+            foregroundColor: AppColors.maroon,
+            child: Text(
+              member.title.substring(0, 1).toUpperCase(),
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  member.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w700, fontSize: 12),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  member.subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style:
+                      const TextStyle(color: AppColors.mutedInk, fontSize: 11),
+                ),
+              ],
+            ),
+          ),
+          RoleChip(label: member.roleLabel, selected: true),
+        ],
       ),
     );
   }

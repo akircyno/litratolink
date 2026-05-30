@@ -11,6 +11,8 @@ export type ApiErrorCode =
   | "UPLOAD_FAILED"
   | "DOWNLOAD_FAILED"
   | "STORAGE_FULL"
+  | "USER_NOT_FOUND"
+  | "ALREADY_EXISTS"
   | "SERVER_ERROR";
 
 const jsonHeaders = {

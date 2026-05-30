@@ -21,7 +21,8 @@ class AlbumRepository {
   final EdgeFunctionService edgeFunctionService;
 
   Future<List<Album>> fetchMyAlbums() async {
-    if (!supabaseService.isConfigured || supabaseService.currentSession == null) {
+    if (!supabaseService.isConfigured ||
+        supabaseService.currentSession == null) {
       return const [];
     }
 
@@ -35,7 +36,8 @@ class AlbumRepository {
           .eq('is_active', true);
 
       final memberships = (membershipRows as List)
-          .map((row) => AlbumMember.fromJson(Map<String, dynamic>.from(row as Map)))
+          .map((row) =>
+              AlbumMember.fromJson(Map<String, dynamic>.from(row as Map)))
           .where((member) => member.albumId.isNotEmpty)
           .toList();
 
@@ -49,8 +51,10 @@ class AlbumRepository {
           .eq('is_deleted', false)
           .order('updated_at', ascending: false);
 
-      final memberCounts = await _countRowsByAlbum('album_members', albumIds, activeMembersOnly: true);
-      final fileCounts = await _countRowsByAlbum('media_files', albumIds, completedMediaOnly: true);
+      final memberCounts = await _countRowsByAlbum('album_members', albumIds,
+          activeMembersOnly: true);
+      final fileCounts = await _countRowsByAlbum('media_files', albumIds,
+          completedMediaOnly: true);
       final roleByAlbum = {
         for (final member in memberships) member.albumId: member.role,
       };
@@ -81,19 +85,22 @@ class AlbumRepository {
         'name': name,
         'description': description,
       },
-      parser: (data) => Album.fromCreateResponse(Map<String, dynamic>.from(data as Map)),
+      parser: (data) =>
+          Album.fromCreateResponse(Map<String, dynamic>.from(data as Map)),
     );
   }
 
   Future<List<MediaFile>> fetchAlbumMediaFiles(String albumId) async {
-    if (!supabaseService.isConfigured || supabaseService.currentSession == null) {
+    if (!supabaseService.isConfigured ||
+        supabaseService.currentSession == null) {
       return const [];
     }
 
     try {
       final rows = await supabaseService.client
           .from('media_files')
-          .select('id, original_filename, file_type, mime_type, file_size_bytes, uploaded_at')
+          .select(
+              'id, original_filename, file_type, mime_type, file_size_bytes, uploaded_at')
           .eq('album_id', albumId)
           .eq('upload_status', 'completed')
           .eq('is_deleted', false)
@@ -101,11 +108,56 @@ class AlbumRepository {
           .order('uploaded_at', ascending: false);
 
       return (rows as List)
-          .map((row) => MediaFile.fromJson(Map<String, dynamic>.from(row as Map)))
+          .map((row) =>
+              MediaFile.fromJson(Map<String, dynamic>.from(row as Map)))
           .toList();
     } catch (_) {
       throw const AppError('Could not load album files. Please try again.');
     }
+  }
+
+  Future<List<AlbumMember>> fetchAlbumMembers(String albumId) async {
+    if (!supabaseService.isConfigured ||
+        supabaseService.currentSession == null) {
+      return const [];
+    }
+
+    try {
+      final rows = await supabaseService.client
+          .from('album_members')
+          .select(
+              'album_id, user_id, role, joined_at, profile:user_profiles!album_members_user_id_fkey(email, display_name, avatar_url)')
+          .eq('album_id', albumId)
+          .eq('is_active', true)
+          .order('joined_at', ascending: true);
+
+      return (rows as List)
+          .map((row) =>
+              AlbumMember.fromJson(Map<String, dynamic>.from(row as Map)))
+          .toList();
+    } catch (_) {
+      throw const AppError('Could not load album members. Please try again.');
+    }
+  }
+
+  Future<AlbumMember> inviteAlbumMember({
+    required String albumId,
+    required String email,
+    required String role,
+  }) {
+    return edgeFunctionService.callFunction<AlbumMember>(
+      'invite-album-member',
+      body: {
+        'album_id': albumId,
+        'email': email,
+        'role': role,
+      },
+      parser: (data) {
+        final payload = Map<String, dynamic>.from(data as Map);
+        return AlbumMember.fromJson(
+            Map<String, dynamic>.from(payload['member'] as Map));
+      },
+    );
   }
 
   Future<Map<String, int>> _countRowsByAlbum(
@@ -114,7 +166,10 @@ class AlbumRepository {
     bool activeMembersOnly = false,
     bool completedMediaOnly = false,
   }) async {
-    var query = supabaseService.client.from(table).select('album_id').inFilter('album_id', albumIds);
+    var query = supabaseService.client
+        .from(table)
+        .select('album_id')
+        .inFilter('album_id', albumIds);
 
     if (activeMembersOnly) {
       query = query.eq('is_active', true);

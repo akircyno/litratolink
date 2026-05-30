@@ -5,7 +5,6 @@ import '../../../app/routes.dart';
 import '../../../app/theme.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_card.dart';
-import '../../../core/widgets/invite_form.dart';
 import '../../../core/widgets/litrato_header.dart';
 import '../../../core/widgets/memory_stat_card.dart';
 import '../../../core/widgets/notification_item.dart';
@@ -88,8 +87,10 @@ class _AlbumsTab extends ConsumerWidget {
       loading: () => const [],
       error: (_, __) => const [],
     );
-    final fileCount = albums.fold<int>(0, (total, album) => total + album.fileCount);
-    final memberCount = albums.fold<int>(0, (total, album) => total + album.memberCount);
+    final fileCount =
+        albums.fold<int>(0, (total, album) => total + album.fileCount);
+    final memberCount =
+        albums.fold<int>(0, (total, album) => total + album.memberCount);
 
     return Stack(
       children: [
@@ -105,11 +106,21 @@ class _AlbumsTab extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  MemoryStatCard(label: 'Files', value: '$fileCount', icon: Icons.photo_library_outlined),
+                  MemoryStatCard(
+                      label: 'Files',
+                      value: '$fileCount',
+                      icon: Icons.photo_library_outlined),
                   const SizedBox(width: 10),
-                  MemoryStatCard(label: 'Albums', value: '${albums.length}', icon: Icons.auto_awesome_motion_outlined, gold: true),
+                  MemoryStatCard(
+                      label: 'Albums',
+                      value: '${albums.length}',
+                      icon: Icons.auto_awesome_motion_outlined,
+                      gold: true),
                   const SizedBox(width: 10),
-                  MemoryStatCard(label: 'People', value: '$memberCount', icon: Icons.group_outlined),
+                  MemoryStatCard(
+                      label: 'People',
+                      value: '$memberCount',
+                      icon: Icons.group_outlined),
                 ],
               ),
             ),
@@ -123,12 +134,16 @@ class _AlbumsTab extends ConsumerWidget {
                       children: [
                         Text(
                           'Your Albums',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 16),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(fontSize: 16),
                         ),
                         const SizedBox(height: 2),
                         const Text(
                           'Invite-only spaces, sorted by recent activity.',
-                          style: TextStyle(color: AppColors.mutedInk, fontSize: 11),
+                          style: TextStyle(
+                              color: AppColors.mutedInk, fontSize: 11),
                         ),
                       ],
                     ),
@@ -137,12 +152,16 @@ class _AlbumsTab extends ConsumerWidget {
                     style: TextButton.styleFrom(
                       backgroundColor: AppColors.maroon,
                       foregroundColor: AppColors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 6),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
                     ),
-                    onPressed: () => Navigator.pushNamed(context, AppRoutes.createAlbum),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, AppRoutes.createAlbum),
                     icon: const Icon(Icons.add, size: 12),
-                    label: const Text('New Album', style: TextStyle(fontSize: 12)),
+                    label:
+                        const Text('New Album', style: TextStyle(fontSize: 12)),
                   ),
                 ],
               ),
@@ -165,9 +184,11 @@ class _AlbumsTab extends ConsumerWidget {
                 data: (albums) => albums.isEmpty
                     ? AlbumEmptyState(
                         title: 'No albums yet',
-                        message: 'Create your first private album and start sharing original-quality memories.',
+                        message:
+                            'Create your first private album and start sharing original-quality memories.',
                         actionLabel: 'Create Album',
-                        onAction: () => Navigator.pushNamed(context, AppRoutes.createAlbum),
+                        onAction: () =>
+                            Navigator.pushNamed(context, AppRoutes.createAlbum),
                       )
                     : Column(
                         children: [
@@ -196,7 +217,8 @@ class _AlbumsTab extends ConsumerWidget {
             backgroundColor: AppColors.maroon,
             foregroundColor: AppColors.white,
             shape: const CircleBorder(),
-            onPressed: () => Navigator.pushNamed(context, AppRoutes.createAlbum),
+            onPressed: () =>
+                Navigator.pushNamed(context, AppRoutes.createAlbum),
             child: const Icon(Icons.add),
           ),
         ),
@@ -220,7 +242,12 @@ class _InvitesTab extends StatelessWidget {
           style: TextStyle(color: AppColors.mutedInk, height: 1.4),
         ),
         const SizedBox(height: 14),
-        const AppCard(child: InviteForm()),
+        const AppCard(
+          child: Text(
+            'Open an album to add members and choose their role.',
+            style: TextStyle(color: AppColors.mutedInk, height: 1.4),
+          ),
+        ),
       ],
     );
   }
@@ -276,8 +303,11 @@ class _ProfileTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(currentUserProfileProvider);
-    final displayName = profile?.displayName?.isNotEmpty == true ? profile!.displayName! : 'LitratoLink User';
-    final email = profile?.email.isNotEmpty == true ? profile!.email : 'user@example.com';
+    final displayName = profile?.displayName?.isNotEmpty == true
+        ? profile!.displayName!
+        : 'LitratoLink User';
+    final email =
+        profile?.email.isNotEmpty == true ? profile!.email : 'user@example.com';
     final initials = _initialsFor(displayName);
 
     return ListView(
@@ -292,7 +322,8 @@ class _ProfileTab extends ConsumerWidget {
               CircleAvatar(
                 radius: 30,
                 backgroundColor: AppColors.maroon,
-                child: Text(initials, style: const TextStyle(color: AppColors.white)),
+                child: Text(initials,
+                    style: const TextStyle(color: AppColors.white)),
               ),
               const SizedBox(height: 14),
               Text(displayName, style: Theme.of(context).textTheme.titleLarge),
@@ -318,10 +349,17 @@ class _ProfileTab extends ConsumerWidget {
   }
 
   String _initialsFor(String name) {
-    final parts = name.trim().split(RegExp(r'\s+')).where((part) => part.isNotEmpty).toList();
+    final parts = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .toList();
     if (parts.isEmpty) return 'LL';
-    if (parts.length == 1) return parts.first.characters.take(2).toString().toUpperCase();
+    if (parts.length == 1) {
+      return parts.first.characters.take(2).toString().toUpperCase();
+    }
 
-    return '${parts.first.characters.first}${parts.last.characters.first}'.toUpperCase();
+    return '${parts.first.characters.first}${parts.last.characters.first}'
+        .toUpperCase();
   }
 }
