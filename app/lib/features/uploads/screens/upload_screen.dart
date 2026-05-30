@@ -26,12 +26,14 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
   Widget build(BuildContext context) {
     final routeAlbum = ModalRoute.of(context)?.settings.arguments;
     final album = routeAlbum is Album ? routeAlbum : null;
+    final canUpload = album?.canUpload ?? false;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Upload')),
       body: AppScreen(
         children: [
-          Text('Upload Original Photo', style: Theme.of(context).textTheme.headlineLarge),
+          Text('Upload Original Photo',
+              style: Theme.of(context).textTheme.headlineLarge),
           const SizedBox(height: 8),
           const Text(
             'Choose one photo and upload the original file. No compression, resizing, or conversion.',
@@ -41,46 +43,62 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
             const SizedBox(height: 8),
             Text(
               album.name,
-              style: const TextStyle(color: AppColors.softGold, fontWeight: FontWeight.w700),
+              style: const TextStyle(
+                  color: AppColors.softGold, fontWeight: FontWeight.w700),
             ),
+            if (!album.canUpload) ...[
+              const SizedBox(height: 12),
+              const AppEmptyState(
+                title: 'Viewer access',
+                message:
+                    'Viewers can open and download originals, but only Admins and Contributors can upload.',
+              ),
+            ],
           ],
           const SizedBox(height: 22),
           AppButton(
             label: isPicking ? 'Opening picker...' : 'Choose Photo',
             icon: Icons.photo_library_outlined,
             secondary: true,
-            onPressed: isPicking ? null : () => _pickFile(includeVideos: false),
+            onPressed: isPicking || !canUpload
+                ? null
+                : () => _pickFile(includeVideos: false),
           ),
           const SizedBox(height: 10),
           AppButton(
             label: 'Choose from Files',
             icon: Icons.folder_open_outlined,
             secondary: true,
-            onPressed: isPicking ? null : () => _pickFile(includeVideos: false),
+            onPressed: isPicking || !canUpload
+                ? null
+                : () => _pickFile(includeVideos: false),
           ),
           const SizedBox(height: 20),
           if (selectedFile == null)
             const AppEmptyState(
               title: 'No file selected',
-              message: 'Choose one original photo for this Sprint 1 upload test.',
+              message:
+                  'Choose one original photo for this Sprint 1 upload test.',
             )
           else
             SelectedFileCard(file: selectedFile!),
           const SizedBox(height: 14),
           const Text(
             'Files will be uploaded in original quality.',
-            style: TextStyle(color: AppColors.maroon, fontWeight: FontWeight.w700),
+            style:
+                TextStyle(color: AppColors.maroon, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 22),
           AppButton(
             label: 'Upload Original File',
             icon: Icons.cloud_upload_outlined,
-            onPressed: selectedFile == null
+            onPressed: selectedFile == null || !canUpload
                 ? null
                 : () {
                     if (album == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Open Upload from an album first.')),
+                        const SnackBar(
+                            content: Text('Open Upload from an album first.')),
                       );
                       return;
                     }
@@ -88,7 +106,8 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
                     Navigator.pushNamed(
                       context,
                       AppRoutes.uploadProgress,
-                      arguments: UploadProgressArgs(album: album, file: selectedFile!),
+                      arguments:
+                          UploadProgressArgs(album: album, file: selectedFile!),
                     );
                   },
           ),

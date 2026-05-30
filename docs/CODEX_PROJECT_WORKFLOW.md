@@ -92,6 +92,8 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Album details show uploaded media and current members.
 - Admin-only invite form validates album admin permission.
 - Invite form shows a friendly message when the email has not signed in yet.
+- Viewer upload controls are blocked in the Flutter UI.
+- Save All screen uses real album files and downloads originals through `download-original-file`.
 - Live test file `IMG_3778.JPG` uploaded and downloaded at original size.
 - Stale pending test upload rows were cleaned from Supabase.
 
@@ -105,6 +107,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Verified with an unregistered email:
   - App shows `Ask this person to sign in to LitratoLink once before inviting them.`
 - Still useful to test with a second real registered account before expanding roles deeper.
+- Save All is implemented for completed album files, but should be manually tested with more than one file.
 
 ## Next Product Step
 
@@ -118,3 +121,4 @@ Continue the Invite / Album Members feature:
 6. App refreshes members and album counts.
 7. Test a second real registered account.
 8. Confirm role-specific access in later prompts.
+9. Manually test Save All with multiple completed files.

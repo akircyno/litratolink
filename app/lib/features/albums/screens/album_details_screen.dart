@@ -7,6 +7,7 @@ import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_screen.dart';
 import '../../../core/widgets/invite_form.dart';
 import '../../../core/widgets/role_chip.dart';
+import '../../downloads/screens/save_all_screen.dart';
 import '../models/album.dart';
 import '../models/album_member.dart';
 import '../models/media_file.dart';
@@ -45,7 +46,7 @@ class AlbumDetailsScreen extends ConsumerWidget {
     final visibleFileCount = loadedFiles?.length ?? album.fileCount;
     final loadedMembers = membersAsync.asData?.value;
     final visibleMemberCount = loadedMembers?.length ?? album.memberCount;
-    final isAdmin = album.role.toLowerCase() == 'admin';
+    final isAdmin = album.canManageMembers;
 
     return Scaffold(
       appBar: AppBar(
@@ -140,8 +141,14 @@ class AlbumDetailsScreen extends ConsumerWidget {
                     icon: Icons.save_alt,
                     color: AppColors.goldFaint,
                     foreground: AppColors.softGold,
-                    onTap: () =>
-                        Navigator.pushNamed(context, AppRoutes.saveAll),
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      AppRoutes.saveAll,
+                      arguments: SaveAllArgs(
+                        album: album,
+                        files: loadedFiles ?? const [],
+                      ),
+                    ),
                   ),
                 ),
               ],

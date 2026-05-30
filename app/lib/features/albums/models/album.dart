@@ -21,6 +21,8 @@ class Album {
   final String updatedLabel;
   final List<Color> coverColors;
 
+  String get normalizedRole => role.toLowerCase();
+
   factory Album.fromData({
     required Map<String, dynamic> album,
     required String role,
@@ -58,9 +60,10 @@ class Album {
   }
 
   bool get canUpload {
-    final normalizedRole = role.toLowerCase();
     return normalizedRole == 'admin' || normalizedRole == 'contributor';
   }
+
+  bool get canManageMembers => normalizedRole == 'admin';
 
   static String _formatRole(String role) {
     if (role.isEmpty) return 'Viewer';
