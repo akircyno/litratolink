@@ -17,7 +17,7 @@ Sprint 1 now supports the core private original-quality flow:
 - File Preview displays a downloaded-size vs expected-original-size quality check.
 - Upload progress keeps users on the upload screen until the active upload finishes or fails.
 - Save All uses real album files and downloads originals through the same backend path.
-- Save All keeps the batch screen stable while downloads are active.
+- Save All bundles originals into one ZIP for browser downloads and keeps the batch screen stable while active.
 - Invites tab uses real album data and links Admins to member management.
 - Profile tab uses the signed-in account and real album totals instead of placeholder content.
 - Admins can invite existing LitratoLink users by email and role.
@@ -80,6 +80,7 @@ Sprint 1 now supports the core private original-quality flow:
 - Re-add the second account and confirm access returns.
 - Confirm non-member album/file access is blocked from a second account.
 - Test Save All with at least two completed files.
+- Confirm Save All creates one `*-originals.zip` in the browser downloads.
 - Compare downloaded file properties in Windows against the original file.
 
 ## Known Notes

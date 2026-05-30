@@ -27,6 +27,44 @@ class DownloadRepository {
     required MediaFile file,
     required void Function(double progress) onProgress,
   }) async {
+    final original = await downloadOriginalBytes(
+      file: file,
+      onProgress: onProgress,
+    );
+
+    final savedPath = await FilePicker.saveFile(
+      dialogTitle: 'Save original file',
+      fileName: original.filename,
+      bytes: original.bytes,
+    );
+
+    if (savedPath == null && !kIsWeb) {
+      throw const AppError('Download was cancelled.');
+    }
+
+    QualityTestLog.downloadedFile(
+      filename: original.filename,
+      downloadedSizeBytes: original.sizeBytes,
+      expectedSizeBytes: original.expectedSizeBytes,
+      mimeType: original.mimeType,
+      savedPath: savedPath ?? 'Browser downloads',
+    );
+
+    onProgress(1);
+
+    return DownloadedFile(
+      filename: original.filename,
+      mimeType: original.mimeType,
+      sizeBytes: original.sizeBytes,
+      expectedSizeBytes: original.expectedSizeBytes,
+      savedPath: savedPath ?? 'Browser downloads',
+    );
+  }
+
+  Future<OriginalDownload> downloadOriginalBytes({
+    required MediaFile file,
+    required void Function(double progress) onProgress,
+  }) async {
     final Response<List<int>> response;
     try {
       response = await dio.post<List<int>>(
@@ -67,32 +105,16 @@ class DownloadRepository {
         ) ??
         bytes.length;
 
-    final savedPath = await FilePicker.saveFile(
-      dialogTitle: 'Save original file',
-      fileName: Uri.decodeComponent(originalFilename),
-      bytes: Uint8List.fromList(bytes),
-    );
-
-    if (savedPath == null && !kIsWeb) {
-      throw const AppError('Download was cancelled.');
-    }
-
-    QualityTestLog.downloadedFile(
-      filename: Uri.decodeComponent(originalFilename),
-      downloadedSizeBytes: bytes.length,
-      expectedSizeBytes: expectedSize,
-      mimeType: mimeType,
-      savedPath: savedPath ?? 'Browser downloads',
-    );
+    final downloadedBytes = Uint8List.fromList(bytes);
+    final filename = Uri.decodeComponent(originalFilename);
 
     onProgress(1);
 
-    return DownloadedFile(
-      filename: Uri.decodeComponent(originalFilename),
+    return OriginalDownload(
+      filename: filename,
       mimeType: mimeType,
-      sizeBytes: bytes.length,
+      bytes: downloadedBytes,
       expectedSizeBytes: expectedSize,
-      savedPath: savedPath ?? 'Browser downloads',
     );
   }
 

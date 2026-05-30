@@ -1,7 +1,12 @@
+import 'package:archive/archive.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme.dart';
+import '../../../core/errors/app_error.dart';
+import '../../../core/utils/quality_test_log.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_empty_state.dart';
@@ -12,6 +17,7 @@ import '../../albums/models/album.dart';
 import '../../albums/models/media_file.dart';
 import '../../albums/providers/album_provider.dart';
 import '../data/download_repository.dart';
+import '../models/downloaded_file.dart';
 
 class SaveAllArgs {
   const SaveAllArgs({
@@ -198,25 +204,54 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
 
     try {
       final repository = ref.read(downloadRepositoryProvider);
+      final archive = Archive();
+      final usedNames = <String>{};
+      final savedOriginals = <OriginalDownload>[];
+
       for (var index = 0; index < files.length; index++) {
         if (!mounted) return;
 
         setState(() => activeIndex = index);
-        await repository.downloadOriginal(
+        final original = await repository.downloadOriginalBytes(
           file: files[index],
           onProgress: (fileProgress) {
             if (!mounted) return;
             final totalProgress =
-                (index + fileProgress.clamp(0, 1)) / files.length;
+                (index + (fileProgress.clamp(0, 1) * 0.9)) / files.length;
             setState(() => progress = totalProgress);
           },
         );
+        savedOriginals.add(original);
+        final zipFilename = _uniqueZipFilename(original.filename, usedNames);
+        archive.addFile(ArchiveFile.bytes(zipFilename, original.bytes));
 
         if (!mounted) return;
         setState(() {
           savedCount = index + 1;
-          progress = savedCount / files.length;
+          progress = (savedCount / files.length) * 0.9;
         });
+      }
+
+      final zipBytes = Uint8List.fromList(ZipEncoder().encode(archive));
+      final zipName = '${_safeZipName(files)}-originals.zip';
+      final savedPath = await FilePicker.saveFile(
+        dialogTitle: 'Save all original files',
+        fileName: zipName,
+        bytes: zipBytes,
+      );
+
+      if (savedPath == null && !kIsWeb) {
+        throw const AppError('Save All was cancelled.');
+      }
+
+      for (final original in savedOriginals) {
+        QualityTestLog.downloadedFile(
+          filename: original.filename,
+          downloadedSizeBytes: original.sizeBytes,
+          expectedSizeBytes: original.expectedSizeBytes,
+          mimeType: original.mimeType,
+          savedPath: savedPath ?? 'Browser downloads: $zipName',
+        );
       }
 
       if (!mounted) return;
@@ -233,6 +268,37 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
         isComplete = false;
         errorMessage = error.toString();
       });
+    }
+  }
+
+  String _safeZipName(List<MediaFile> files) {
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final saveArgs = args is SaveAllArgs ? args : null;
+    final rawName = saveArgs?.album.name.trim();
+    final albumName = rawName == null || rawName.isEmpty ? 'album' : rawName;
+    final safeName = albumName
+        .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F]'), '_')
+        .replaceAll(RegExp(r'\s+'), '-')
+        .toLowerCase();
+    return safeName.isEmpty ? 'litratolink-album' : safeName;
+  }
+
+  String _uniqueZipFilename(String filename, Set<String> usedNames) {
+    final safeName = filename
+        .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F]'), '_')
+        .replaceAll(RegExp(r'^[_\s.]+'), '');
+    final baseName = safeName.isEmpty ? 'original-file' : safeName;
+    if (usedNames.add(baseName)) return baseName;
+
+    final dotIndex = baseName.lastIndexOf('.');
+    final name = dotIndex <= 0 ? baseName : baseName.substring(0, dotIndex);
+    final extension = dotIndex <= 0 ? '' : baseName.substring(dotIndex);
+
+    var counter = 2;
+    while (true) {
+      final candidate = '$name ($counter)$extension';
+      if (usedNames.add(candidate)) return candidate;
+      counter++;
     }
   }
 
