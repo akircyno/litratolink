@@ -54,6 +54,13 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
                     'Viewers can open and download originals, but only Admins and Contributors can upload.',
               ),
             ],
+          ] else ...[
+            const SizedBox(height: 12),
+            const AppEmptyState(
+              title: 'Choose an album first',
+              message:
+                  'Open Upload from an album so the file is stored in the right private space.',
+            ),
           ],
           const SizedBox(height: 22),
           AppButton(

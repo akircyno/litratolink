@@ -104,6 +104,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Viewer upload controls are blocked in the Flutter UI.
 - Save All screen uses real album files and downloads originals through `download-original-file`.
 - Save All fetches album files itself and uses Album Details data only as a fallback.
+- Direct Upload route now explains that uploads must start from an album.
 - File Preview shows a tester-friendly downloaded-size vs expected-original-size check.
 - Download permission/file errors are mapped to friendly app messages instead of raw Dio errors.
 - Activity tab is driven by real album data instead of fake placeholder notifications.
