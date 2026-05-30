@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:litratolink/features/albums/models/album.dart';
+import 'package:litratolink/features/albums/models/album_member.dart';
 import 'package:litratolink/features/downloads/models/downloaded_file.dart';
 
 void main() {
@@ -44,6 +45,36 @@ void main() {
       );
 
       expect(file.sizeMatchesExpected, isFalse);
+    });
+  });
+
+  group('AlbumMember display helpers', () {
+    test('uses shared profile display name and email from joined rows', () {
+      final member = AlbumMember.fromJson({
+        'album_id': 'album-id',
+        'user_id': 'user-id',
+        'role': 'viewer',
+        'profile': {
+          'email': 'viewer@example.com',
+          'display_name': 'Album Viewer',
+          'avatar_url': 'https://example.com/avatar.png',
+        },
+      });
+
+      expect(member.title, 'Album Viewer');
+      expect(member.subtitle, 'viewer@example.com');
+      expect(member.roleLabel, 'Viewer');
+    });
+
+    test('falls back to role when profile details are hidden', () {
+      final member = AlbumMember.fromJson({
+        'album_id': 'album-id',
+        'user_id': 'user-id',
+        'role': 'contributor',
+      });
+
+      expect(member.title, 'Album member');
+      expect(member.subtitle, 'Contributor');
     });
   });
 }
