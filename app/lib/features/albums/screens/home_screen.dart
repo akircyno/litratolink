@@ -463,11 +463,21 @@ class _ProfileTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(currentUserProfileProvider);
+    final albumsAsync = ref.watch(albumListProvider);
+    final albums = albumsAsync.asData?.value ?? const <Album>[];
+    final fileCount =
+        albums.fold<int>(0, (total, album) => total + album.fileCount);
+    final memberCount =
+        albums.fold<int>(0, (total, album) => total + album.memberCount);
+    final adminCount = albums.where((album) => album.canManageMembers).length;
     final displayName = profile?.displayName?.isNotEmpty == true
         ? profile!.displayName!
         : 'LitratoLink User';
-    final email =
-        profile?.email.isNotEmpty == true ? profile!.email : 'user@example.com';
+    final email = profile?.email.isNotEmpty == true
+        ? profile!.email
+        : 'Signed in with Google';
+    final avatarUrl = profile?.avatarUrl?.trim();
+    final hasAvatar = avatarUrl != null && avatarUrl.isNotEmpty;
     final initials = _initialsFor(displayName);
 
     return ListView(
@@ -482,6 +492,7 @@ class _ProfileTab extends ConsumerWidget {
               CircleAvatar(
                 radius: 30,
                 backgroundColor: AppColors.maroon,
+                foregroundImage: hasAvatar ? NetworkImage(avatarUrl) : null,
                 child: Text(initials,
                     style: const TextStyle(color: AppColors.white)),
               ),
@@ -500,6 +511,54 @@ class _ProfileTab extends ConsumerWidget {
                     Navigator.pushReplacementNamed(context, AppRoutes.login);
                   }
                 },
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
+        Row(
+          children: [
+            MemoryStatCard(
+              label: 'Files',
+              value: '$fileCount',
+              icon: Icons.photo_library_outlined,
+            ),
+            const SizedBox(width: 10),
+            MemoryStatCard(
+              label: 'Albums',
+              value: '${albums.length}',
+              icon: Icons.auto_awesome_motion_outlined,
+              gold: true,
+            ),
+            const SizedBox(width: 10),
+            MemoryStatCard(
+              label: 'People',
+              value: '$memberCount',
+              icon: Icons.group_outlined,
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        AppCard(
+          child: Row(
+            children: [
+              const Icon(Icons.admin_panel_settings_outlined,
+                  color: AppColors.softGold, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Albums you manage',
+                        style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: 3),
+                    Text(
+                      '$adminCount Admin space${adminCount == 1 ? '' : 's'}',
+                      style: const TextStyle(
+                          color: AppColors.mutedInk, fontSize: 12),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

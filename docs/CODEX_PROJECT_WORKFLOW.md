@@ -116,6 +116,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Download permission/file errors are mapped to friendly app messages instead of raw Dio errors.
 - Activity tab is driven by real album data instead of fake placeholder notifications.
 - Invites tab is driven by real album data and links Admins to member management.
+- Profile tab shows the signed-in account, Google avatar when available, and real album totals.
 - Unused Flutter demo album data was removed.
 - Test coverage includes role helpers and downloaded-size quality checks.
 - Live test file `IMG_3778.JPG` uploaded and downloaded at original size.

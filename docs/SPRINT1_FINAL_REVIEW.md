@@ -17,6 +17,7 @@ Sprint 1 now supports the core private original-quality flow:
 - File Preview displays a downloaded-size vs expected-original-size quality check.
 - Save All uses real album files and downloads originals through the same backend path.
 - Invites tab uses real album data and links Admins to member management.
+- Profile tab uses the signed-in account and real album totals instead of placeholder content.
 - Admins can invite existing LitratoLink users by email and role.
 - Admins can update an existing member's role from the same invite form.
 - Admins can update another member's role from the member row menu.
