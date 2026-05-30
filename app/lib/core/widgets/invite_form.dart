@@ -25,6 +25,19 @@ class InviteForm extends StatefulWidget {
 class _InviteFormState extends State<InviteForm> {
   final emailController = TextEditingController();
   String role = 'Viewer';
+  String? handledSuccessMessage;
+
+  @override
+  void didUpdateWidget(covariant InviteForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final successMessage = widget.successMessage;
+    if (successMessage != null && successMessage != handledSuccessMessage) {
+      handledSuccessMessage = successMessage;
+      emailController.clear();
+      role = 'Viewer';
+    }
+  }
 
   @override
   void dispose() {

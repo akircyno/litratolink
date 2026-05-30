@@ -98,6 +98,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Album details show uploaded media and current members.
 - Admin-only invite form validates album admin permission.
 - Invite form shows a friendly message when the email has not signed in yet.
+- Invite form clears after a successful invite and keeps the email after errors.
 - Viewer upload controls are blocked in the Flutter UI.
 - Save All screen uses real album files and downloads originals through `download-original-file`.
 - File Preview shows a tester-friendly downloaded-size vs expected-original-size check.
