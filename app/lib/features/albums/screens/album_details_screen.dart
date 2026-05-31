@@ -44,7 +44,15 @@ class AlbumDetailsScreen extends ConsumerWidget {
     final membersAsync = ref.watch(albumMembersProvider(album.id));
     final inviteState = ref.watch(inviteMemberControllerProvider);
     final currentProfile = ref.watch(currentUserProfileProvider);
+    final selectionMode = ref.watch(albumSelectionModeProvider(album.id));
+    final selectedIds = ref.watch(selectedMediaIdsProvider(album.id));
     final loadedFiles = filesAsync.asData?.value;
+    final selectedFiles = loadedFiles
+            ?.where((file) => selectedIds.contains(file.id))
+            .toList(growable: false) ??
+        const <MediaFile>[];
+    final filesForSaveAll =
+        selectedFiles.isNotEmpty ? selectedFiles : loadedFiles ?? const [];
     final visibleFileCount = loadedFiles?.length ?? album.fileCount;
     final loadedMembers = membersAsync.asData?.value;
     if (loadedMembers != null && loadedMembers.isEmpty) {
@@ -157,7 +165,9 @@ class AlbumDetailsScreen extends ConsumerWidget {
                 ],
                 Expanded(
                   child: _ActionButton(
-                    label: 'Save All',
+                    label: selectedFiles.isEmpty
+                        ? 'Save All'
+                        : 'Save ${selectedFiles.length}',
                     icon: Icons.save_alt,
                     color: AppColors.goldFaint,
                     foreground: AppColors.softGold,
@@ -166,7 +176,7 @@ class AlbumDetailsScreen extends ConsumerWidget {
                       AppRoutes.saveAll,
                       arguments: SaveAllArgs(
                         album: album,
-                        files: loadedFiles ?? const [],
+                        files: filesForSaveAll,
                       ),
                     ),
                   ),
@@ -180,7 +190,9 @@ class AlbumDetailsScreen extends ConsumerWidget {
               children: [
                 Expanded(
                   child: Text(
-                    '$visibleFileCount memories',
+                    selectionMode
+                        ? '${selectedIds.length} selected'
+                        : '$visibleFileCount memories',
                     style: TextStyle(
                         color: AppColors.mutedInk,
                         fontSize: 11,
@@ -188,10 +200,20 @@ class AlbumDetailsScreen extends ConsumerWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () {},
-                  child: const Text('Select',
-                      style:
-                          TextStyle(color: AppColors.softGold, fontSize: 11)),
+                  onPressed: loadedFiles == null || loadedFiles.isEmpty
+                      ? null
+                      : () {
+                          final selectionNotifier = ref.read(
+                              albumSelectionModeProvider(album.id).notifier);
+                          final selectedNotifier = ref.read(
+                              selectedMediaIdsProvider(album.id).notifier);
+                          final nextMode = !selectionMode;
+                          selectionNotifier.setEnabled(nextMode);
+                          if (!nextMode) selectedNotifier.clear();
+                        },
+                  child: Text(selectionMode ? 'Done' : 'Select',
+                      style: const TextStyle(
+                          color: AppColors.softGold, fontSize: 11)),
                 ),
               ],
             ),
@@ -242,9 +264,17 @@ class AlbumDetailsScreen extends ConsumerWidget {
                             itemBuilder: (context, index) {
                               return GalleryTile(
                                 file: files[index],
-                                onTap: () => Navigator.pushNamed(
-                                    context, AppRoutes.filePreview,
-                                    arguments: files[index]),
+                                selectionMode: selectionMode,
+                                selected: selectedIds.contains(files[index].id),
+                                onTap: selectionMode
+                                    ? () => _toggleSelectedFile(
+                                          ref,
+                                          albumId: album.id,
+                                          fileId: files[index].id,
+                                        )
+                                    : () => Navigator.pushNamed(
+                                        context, AppRoutes.filePreview,
+                                        arguments: files[index]),
                               );
                             },
                           ),
@@ -253,9 +283,17 @@ class AlbumDetailsScreen extends ConsumerWidget {
                         for (final file in files) ...[
                           _FileMetadataRow(
                             file: file,
-                            onTap: () => Navigator.pushNamed(
-                                context, AppRoutes.filePreview,
-                                arguments: file),
+                            selectionMode: selectionMode,
+                            selected: selectedIds.contains(file.id),
+                            onTap: selectionMode
+                                ? () => _toggleSelectedFile(
+                                      ref,
+                                      albumId: album.id,
+                                      fileId: file.id,
+                                    )
+                                : () => Navigator.pushNamed(
+                                    context, AppRoutes.filePreview,
+                                    arguments: file),
                           ),
                           const SizedBox(height: 8),
                         ],
@@ -381,16 +419,28 @@ class AlbumDetailsScreen extends ConsumerWidget {
           member: member,
         );
   }
+
+  void _toggleSelectedFile(
+    WidgetRef ref, {
+    required String albumId,
+    required String fileId,
+  }) {
+    ref.read(selectedMediaIdsProvider(albumId).notifier).toggle(fileId);
+  }
 }
 
 class _FileMetadataRow extends StatelessWidget {
   const _FileMetadataRow({
     required this.file,
     required this.onTap,
+    this.selectionMode = false,
+    this.selected = false,
   });
 
   final MediaFile file;
   final VoidCallback onTap;
+  final bool selectionMode;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
@@ -408,11 +458,18 @@ class _FileMetadataRow extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(
-                file.isVideo ? Icons.movie_outlined : Icons.image_outlined,
-                color: AppColors.maroon,
-                size: 18,
-              ),
+              if (selectionMode)
+                Icon(
+                  selected ? Icons.check_circle : Icons.radio_button_unchecked,
+                  color: selected ? AppColors.maroon : AppColors.mutedInk,
+                  size: 18,
+                )
+              else
+                Icon(
+                  file.isVideo ? Icons.movie_outlined : Icons.image_outlined,
+                  color: AppColors.maroon,
+                  size: 18,
+                ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -436,8 +493,9 @@ class _FileMetadataRow extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right,
-                  color: AppColors.mutedInk, size: 18),
+              if (!selectionMode)
+                const Icon(Icons.chevron_right,
+                    color: AppColors.mutedInk, size: 18),
             ],
           ),
         ),

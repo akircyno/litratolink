@@ -7,11 +7,15 @@ class GalleryTile extends StatelessWidget {
   const GalleryTile({
     required this.file,
     required this.onTap,
+    this.selectionMode = false,
+    this.selected = false,
     super.key,
   });
 
   final MediaFile file;
   final VoidCallback onTap;
+  final bool selectionMode;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +57,8 @@ class GalleryTile extends StatelessWidget {
                 top: 4,
                 left: 4,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(4),
@@ -63,7 +68,9 @@ class GalleryTile extends StatelessWidget {
                     children: [
                       Icon(Icons.play_arrow, size: 8, color: AppColors.white),
                       SizedBox(width: 2),
-                      Text('0:24', style: TextStyle(color: AppColors.white, fontSize: 9)),
+                      Text('0:24',
+                          style:
+                              TextStyle(color: AppColors.white, fontSize: 9)),
                     ],
                   ),
                 ),
@@ -87,6 +94,35 @@ class GalleryTile extends StatelessWidget {
                 ),
               ),
             ),
+            if (selectionMode)
+              Positioned(
+                top: 4,
+                left: 4,
+                child: Container(
+                  width: 18,
+                  height: 18,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? AppColors.maroon
+                        : AppColors.white.withValues(alpha: 0.80),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.white, width: 1),
+                  ),
+                  child: selected
+                      ? const Icon(Icons.check,
+                          color: AppColors.white, size: 12)
+                      : null,
+                ),
+              ),
+            if (selected)
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.maroon, width: 3),
+                  ),
+                ),
+              ),
             Positioned(
               left: 6,
               right: 6,

@@ -111,6 +111,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Upload and download controllers auto-dispose so progress state resets between files/screens.
 - Viewer upload controls are blocked in the Flutter UI.
 - Save All screen uses real album files and downloads originals through `download-original-file`.
+- Album Details selection mode lets users select files and save only selected originals.
 - Save All fetches album files itself and uses Album Details data only as a fallback.
 - Save All shows a retryable error if its file fetch fails with no fallback data.
 - Save All creates one ZIP download for browser reliability and disables cancel navigation while active.

@@ -34,6 +34,50 @@ final inviteMemberControllerProvider =
   InviteMemberController.new,
 );
 
+final albumSelectionModeProvider =
+    NotifierProvider.autoDispose.family<AlbumSelectionMode, bool, String>(
+  AlbumSelectionMode.new,
+);
+
+final selectedMediaIdsProvider =
+    NotifierProvider.autoDispose.family<SelectedMediaIds, Set<String>, String>(
+  SelectedMediaIds.new,
+);
+
+class AlbumSelectionMode extends Notifier<bool> {
+  AlbumSelectionMode(this.albumId);
+
+  final String albumId;
+
+  @override
+  bool build() => false;
+
+  void setEnabled(bool enabled) {
+    state = enabled;
+  }
+}
+
+class SelectedMediaIds extends Notifier<Set<String>> {
+  SelectedMediaIds(this.albumId);
+
+  final String albumId;
+
+  @override
+  Set<String> build() => <String>{};
+
+  void clear() {
+    state = <String>{};
+  }
+
+  void toggle(String fileId) {
+    final nextSelection = <String>{...state};
+    if (!nextSelection.add(fileId)) {
+      nextSelection.remove(fileId);
+    }
+    state = nextSelection;
+  }
+}
+
 class InviteMemberState {
   const InviteMemberState({
     this.isSending = false,
