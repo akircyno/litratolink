@@ -51,8 +51,10 @@ class AlbumDetailsScreen extends ConsumerWidget {
             ?.where((file) => selectedIds.contains(file.id))
             .toList(growable: false) ??
         const <MediaFile>[];
+    final hasSelection = selectedFiles.isNotEmpty;
+    final canSaveSelection = !selectionMode || hasSelection;
     final filesForSaveAll =
-        selectedFiles.isNotEmpty ? selectedFiles : loadedFiles ?? const [];
+        hasSelection ? selectedFiles : loadedFiles ?? const [];
     final visibleFileCount = loadedFiles?.length ?? album.fileCount;
     final loadedMembers = membersAsync.asData?.value;
     if (loadedMembers != null && loadedMembers.isEmpty) {
@@ -165,20 +167,24 @@ class AlbumDetailsScreen extends ConsumerWidget {
                 ],
                 Expanded(
                   child: _ActionButton(
-                    label: selectedFiles.isEmpty
-                        ? 'Save All'
-                        : 'Save ${selectedFiles.length}',
+                    label: selectionMode
+                        ? hasSelection
+                            ? 'Save ${selectedFiles.length}'
+                            : 'Save Selected'
+                        : 'Save All',
                     icon: Icons.save_alt,
                     color: AppColors.goldFaint,
                     foreground: AppColors.softGold,
-                    onTap: () => Navigator.pushNamed(
-                      context,
-                      AppRoutes.saveAll,
-                      arguments: SaveAllArgs(
-                        album: album,
-                        files: filesForSaveAll,
-                      ),
-                    ),
+                    onTap: canSaveSelection
+                        ? () => Navigator.pushNamed(
+                              context,
+                              AppRoutes.saveAll,
+                              arguments: SaveAllArgs(
+                                album: album,
+                                files: filesForSaveAll,
+                              ),
+                            )
+                        : null,
                   ),
                 ),
               ],
@@ -643,7 +649,7 @@ class _ActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: color,
+      color: onTap == null ? AppColors.creamLine : color,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -659,11 +665,13 @@ class _ActionButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: foreground, size: 14),
+              Icon(icon,
+                  color: onTap == null ? AppColors.mutedInk : foreground,
+                  size: 14),
               const SizedBox(width: 6),
               Text(label,
                   style: TextStyle(
-                      color: foreground,
+                      color: onTap == null ? AppColors.mutedInk : foreground,
                       fontSize: 12,
                       fontWeight: FontWeight.w500)),
             ],

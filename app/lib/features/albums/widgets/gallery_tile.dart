@@ -52,7 +52,7 @@ class GalleryTile extends StatelessWidget {
                 ),
               ),
             ),
-            if (file.isVideo)
+            if (file.isVideo && !selectionMode)
               Positioned(
                 top: 4,
                 left: 4,
