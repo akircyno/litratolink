@@ -35,6 +35,40 @@ Before sharing the hosted beta link:
 - Test upload, download, and Save All ZIP.
 - Share only with trusted testers.
 
+## Current GitHub Pages URL Setup
+
+Supabase Auth URL Configuration:
+
+```text
+Site URL:
+https://akircyno.github.io/litratolink/
+
+Redirect URLs:
+http://localhost:8080/**
+https://akircyno.github.io/litratolink/**
+```
+
+The wildcard covers hash routes such as:
+
+```text
+https://akircyno.github.io/litratolink/#/login
+https://akircyno.github.io/litratolink/#/home
+```
+
+Google OAuth client:
+
+```text
+Authorized JavaScript origins:
+http://localhost:8080
+https://akircyno.github.io
+https://srquwfxaknsoiuvmlrxy.supabase.co
+
+Authorized redirect URIs:
+https://srquwfxaknsoiuvmlrxy.supabase.co/auth/v1/callback
+```
+
+If the GitHub repository is renamed later from `litratolink` to `potoos`, update the GitHub Pages URL, Flutter web base href, Supabase redirect URLs, and Google OAuth origins in the same rename pass.
+
 ## GitHub Pages Beta Deploy
 
 This repo includes `.github/workflows/pwa-beta.yml`.
