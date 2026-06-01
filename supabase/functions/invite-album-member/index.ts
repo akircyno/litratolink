@@ -3,6 +3,7 @@ import { error, success } from "../_shared/response.ts";
 import { getUserFromRequest } from "../_shared/auth.ts";
 import { AlbumRole, getAlbumRole } from "../_shared/permissions.ts";
 import { supabaseAdmin } from "../_shared/supabaseAdmin.ts";
+import { touchAlbum } from "../_shared/albums.ts";
 import { isUuid } from "../_shared/validation.ts";
 
 Deno.serve(async (req) => {
@@ -110,6 +111,8 @@ Deno.serve(async (req) => {
       return error("SERVER_ERROR", "Could not update this member. Please try again.", 500);
     }
 
+    await touchAlbum(albumId);
+
     return success({ member: mapMember(updatedMember), action: "updated" });
   }
 
@@ -134,6 +137,8 @@ Deno.serve(async (req) => {
       return error("SERVER_ERROR", "Could not invite this person. Please try again.", 500);
     }
 
+    await touchAlbum(albumId);
+
     return success({ member: mapMember(restoredMember), action: "restored" });
   }
 
@@ -154,6 +159,8 @@ Deno.serve(async (req) => {
     console.error("invite-album-member insert failed", memberError?.message);
     return error("SERVER_ERROR", "Could not invite this person. Please try again.", 500);
   }
+
+  await touchAlbum(albumId);
 
   return success({ member: mapMember(member), action: "added" }, 201);
 });

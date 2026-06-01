@@ -3,6 +3,7 @@ import { error, success } from "../_shared/response.ts";
 import { getUserFromRequest } from "../_shared/auth.ts";
 import { getDriveFileMetadata } from "../_shared/googleDrive.ts";
 import { supabaseAdmin } from "../_shared/supabaseAdmin.ts";
+import { touchAlbum } from "../_shared/albums.ts";
 import { isUuid, isValidFileSize } from "../_shared/validation.ts";
 
 Deno.serve(async (req) => {
@@ -47,7 +48,7 @@ Deno.serve(async (req) => {
 
   const { data: mediaFile, error: mediaError } = await supabaseAdmin
     .from("media_files")
-    .select("id, uploader_id, storage_object_id, mime_type, file_size_bytes, upload_status")
+    .select("id, album_id, uploader_id, storage_object_id, mime_type, file_size_bytes, upload_status")
     .eq("id", mediaFileId)
     .eq("storage_object_id", storageObjectId)
     .eq("is_deleted", false)
@@ -126,6 +127,8 @@ Deno.serve(async (req) => {
     await markUploadFailed(mediaFileId);
     return error("SERVER_ERROR", "Could not finish the upload. Please try again.", 500);
   }
+
+  await touchAlbum(mediaFile.album_id);
 
   return success({
     media_file_id: completedFile.id,

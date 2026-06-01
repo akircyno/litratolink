@@ -102,6 +102,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Album/media/member providers are keyed to the current signed-in profile so role state refreshes after account switching.
 - Album Details and Save All stop showing stale content if the current account no longer has active album membership.
 - Album members can read basic profile details for other active, unbanned members in shared albums.
+- Album `updated_at` is refreshed after successful uploads and member changes so Home, Invites, and Activity stay recent.
 - Admin-only invite form validates album admin permission.
 - Invite form shows a friendly message when the email has not signed in yet.
 - Invite form clears after a successful invite and keeps the email after errors.
@@ -139,6 +140,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Still useful to test with a second real registered account before expanding roles deeper.
 - Still useful to test removing and re-adding a second registered account from the Admin UI.
 - Save All is implemented for completed album files, but should be manually tested with more than one file.
+- Upload, invite/update/restore member, and remove member Edge Functions now touch the album timestamp after success.
 
 ## Next Product Step
 

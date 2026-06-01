@@ -3,6 +3,7 @@ import { error, success } from "../_shared/response.ts";
 import { getUserFromRequest } from "../_shared/auth.ts";
 import { getAlbumRole } from "../_shared/permissions.ts";
 import { supabaseAdmin } from "../_shared/supabaseAdmin.ts";
+import { touchAlbum } from "../_shared/albums.ts";
 import { isUuid } from "../_shared/validation.ts";
 
 Deno.serve(async (req) => {
@@ -92,6 +93,8 @@ Deno.serve(async (req) => {
     console.error("remove-album-member update failed", updateError.message);
     return error("SERVER_ERROR", "Could not remove this member. Please try again.", 500);
   }
+
+  await touchAlbum(albumId);
 
   return success({
     album_id: albumId,
