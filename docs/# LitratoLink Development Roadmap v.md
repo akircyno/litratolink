@@ -59,13 +59,14 @@ Each phase must have a working result.
 Recommended development approach:
 
 1. Build the core proof of concept first.
-2. Build the MVP.
-3. Add important V1 features.
-4. Test with real users.
-5. Release on TestFlight.
-6. Improve based on feedback.
-7. Prepare for App Store.
-8. Add future features only after the core app is stable.
+2. Deploy a Flutter Web PWA beta link for early browser access.
+3. Build the MVP.
+4. Add important V1 features.
+5. Test with real users.
+6. Release on TestFlight.
+7. Improve based on feedback.
+8. Prepare for App Store.
+9. Add future features only after the core app is stable.
 
 ---
 
@@ -225,6 +226,60 @@ A logged-in user can:
 4. Download the original file.
 
 This is the first working proof that LitratoLink is possible.
+
+---
+
+# 6.5 Phase 1.5: PWA Beta Access
+
+## 6.5.1 Goal
+
+After the Sprint 1 proof works, deploy LitratoLink as a Flutter Web PWA so early testers can open the app through a browser link before TestFlight or App Store release.
+
+This phase is for fast feedback, not public launch.
+
+## 6.5.2 Why This Phase Exists
+
+PWA beta access helps the project test real accounts and real albums without waiting for:
+
+* Apple Developer Program setup
+* App Store Connect setup
+* TestFlight review
+* Native iOS build signing
+
+It gives trusted testers a simple link while the app is still being hardened.
+
+## 6.5.3 Features to Prepare
+
+Build or verify:
+
+* Flutter Web release build
+* PWA manifest and app icon
+* Hosted browser URL
+* Supabase redirect URLs for the deployed web domain
+* Google OAuth redirect support for the deployed web domain
+* Basic loading and error states for web users
+* Download behavior in browser downloads
+* Save All ZIP behavior in browser downloads
+
+## 6.5.4 Beta Access Rules
+
+During this phase:
+
+* Share the link only with trusted early testers.
+* Use the development or staging Supabase project, not production.
+* Keep Google Drive storage limited to the test storage account.
+* Do not market the app publicly yet.
+* Do not treat PWA beta as App Store release.
+* Keep TestFlight as the next native iOS testing milestone.
+
+## 6.5.5 Output
+
+At the end of Phase 1.5:
+
+* Early testers can open LitratoLink through a browser link.
+* Google login works on the hosted web URL.
+* Testers can create albums, upload originals, invite members, download originals, and test Save All.
+* Feedback can be collected before native TestFlight work begins.
 
 ---
 
@@ -1513,19 +1568,20 @@ Recommended order:
 3. Album creation
 4. Google Drive storage proof
 5. Original upload and download
-6. Album gallery
-7. Invite system
-8. Roles and permissions
-9. Save All
-10. Soft delete and restore
-11. Push notifications
-12. UI polish
-13. Internal testing
-14. TestFlight
-15. Friends and family beta
-16. App Store preparation
-17. App Store release
-18. Future enhancements later
+6. PWA beta access
+7. Album gallery
+8. Invite system
+9. Roles and permissions
+10. Save All
+11. Soft delete and restore
+12. Push notifications
+13. UI polish
+14. Internal testing
+15. TestFlight
+16. Friends and family beta
+17. App Store preparation
+18. App Store release
+19. Future enhancements later
 
 ---
 
