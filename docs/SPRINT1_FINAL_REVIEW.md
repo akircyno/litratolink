@@ -11,6 +11,7 @@ Sprint 1 now supports the core private original-quality flow:
 - The album creator becomes an Admin member.
 - Admins and Contributors can upload original files.
 - Viewers are blocked from upload in the UI and backend.
+- Upload completion re-checks Admin/Contributor permission before accepting original bytes.
 - Completed files appear in the album gallery and file list.
 - File metadata uses joined uploader profile names when visible.
 - Album, media, and member reads refresh when the signed-in profile changes.
@@ -68,6 +69,7 @@ Sprint 1 now supports the core private original-quality flow:
 - Album and media reads rely on RLS membership policies.
 - Active album members can read basic profile details for other active, unbanned members in the same album.
 - Upload is checked in Edge Functions with Admin/Contributor role logic.
+- Pending upload completion is rejected if the uploader no longer has Admin/Contributor access.
 - Download is checked in Edge Functions with active album membership logic.
 - Failed upload paths now mark `media_files.upload_status` as `failed`.
 - Legacy upload completion verifies final size against original upload metadata.

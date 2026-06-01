@@ -4,6 +4,7 @@ import { getUserFromRequest } from "../_shared/auth.ts";
 import { uploadFileBytesToDrive } from "../_shared/googleDrive.ts";
 import { supabaseAdmin } from "../_shared/supabaseAdmin.ts";
 import { touchAlbum } from "../_shared/albums.ts";
+import { canUploadToAlbum } from "../_shared/permissions.ts";
 import { isUuid } from "../_shared/validation.ts";
 
 Deno.serve(async (req) => {
@@ -64,6 +65,12 @@ Deno.serve(async (req) => {
 
   if (mediaFile.uploader_id !== user.id) {
     return error("FORBIDDEN", "You do not have permission to upload this file.", 403);
+  }
+
+  const canUpload = await canUploadToAlbum(mediaFile.album_id, user.id);
+  if (!canUpload) {
+    await markUploadFailed(mediaFileId);
+    return error("FORBIDDEN", "You do not have permission to upload to this album.", 403);
   }
 
   if (!["pending", "uploading", "failed"].includes(mediaFile.upload_status)) {
