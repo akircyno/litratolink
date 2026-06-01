@@ -113,6 +113,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Upload and download controllers auto-dispose so progress state resets between files/screens.
 - Viewer upload controls are blocked in the Flutter UI.
 - Upload completion also re-checks Admin/Contributor permission before accepting original bytes.
+- Direct pending media row updates also require current Admin/Contributor access.
 - Save All screen uses real album files and downloads originals through `download-original-file`.
 - Album Details selection mode lets users select files and save only selected originals.
 - Save All fetches album files itself and uses Album Details data only as a fallback.

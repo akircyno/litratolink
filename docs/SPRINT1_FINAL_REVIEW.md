@@ -70,6 +70,7 @@ Sprint 1 now supports the core private original-quality flow:
 - Active album members can read basic profile details for other active, unbanned members in the same album.
 - Upload is checked in Edge Functions with Admin/Contributor role logic.
 - Pending upload completion is rejected if the uploader no longer has Admin/Contributor access.
+- Direct pending media row updates also require current Admin/Contributor access.
 - Download is checked in Edge Functions with active album membership logic.
 - Failed upload paths now mark `media_files.upload_status` as `failed`.
 - Legacy upload completion verifies final size against original upload metadata.
