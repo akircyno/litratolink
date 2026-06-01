@@ -33,6 +33,7 @@ Sprint 1 now supports the core private original-quality flow:
 - Admins can remove another member from the member row menu after confirmation.
 - The database prevents downgrading or removing the final active Admin.
 - Unregistered invite emails show a friendly action message.
+- Code has a dedicated Sprint 1 rules review in `docs/SPRINT1_RULES_REVIEW.md`.
 
 ## Verified Locally
 

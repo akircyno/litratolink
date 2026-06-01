@@ -9,6 +9,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
 - Sprint execution order: `docs/# LitratoLink Sprint 1 Build Prompt.md`
 - Manual Sprint 1 QA checklist: `docs/SPRINT1_TEST_CHECKLIST.md`
 - Sprint 1 final review/status: `docs/SPRINT1_FINAL_REVIEW.md`
+- Sprint 1 rules review: `docs/SPRINT1_RULES_REVIEW.md`
 - Do not redesign the UI unless explicitly requested.
 - Flutter screens should closely match the HTML mockup layout, navigation, colors, component hierarchy, and user flow.
 
