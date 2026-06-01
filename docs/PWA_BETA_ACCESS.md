@@ -45,8 +45,13 @@ To use it:
 2. Open the GitHub repository.
 3. Go to **Settings > Pages**.
 4. Set **Build and deployment > Source** to **GitHub Actions**.
-5. Open **Actions > PWA Beta Deploy**.
-6. Run the workflow manually, or let it run after app changes.
+5. Go to **Settings > Secrets and variables > Actions**.
+6. Add these repository secrets:
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+   - `GOOGLE_WEB_CLIENT_ID`
+7. Open **Actions > PWA Beta Deploy**.
+8. Run the workflow manually, or let it run after app changes.
 
 Expected beta URL:
 
