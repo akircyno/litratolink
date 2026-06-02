@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:litratolink/core/errors/app_error.dart';
 import 'package:litratolink/features/albums/models/album.dart';
+import 'package:litratolink/features/downloads/screens/save_all_screen.dart';
 import 'package:litratolink/features/albums/models/album_member.dart';
 import 'package:litratolink/features/albums/models/media_file.dart';
 import 'package:litratolink/features/auth/data/auth_repository.dart';
@@ -131,6 +132,59 @@ void main() {
         AppError.messageFor(null),
         'Something went wrong. Please try again.',
       );
+    });
+  });
+
+  group('safeZipName', () {
+    test('normal album name becomes lowercase-dashed', () {
+      expect(safeZipName('Summer Trip'), 'summer-trip');
+    });
+
+    test('collapses runs of unsafe chars and separators', () {
+      expect(safeZipName('My!!!Album'), 'my-album');
+      expect(safeZipName('A  B   C'), 'a-b-c');
+    });
+
+    test('strips leading and trailing dashes', () {
+      expect(safeZipName('!Hello!'), 'hello');
+    });
+
+    test('caps at 50 characters without a trailing dash', () {
+      final long = 'a' * 60;
+      final result = safeZipName(long);
+      expect(result.length, lessThanOrEqualTo(50));
+      expect(result.endsWith('-'), isFalse);
+    });
+
+    test('falls back to litratolink-album for blank or all-symbol names', () {
+      expect(safeZipName(''), 'litratolink-album');
+      expect(safeZipName('   '), 'litratolink-album');
+      expect(safeZipName('!!!'), 'litratolink-album');
+    });
+  });
+
+  group('uniqueZipFilename', () {
+    test('returns the filename unchanged when no collision', () {
+      final used = <String>{};
+      expect(uniqueZipFilename('photo.jpg', used), 'photo.jpg');
+    });
+
+    test('strips leading hyphens, underscores, spaces, and dots', () {
+      final used = <String>{};
+      expect(uniqueZipFilename('-cover.jpg', used), 'cover.jpg');
+      expect(uniqueZipFilename('..hidden.png', <String>{}), 'hidden.png');
+    });
+
+    test('appends counter on duplicate names', () {
+      final used = <String>{};
+      expect(uniqueZipFilename('photo.jpg', used), 'photo.jpg');
+      expect(uniqueZipFilename('photo.jpg', used), 'photo (2).jpg');
+      expect(uniqueZipFilename('photo.jpg', used), 'photo (3).jpg');
+    });
+
+    test('falls back to original-file for empty or all-stripped names', () {
+      expect(uniqueZipFilename('', <String>{}), 'original-file');
+      expect(uniqueZipFilename('---', <String>{}), 'original-file');
     });
   });
 

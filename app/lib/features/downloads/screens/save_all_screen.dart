@@ -196,7 +196,7 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
                     icon: isComplete ? Icons.refresh : Icons.download,
                     onPressed: isSaving || resolvedFiles.isEmpty
                         ? null
-                        : () => _saveAll(resolvedFiles),
+                        : () => _saveAll(album, resolvedFiles),
                   ),
                 ],
               ),
@@ -215,7 +215,7 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
     );
   }
 
-  Future<void> _saveAll(List<MediaFile> files) async {
+  Future<void> _saveAll(Album album, List<MediaFile> files) async {
     setState(() {
       isSaving = true;
       isComplete = false;
@@ -245,7 +245,7 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
           },
         );
         savedOriginals.add(original);
-        final zipFilename = _uniqueZipFilename(original.filename, usedNames);
+        final zipFilename = uniqueZipFilename(original.filename, usedNames);
         archive.addFile(ArchiveFile.bytes(zipFilename, original.bytes));
 
         if (!mounted) return;
@@ -256,7 +256,7 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
       }
 
       final zipBytes = Uint8List.fromList(ZipEncoder().encode(archive));
-      final zipName = '${_safeZipName(files)}-originals.zip';
+      final zipName = '${safeZipName(album.name)}-originals.zip';
       final savedPath = await FilePicker.saveFile(
         dialogTitle: 'Save all original files',
         fileName: zipName,
@@ -295,37 +295,6 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
     }
   }
 
-  String _safeZipName(List<MediaFile> files) {
-    final args = ModalRoute.of(context)?.settings.arguments;
-    final saveArgs = args is SaveAllArgs ? args : null;
-    final rawName = saveArgs?.album.name.trim();
-    final albumName = rawName == null || rawName.isEmpty ? 'album' : rawName;
-    final safeName = albumName
-        .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F]'), '_')
-        .replaceAll(RegExp(r'\s+'), '-')
-        .toLowerCase();
-    return safeName.isEmpty ? 'litratolink-album' : safeName;
-  }
-
-  String _uniqueZipFilename(String filename, Set<String> usedNames) {
-    final safeName = filename
-        .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F]'), '_')
-        .replaceAll(RegExp(r'^[_\s.]+'), '');
-    final baseName = safeName.isEmpty ? 'original-file' : safeName;
-    if (usedNames.add(baseName)) return baseName;
-
-    final dotIndex = baseName.lastIndexOf('.');
-    final name = dotIndex <= 0 ? baseName : baseName.substring(0, dotIndex);
-    final extension = dotIndex <= 0 ? '' : baseName.substring(dotIndex);
-
-    var counter = 2;
-    while (true) {
-      final candidate = '$name ($counter)$extension';
-      if (usedNames.add(candidate)) return candidate;
-      counter++;
-    }
-  }
-
   String _statusFor(int index) {
     if (index < savedCount) return 'Saved';
     if (index == activeIndex && isSaving) return 'Saving...';
@@ -336,6 +305,57 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
     if (index < savedCount) return _SaveFileState.done;
     if (index == activeIndex && isSaving) return _SaveFileState.active;
     return _SaveFileState.waiting;
+  }
+}
+
+/// Produces a safe, readable ZIP filename stem from an album name.
+///
+/// - Replaces OS-unsafe chars with `_`, whitespace with `-`, lowercases.
+/// - Collapses runs of `-` and `_` to a single `-` and strips leading/trailing
+///   dashes so the result is always tidy (e.g. `"My!!!Album"` → `my-album`).
+/// - Caps at 50 characters to stay well within browser/OS filename limits
+///   before the `-originals.zip` suffix is appended.
+@visibleForTesting
+String safeZipName(String albumName) {
+  final rawName = albumName.trim();
+  if (rawName.isEmpty) return 'litratolink-album';
+
+  var safe = rawName
+      .replaceAll(RegExp(r'[^\w\s-]'), '_') // replace any non-alphanumeric/space/dash
+      .replaceAll(RegExp(r'\s+'), '-')
+      .toLowerCase()
+      .replaceAll(RegExp(r'[-_]+'), '-')
+      .replaceAll(RegExp(r'^-+|-+$'), '');
+
+  if (safe.isEmpty) return 'litratolink-album';
+  if (safe.length > 50) {
+    safe = safe.substring(0, 50).replaceAll(RegExp(r'-+$'), '');
+  }
+  return safe.isEmpty ? 'litratolink-album' : safe;
+}
+
+/// Returns a deduplicated, OS-safe filename for an entry inside the ZIP.
+///
+/// Strips leading hyphens, underscores, spaces, and dots (e.g. `"-cover.jpg"`
+/// → `cover.jpg`). When the same base name appears more than once it appends
+/// a counter: `photo.jpg`, `photo (2).jpg`, `photo (3).jpg`, …
+@visibleForTesting
+String uniqueZipFilename(String filename, Set<String> usedNames) {
+  final safeName = filename
+      .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F]'), '_')
+      .replaceAll(RegExp(r'^[-_\s.]+'), '');
+  final baseName = safeName.isEmpty ? 'original-file' : safeName;
+  if (usedNames.add(baseName)) return baseName;
+
+  final dotIndex = baseName.lastIndexOf('.');
+  final name = dotIndex <= 0 ? baseName : baseName.substring(0, dotIndex);
+  final extension = dotIndex <= 0 ? '' : baseName.substring(dotIndex);
+
+  var counter = 2;
+  while (true) {
+    final candidate = '$name ($counter)$extension';
+    if (usedNames.add(candidate)) return candidate;
+    counter++;
   }
 }
 
