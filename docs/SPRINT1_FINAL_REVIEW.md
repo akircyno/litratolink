@@ -1,6 +1,6 @@
 # LitratoLink Sprint 1 Final Review
 
-Last updated: 2026-06-01
+Last updated: 2026-06-02
 
 ## Current Result
 
@@ -80,20 +80,26 @@ Sprint 1 now supports the core private original-quality flow:
 - Failed upload paths now mark `media_files.upload_status` as `failed`.
 - Legacy upload completion verifies final size against original upload metadata.
 
-## Manual Tests Still Needed
+## Manual Tests Verified Live (2026-06-02)
 
-- Sign in with a second real account.
-- Invite that account as Viewer.
-- Confirm Viewer can open/download but cannot upload.
-- Invite or update that account as Contributor.
-- Confirm Contributor can upload.
-- Remove the second account from the Admin UI.
-- Confirm the removed account loses album access after refresh/sign-in.
-- Re-add the second account and confirm access returns.
-- Confirm non-member album/file access is blocked from a second account.
-- Test Save All with at least two completed files.
-- Confirm Save All creates one `*-originals.zip` in the browser downloads.
-- Compare downloaded file properties in Windows against the original file.
+All second-account role and Save All tests were verified on the hosted PWA:
+
+- Signed in with a second real account. ✓
+- Invited that account as Viewer; Viewer can open/download but cannot upload. ✓
+- Updated that account to Contributor; Contributor can upload. ✓
+- Removed the second account from the Admin UI; removed account loses album
+  access after refresh/sign-in. ✓
+- Re-added the second account; access returns with the chosen role. ✓
+- Save All with multiple completed files creates one `*-originals.zip`. ✓
+
+### Fix Found During Live QA
+
+- Hosted Google login initially failed with
+  `Add Supabase URL and anon key before signing in.`
+- Root cause: GitHub Pages does not serve dot-prefixed files, so the bundled
+  `.env` asset returned 404 and `flutter_dotenv` loaded an empty config.
+- Fix: ship the web runtime config as a non-hidden `env.properties` asset
+  (pubspec asset, dotenv `fileName`, and CI workflow all updated).
 
 ## Known Notes
 

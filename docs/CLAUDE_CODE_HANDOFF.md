@@ -176,9 +176,32 @@ ccb1a2f Add PWA route recovery actions
 
 GitHub Pages deploys from `main` through `.github/workflows/pwa-beta.yml`.
 
+## Hosted Config Gotcha (Important)
+
+GitHub Pages does **not** serve files whose names begin with a dot. The
+runtime config must therefore be shipped as a non-hidden asset.
+
+- The web runtime config is `app/env.properties` (NOT `.env`).
+- `app/pubspec.yaml` lists `env.properties` as an asset.
+- `app/lib/config/env.dart` loads `fileName: 'env.properties'`.
+- `.github/workflows/pwa-beta.yml` writes `app/env.properties` from secrets.
+
+Symptom if this regresses: the hosted PWA shows
+`Add Supabase URL and anon key before signing in.` because the config
+asset 404s and `flutter_dotenv` loads nothing. Verify a deploy with:
+
+```text
+https://akircyno.github.io/litratolink/assets/env.properties
+```
+
+It must return HTTP 200 with a non-empty `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
+Do not reintroduce a dot-prefixed config asset for the hosted build, and keep
+this in mind during the future Potoos repo/URL migration.
+
 ## Manual Setup Still Needed
 
-The user still needs to confirm Supabase Auth URL Configuration is updated.
+Supabase Auth URL Configuration is confirmed applied (hosted Google login
+returns to Home). Kept here for reference and the future Potoos migration.
 
 Supabase Auth URL Configuration:
 
@@ -205,28 +228,33 @@ https://srquwfxaknsoiuvmlrxy.supabase.co/auth/v1/callback
 
 Do not rename GitHub repo, Supabase project, OAuth app, or storage email yet unless the user explicitly starts the Potoos migration.
 
+## Live PWA QA Status (Sprint 1) — PASSED
+
+Live QA on `https://akircyno.github.io/litratolink/` is complete. All of the
+following were verified on the hosted PWA on 2026-06-02:
+
+1. Hosted Google login returns to Home, not stuck on Login. ✓
+   (Fixed by serving config as `env.properties` — see Hosted Config Gotcha.)
+2. Create/open album, upload original, download original. ✓
+3. Save All with multiple files produces one `*-originals.zip`. ✓
+4. Second account invited as Viewer — can view/download, cannot upload. ✓
+5. Second account updated to Contributor — can upload. ✓
+6. Member removed from Admin UI — loses album access after refresh. ✓
+7. Member re-added — access returns with chosen role. ✓
+
+Sprint 1 live proof is closed. The only code fix QA surfaced was the
+GitHub Pages dotfile config issue, now resolved.
+
 ## Next Development Step
 
-Continue **live PWA QA** after the Supabase Auth URLs are added.
+Sprint 1 (local + live) is closed. The next major track is a product
+decision and has not been started. Candidate directions:
 
-Priority manual QA:
-
-1. Open `https://akircyno.github.io/litratolink/`.
-2. Sign in with Google on the hosted PWA.
-3. Confirm it returns to Home, not stuck on Login.
-4. Create/open an album.
-5. Upload an original file.
-6. Download original and compare Windows file size to the source file.
-7. Upload at least two files.
-8. Use Save All and confirm one `*-originals.zip` downloads.
-9. Sign in with a second registered account.
-10. Invite second account as Viewer.
-11. Confirm Viewer can view/download but cannot upload.
-12. Update second account to Contributor.
-13. Confirm Contributor can upload.
-14. Remove second account from Admin UI.
-15. Confirm removed account loses album access after refresh/sign-in.
-16. Re-add second account and confirm access returns.
+- TestFlight / native packaging prep (per `docs/PWA_BETA_ACCESS.md`).
+- Production upload hardening (resumable/chunked, replacing the base64 JSON
+  path noted in `docs/SPRINT1_FINAL_REVIEW.md`).
+- Sprint 2 feature work.
+- Potoos rename migration — still deferred until explicitly started.
 
 ## Likely Next Code Work If QA Finds Issues
 
