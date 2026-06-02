@@ -8,4 +8,5 @@ app/.dart_tool/
 
 # Local environment files
 app/.env
+app/env.properties
 .env

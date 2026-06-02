@@ -33,6 +33,8 @@ jobs:
           cache: true
 
       - name: Create web env file
+        # GitHub Pages does not serve dotfiles, so this is written as a
+        # non-hidden env.properties asset rather than .env.
         working-directory: app
         env:
           APP_ENV: ${{ vars.APP_ENV || 'development' }}
@@ -47,7 +49,7 @@ jobs:
             echo "SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}"
             echo "GOOGLE_WEB_CLIENT_ID=${GOOGLE_WEB_CLIENT_ID}"
             echo "GOOGLE_IOS_CLIENT_ID=${GOOGLE_IOS_CLIENT_ID}"
-          } > .env
+          } > env.properties
 
       - name: Install dependencies
         working-directory: app

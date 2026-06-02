@@ -25,7 +25,10 @@ class AppEnv {
   }
 
   static Future<AppEnv> load() async {
-    await dotenv.load(fileName: '.env', isOptional: true);
+    // Note: GitHub Pages does not serve files whose names begin with a dot,
+    // so the web runtime config is shipped as a non-hidden `env.properties`
+    // asset instead of `.env`. The CI workflow writes this file from secrets.
+    await dotenv.load(fileName: 'env.properties', isOptional: true);
 
     return AppEnv(
       appEnv: dotenv.maybeGet('APP_ENV', fallback: 'development') ?? 'development',
