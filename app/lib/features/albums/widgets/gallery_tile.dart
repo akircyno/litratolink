@@ -3,6 +3,23 @@ import 'package:flutter/material.dart';
 import '../../../app/theme.dart';
 import '../models/media_file.dart';
 
+IconData fileTypeIcon(MediaFile file) {
+  if (file.isVideo) return Icons.movie_outlined;
+  final mime = file.mimeType.toLowerCase();
+  if (mime.contains('raw') || mime.contains('dng') || mime.contains('tiff')) {
+    return Icons.camera_outlined;
+  }
+  return Icons.image_outlined;
+}
+
+String fileFormatLabel(MediaFile file) {
+  final name = file.originalFilename;
+  final dot = name.lastIndexOf('.');
+  if (dot < 0 || dot >= name.length - 1) return file.isVideo ? 'VID' : 'IMG';
+  final ext = name.substring(dot + 1).toUpperCase();
+  return ext.length > 5 ? ext.substring(0, 5) : ext;
+}
+
 class GalleryTile extends StatelessWidget {
   const GalleryTile({
     required this.file,
@@ -46,13 +63,13 @@ class GalleryTile extends StatelessWidget {
                   ),
                 ),
                 child: Icon(
-                  Icons.photo_outlined,
+                  fileTypeIcon(file),
                   color: AppColors.white.withValues(alpha: 0.50),
                   size: 18,
                 ),
               ),
             ),
-            if (file.isVideo && !selectionMode)
+            if (!selectionMode)
               Positioned(
                 top: 4,
                 left: 4,
@@ -60,17 +77,24 @@ class GalleryTile extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.5),
+                    color: file.isVideo
+                        ? Colors.black.withValues(alpha: 0.55)
+                        : AppColors.maroon.withValues(alpha: 0.75),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.play_arrow, size: 8, color: AppColors.white),
-                      SizedBox(width: 2),
-                      Text('Video',
-                          style:
-                              TextStyle(color: AppColors.white, fontSize: 9)),
+                      if (file.isVideo) ...[
+                        const Icon(Icons.play_arrow,
+                            size: 8, color: AppColors.white),
+                        const SizedBox(width: 2),
+                      ],
+                      Text(
+                        fileFormatLabel(file),
+                        style: const TextStyle(
+                            color: AppColors.white, fontSize: 9),
+                      ),
                     ],
                   ),
                 ),

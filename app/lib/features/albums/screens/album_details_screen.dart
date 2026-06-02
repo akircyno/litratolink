@@ -501,7 +501,7 @@ class _FileMetadataRow extends StatelessWidget {
                 )
               else
                 Icon(
-                  file.isVideo ? Icons.movie_outlined : Icons.image_outlined,
+                  fileTypeIcon(file),
                   color: AppColors.maroon,
                   size: 18,
                 ),
