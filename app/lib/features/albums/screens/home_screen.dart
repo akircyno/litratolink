@@ -304,13 +304,18 @@ class _InvitesTab extends ConsumerWidget {
                   const SizedBox(height: 10),
                   Text('Your access',
                       style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Tap a row to open the Members screen and leave if needed.',
+                    style: TextStyle(color: AppColors.mutedInk, fontSize: 11),
+                  ),
                   const SizedBox(height: 10),
                   for (final album in sharedAlbums) ...[
                     _InviteAlbumRow(
                       album: album,
                       onTap: () => Navigator.pushNamed(
                         context,
-                        AppRoutes.albumDetails,
+                        AppRoutes.members,
                         arguments: album,
                       ),
                     ),

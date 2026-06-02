@@ -155,3 +155,52 @@ class InviteMemberController extends Notifier<InviteMemberState> {
     }
   }
 }
+
+// ── Leave Album ────────────────────────────────────────────────────────────
+
+final leaveAlbumControllerProvider =
+    NotifierProvider.autoDispose<LeaveAlbumController, LeaveAlbumState>(
+  LeaveAlbumController.new,
+);
+
+class LeaveAlbumState {
+  const LeaveAlbumState({
+    this.isLeaving = false,
+    this.errorMessage,
+    this.left = false,
+  });
+
+  final bool isLeaving;
+  final String? errorMessage;
+  final bool left;
+
+  LeaveAlbumState copyWith({
+    bool? isLeaving,
+    String? errorMessage,
+    bool? left,
+    bool clearError = false,
+  }) {
+    return LeaveAlbumState(
+      isLeaving: isLeaving ?? this.isLeaving,
+      errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
+      left: left ?? this.left,
+    );
+  }
+}
+
+class LeaveAlbumController extends Notifier<LeaveAlbumState> {
+  @override
+  LeaveAlbumState build() => const LeaveAlbumState();
+
+  Future<void> leave({required String albumId}) async {
+    state = const LeaveAlbumState(isLeaving: true);
+
+    try {
+      await ref.read(albumRepositoryProvider).leaveAlbum(albumId: albumId);
+      ref.invalidate(albumListProvider);
+      state = const LeaveAlbumState(left: true);
+    } catch (error) {
+      state = LeaveAlbumState(errorMessage: AppError.messageFor(error));
+    }
+  }
+}

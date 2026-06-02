@@ -192,6 +192,18 @@ class AlbumDetailsScreen extends ConsumerWidget {
                         : null,
                   ),
                 ),
+                const SizedBox(width: 8),
+                _ActionButton(
+                  label: 'Members',
+                  icon: Icons.group_outlined,
+                  color: AppColors.maroonFaint,
+                  foreground: AppColors.maroon,
+                  onTap: () => Navigator.pushNamed(
+                    context,
+                    AppRoutes.members,
+                    arguments: album,
+                  ),
+                ),
               ],
             ),
           ),

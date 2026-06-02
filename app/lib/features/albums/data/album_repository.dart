@@ -173,6 +173,13 @@ class AlbumRepository {
     );
   }
 
+  Future<void> leaveAlbum({required String albumId}) async {
+    await edgeFunctionService.callFunction<Object?>(
+      'leave-album',
+      body: {'album_id': albumId},
+    );
+  }
+
   Future<Map<String, int>> _countRowsByAlbum(
     String table,
     List<String> albumIds, {

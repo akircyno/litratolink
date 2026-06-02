@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../features/albums/screens/album_details_screen.dart';
 import '../features/albums/screens/create_album_screen.dart';
 import '../features/albums/screens/home_screen.dart';
+import '../features/albums/screens/members_screen.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/splash_screen.dart';
 import '../features/downloads/screens/file_preview_screen.dart';
@@ -22,6 +23,7 @@ class AppRoutes {
   static const uploadProgress = '/upload-progress';
   static const filePreview = '/file-preview';
   static const saveAll = '/save-all';
+  static const members = '/members';
   static const profile = '/profile';
 
   static Map<String, WidgetBuilder> get routes {
@@ -35,6 +37,7 @@ class AppRoutes {
       uploadProgress: (_) => const UploadProgressScreen(),
       filePreview: (_) => const FilePreviewScreen(),
       saveAll: (_) => const SaveAllScreen(),
+      members: (_) => const MembersScreen(),
       profile: (_) => const HomeScreen(initialIndex: 3),
     };
   }
