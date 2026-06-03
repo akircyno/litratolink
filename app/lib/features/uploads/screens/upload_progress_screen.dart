@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
-import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_empty_state.dart';
-import '../../../core/widgets/app_progress_bar.dart';
 import '../../../core/widgets/app_screen.dart';
 import '../../../core/widgets/poto_mascot.dart';
+import '../../../core/widgets/pressable_scale.dart';
 import '../models/upload_file.dart';
 import '../providers/upload_provider.dart';
-import '../widgets/upload_progress_card.dart';
 
 class UploadProgressScreen extends ConsumerStatefulWidget {
   const UploadProgressScreen({super.key});
@@ -21,18 +20,17 @@ class UploadProgressScreen extends ConsumerStatefulWidget {
 }
 
 class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
-  UploadProgressArgs? args;
-  bool started = false;
+  UploadProgressArgs? _args;
+  bool _started = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     final routeArgs = ModalRoute.of(context)?.settings.arguments;
     if (routeArgs is UploadProgressArgs) {
-      args = routeArgs;
-      if (!started) {
-        started = true;
+      _args = routeArgs;
+      if (!_started) {
+        _started = true;
         Future.microtask(() {
           ref.read(uploadControllerProvider.notifier).upload(
                 albumId: routeArgs.album.id,
@@ -45,8 +43,8 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final uploadArgs = args;
-    final uploadState = ref.watch(uploadControllerProvider);
+    final uploadArgs = _args;
+    final state = ref.watch(uploadControllerProvider);
     final files = uploadArgs?.files ?? const [];
     final album = uploadArgs?.album;
 
@@ -65,272 +63,592 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
       );
     }
 
+    final isUploading = state.isUploading;
+    final isComplete = state.isComplete;
+    final hasError = state.errorMessage != null;
     final totalCount = files.length;
-    final completedCount = uploadState.completedCount;
-    final currentIndex = uploadState.currentFileIndex;
-    final isUploading = uploadState.isUploading;
-    final isComplete = uploadState.isComplete;
+    final completedCount = state.completedCount;
+    final bottomPad = MediaQuery.of(context).padding.bottom;
 
-    return Scaffold(
-      body: AppScreen(
-        padding: EdgeInsets.zero,
-        children: [
-          // ── Header ────────────────────────────────────────────────────
-          Container(
-            padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
-            decoration: const BoxDecoration(
-              color: AppColors.deepMaroon,
-              borderRadius:
-                  BorderRadius.vertical(bottom: Radius.circular(28)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    InkWell(
-                      onTap: isUploading ? null : () => Navigator.pop(context),
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        width: 28,
-                        height: 28,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColors.white.withValues(alpha: 0.10),
-                          borderRadius: BorderRadius.circular(8),
+    final expression = isComplete
+        ? PotoExpression.happy
+        : hasError
+            ? PotoExpression.error
+            : PotoExpression.working;
+
+    final statusTitle = isComplete
+        ? 'All $totalCount original${totalCount == 1 ? '' : 's'} are safe.'
+        : hasError
+            ? 'Upload stopped.'
+            : '$completedCount of $totalCount secured so far.';
+
+    final statusSub = isComplete
+        ? 'Poto kept every file exactly as you took it.'
+        : hasError
+            ? state.errorMessage ?? 'Something went wrong. Tap Try Again.'
+            : 'Keep this screen open while uploading.';
+
+    return PopScope(
+      canPop: !isUploading,
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: Scaffold(
+          backgroundColor: AppColors.warmCream,
+          body: Column(
+            children: [
+              // ── Header ───────────────────────────────────────────────
+              _Header(
+                albumName: album.name,
+                canClose: !isUploading,
+                onClose: isUploading
+                    ? null
+                    : () => Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          AppRoutes.albumDetails,
+                          ModalRoute.withName(AppRoutes.home),
+                          arguments: album,
                         ),
-                        child: const Icon(Icons.close,
-                            color: AppColors.white, size: 14),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text('Cancel',
-                        style: TextStyle(
-                            color: AppColors.white.withValues(alpha: 0.70),
-                            fontSize: 13)),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                Text(
-                  'Uploading to',
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineLarge
-                      ?.copyWith(color: AppColors.warmCream),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  album.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: AppColors.goldLight),
-                ),
-              ],
-            ),
-          ),
+              ),
 
-          // ── File count + quality badge ─────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    '$totalCount file${totalCount == 1 ? '' : 's'} selected',
-                    style: const TextStyle(
-                        color: AppColors.mutedInk, fontSize: 12),
-                  ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.goldFaint,
-                    border: Border.all(
-                        color: AppColors.softGold.withValues(alpha: 0.30),
-                        width: 0.5),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Row(
+              // ── Scrollable body ──────────────────────────────────────
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.md, AppSpacing.xl, AppSpacing.md, AppSpacing.lg),
+                  child: Column(
                     children: [
-                      Icon(Icons.star, color: AppColors.softGold, size: 10),
-                      SizedBox(width: 4),
-                      Text('Original quality',
-                          style: TextStyle(
-                              color: AppColors.softGold,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500)),
+                      // Poto — the hero
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 400),
+                        switchInCurve: Curves.easeOutCubic,
+                        transitionBuilder: (child, animation) =>
+                            FadeTransition(
+                          opacity: animation,
+                          child: ScaleTransition(
+                              scale: animation, child: child),
+                        ),
+                        child: PotoMascot(
+                          key: ValueKey(expression),
+                          expression: expression,
+                          size: 120,
+                        ),
+                      ),
+
+                      const SizedBox(height: AppSpacing.lg),
+
+                      // Status text
+                      Text(
+                        statusTitle,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: AppTheme.headingFont,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.deepMaroon,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        statusSub,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: hasError
+                              ? AppColors.velvetMaroon
+                              : AppColors.featherTaupe,
+                          fontSize: 13,
+                          height: 1.5,
+                        ),
+                      ),
+
+                      const SizedBox(height: AppSpacing.xl),
+
+                      // Overall progress bar
+                      _OverallProgress(
+                        value: state.progress,
+                        completed: completedCount,
+                        total: totalCount,
+                        isComplete: isComplete,
+                      ),
+
+                      const SizedBox(height: AppSpacing.lg),
+
+                      // Per-file rows
+                      Column(
+                        children: [
+                          for (var i = 0; i < files.length; i++)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: AppSpacing.sm),
+                              child: _FileRow(
+                                file: files[i],
+                                progress: _progressFor(i, state),
+                                status: _statusFor(i, state),
+                                isDone: i < completedCount,
+                                isActive: i == state.currentFileIndex &&
+                                    isUploading,
+                                isWaiting: i > state.currentFileIndex ||
+                                    (state.currentFileIndex < 0 &&
+                                        !isComplete),
+                                isFailed: i == state.currentFileIndex &&
+                                    hasError,
+                              ),
+                            ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-
-          // ── Poto mascot (working / happy / error) ─────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-            child: Center(
-              child: PotoMascot(
-                expression: isComplete
-                    ? PotoExpression.happy
-                    : uploadState.errorMessage != null
-                        ? PotoExpression.error
-                        : PotoExpression.working,
-                size: 80,
-                caption: isComplete
-                    ? 'Original quality confirmed.'
-                    : uploadState.errorMessage != null
-                        ? 'Poto could not complete the upload.'
-                        : 'Poto is protecting your originals.',
               ),
-            ),
-          ),
 
-          // ── Overall progress ───────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: AppProgressBar(value: uploadState.progress),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
-            child: Text(
-              isComplete
-                  ? 'All $totalCount files uploaded'
-                  : isUploading
-                      ? '$completedCount of $totalCount uploaded'
-                      : uploadState.errorMessage != null
-                          ? 'Upload stopped — see error below'
-                          : 'Preparing...',
-              style: const TextStyle(
-                  color: AppColors.mutedInk,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500),
-            ),
-          ),
-
-          // ── Per-file progress cards ────────────────────────────────────
-          const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                for (var i = 0; i < files.length; i++)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: UploadProgressCard(
-                      name: files[i].name,
-                      size: files[i].sizeLabel,
-                      progress: _progressFor(i, uploadState),
-                      status: _statusFor(i, uploadState),
-                      done: i < completedCount,
-                      waiting: !isUploading && i > currentIndex ||
-                          (currentIndex < 0 && !isComplete),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-
-          // ── Error detail ───────────────────────────────────────────────
-          if (uploadState.errorMessage != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
-              child: Text(
-                uploadState.errorMessage!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    color: AppColors.velvetMaroon,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500),
-              ),
-            ),
-
-          // ── Info hint ──────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.info_outline,
-                    color: AppColors.maroon, size: 14),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: Text(
-                    isUploading
-                        ? uploadState.progress < 0.16
-                            ? 'Creating upload session...'
-                            : uploadState.progress >= 0.90
-                                ? 'Finalizing upload...'
-                                : 'Uploading original bytes. Keep this screen open.'
-                        : 'Files are uploaded in original quality. No compression.',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        color: AppColors.maroon,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // ── Action button ──────────────────────────────────────────────
-          const SizedBox(height: 22),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: AppButton(
-              label: isUploading
-                  ? 'Uploading...'
-                  : uploadState.errorMessage == null
-                      ? 'Back to Album'
-                      : 'Try Again',
-              icon: uploadState.errorMessage == null
-                  ? Icons.check
-                  : Icons.refresh,
-              onPressed: isUploading
-                  ? null
-                  : uploadState.errorMessage == null
-                      ? () => Navigator.pushNamedAndRemoveUntil(
+              // ── Bottom CTA ───────────────────────────────────────────
+              if (!isUploading)
+                _BottomCTA(
+                  isError: hasError,
+                  bottomPad: bottomPad,
+                  onAction: hasError
+                      ? () => ref
+                          .read(uploadControllerProvider.notifier)
+                          .upload(
+                            albumId: album.id,
+                            files: files,
+                          )
+                      : () => Navigator.pushNamedAndRemoveUntil(
                             context,
                             AppRoutes.albumDetails,
                             ModalRoute.withName(AppRoutes.home),
                             arguments: album,
-                          )
-                      : () {
-                          ref.read(uploadControllerProvider.notifier).upload(
-                                albumId: album.id,
-                                files: files,
-                              );
-                        },
+                          ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  double _progressFor(int i, UploadState state) {
+    if (i < state.completedCount) return 1.0;
+    if (i == state.currentFileIndex && state.isUploading) {
+      final share = 1.0 / state.totalCount;
+      final base = i / state.totalCount;
+      final current = (state.progress - base).clamp(0.0, share);
+      return (current / share).clamp(0.0, 1.0);
+    }
+    return 0.0;
+  }
+
+  String _statusFor(int i, UploadState state) {
+    if (i < state.completedCount) return 'Done';
+    if (i == state.currentFileIndex && state.isUploading) {
+      return '${(_progressFor(i, state) * 100).round()}%';
+    }
+    if (i == state.currentFileIndex && state.errorMessage != null) {
+      return 'Failed';
+    }
+    return 'Queued';
+  }
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+class _Header extends StatelessWidget {
+  const _Header({
+    required this.albumName,
+    required this.canClose,
+    required this.onClose,
+  });
+
+  final String albumName;
+  final bool canClose;
+  final VoidCallback? onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    final top = MediaQuery.of(context).padding.top;
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: AppGradients.header,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+      ),
+      padding: EdgeInsets.fromLTRB(16, top + 12, 16, 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          PressableScale(
+            onTap: canClose ? onClose : null,
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              width: 32,
+              height: 32,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.white
+                    .withValues(alpha: canClose ? 0.14 : 0.06),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.close,
+                color: AppColors.white
+                    .withValues(alpha: canClose ? 1.0 : 0.3),
+                size: 17,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Uploading',
+                  style: TextStyle(
+                    fontFamily: AppTheme.headingFont,
+                    color: AppColors.pearlCream,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  albumName,
+                  style: TextStyle(
+                    color: AppColors.warmCream.withValues(alpha: 0.55),
+                    fontSize: 13,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  double _progressFor(int index, UploadState state) {
-    if (index < state.completedCount) return 1.0;
-    if (index == state.currentFileIndex && state.isUploading) {
-      // interpolate current file's share of overall progress
-      final fileShare = 1.0 / state.totalCount;
-      final base = index / state.totalCount;
-      final current = (state.progress - base).clamp(0.0, fileShare);
-      return (current / fileShare).clamp(0.0, 1.0);
-    }
-    return 0.0;
+// ── Overall progress ──────────────────────────────────────────────────────────
+
+class _OverallProgress extends StatelessWidget {
+  const _OverallProgress({
+    required this.value,
+    required this.completed,
+    required this.total,
+    required this.isComplete,
+  });
+
+  final double value;
+  final int completed;
+  final int total;
+  final bool isComplete;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              isComplete ? 'Complete' : 'Overall progress',
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.featherTaupe,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              '${(value * 100).round()}%',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color:
+                    isComplete ? AppColors.brightGold : AppColors.velvetMaroon,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0, end: value),
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOut,
+          builder: (context, v, _) {
+            return Container(
+              height: 8,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppColors.creamLine,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: FractionallySizedBox(
+                widthFactor: v.clamp(0.0, 1.0),
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: isComplete
+                          ? [
+                              AppColors.velvetMaroon,
+                              AppColors.brightGold,
+                            ]
+                          : [
+                              AppColors.velvetMaroon,
+                              AppColors.garnetHighlight,
+                            ],
+                    ),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
   }
+}
 
-  String _statusFor(int index, UploadState state) {
-    if (index < state.completedCount) return 'Done';
-    if (index == state.currentFileIndex && state.isUploading) {
-      return '${(_progressFor(index, state) * 100).round()}%';
+// ── File row ──────────────────────────────────────────────────────────────────
+
+class _FileRow extends StatelessWidget {
+  const _FileRow({
+    required this.file,
+    required this.progress,
+    required this.status,
+    required this.isDone,
+    required this.isActive,
+    required this.isWaiting,
+    required this.isFailed,
+  });
+
+  final UploadFile file;
+  final double progress;
+  final String status;
+  final bool isDone;
+  final bool isActive;
+  final bool isWaiting;
+  final bool isFailed;
+
+  @override
+  Widget build(BuildContext context) {
+    final isVideo = file.fileType == 'video';
+
+    final Color iconBg;
+    final Color iconColor;
+    final Color barColor;
+    final Color statusColor;
+
+    if (isDone) {
+      iconBg = AppColors.brightGold.withValues(alpha: 0.12);
+      iconColor = AppColors.brightGold;
+      barColor = AppColors.brightGold;
+      statusColor = const Color(0xFF4A8C2A);
+    } else if (isFailed) {
+      iconBg = AppColors.velvetMaroon.withValues(alpha: 0.10);
+      iconColor = AppColors.velvetMaroon;
+      barColor = AppColors.velvetMaroon;
+      statusColor = AppColors.velvetMaroon;
+    } else if (isWaiting) {
+      iconBg = AppColors.creamLine;
+      iconColor = AppColors.featherTaupe;
+      barColor = AppColors.creamLine;
+      statusColor = AppColors.featherTaupe;
+    } else {
+      iconBg = AppColors.maroonFaint;
+      iconColor = AppColors.velvetMaroon;
+      barColor = AppColors.velvetMaroon;
+      statusColor = AppColors.velvetMaroon;
     }
-    if (index == state.currentFileIndex && state.errorMessage != null) {
-      return 'Failed';
-    }
-    return 'Queued';
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(
+          color: isDone
+              ? AppColors.brightGold.withValues(alpha: 0.20)
+              : AppColors.creamLine,
+          width: 0.8,
+        ),
+        boxShadow: AppShadows.card,
+      ),
+      child: Row(
+        children: [
+          // Icon
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: iconBg,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+            ),
+            child: Icon(
+              isDone
+                  ? Icons.check
+                  : isVideo
+                      ? Icons.movie_outlined
+                      : Icons.image_outlined,
+              color: iconColor,
+              size: 17,
+            ),
+          ),
+          const SizedBox(width: 10),
+
+          // Name + progress
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  file.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isWaiting
+                        ? AppColors.featherTaupe
+                        : AppColors.charcoalInk,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  file.sizeLabel,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: isWaiting
+                        ? AppColors.featherTaupe.withValues(alpha: 0.6)
+                        : AppColors.featherTaupe,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: progress),
+                  duration: const Duration(milliseconds: 350),
+                  curve: Curves.easeOut,
+                  builder: (context, v, _) {
+                    return Container(
+                      height: 4,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: AppColors.creamLine,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: FractionallySizedBox(
+                        widthFactor: v.clamp(0.0, 1.0),
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: barColor,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+
+          // Status badge
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+            decoration: BoxDecoration(
+              color: isDone
+                  ? AppColors.brightGold.withValues(alpha: 0.10)
+                  : isFailed
+                      ? AppColors.maroonFaint
+                      : isWaiting
+                          ? AppColors.warmCream
+                          : AppColors.maroonFaint,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              status,
+              style: TextStyle(
+                color: statusColor,
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Bottom CTA ────────────────────────────────────────────────────────────────
+
+class _BottomCTA extends StatelessWidget {
+  const _BottomCTA({
+    required this.isError,
+    required this.bottomPad,
+    required this.onAction,
+  });
+
+  final bool isError;
+  final double bottomPad;
+  final VoidCallback onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        border:
+            const Border(top: BorderSide(color: AppColors.creamLine, width: 0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.midnightBurgundy.withValues(alpha: 0.06),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.fromLTRB(
+          AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.sm + bottomPad),
+      child: PressableScale(
+        onTap: onAction,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        child: Container(
+          height: 54,
+          width: double.infinity,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.velvetMaroon,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+            boxShadow: AppShadows.primaryButton,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                isError ? Icons.refresh : Icons.check_circle_outline,
+                color: AppColors.pearlCream,
+                size: 18,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                isError ? 'Try Again' : 'Back to Album',
+                style: const TextStyle(
+                  color: AppColors.pearlCream,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.1,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
