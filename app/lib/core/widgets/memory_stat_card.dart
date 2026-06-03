@@ -18,16 +18,19 @@ class MemoryStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = gold ? AppColors.softGold : AppColors.maroon;
+    final color = gold ? AppColors.brightGold : AppColors.velvetMaroon;
 
     return Expanded(
       child: Container(
         height: 82,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: AppColors.warmCream,
           border: Border.all(
-              color: AppColors.maroon.withValues(alpha: 0.10), width: 0.6),
+              color: gold
+                  ? AppColors.brightGold.withValues(alpha: 0.28)
+                  : AppColors.velvetMaroon.withValues(alpha: 0.10),
+              width: 0.6),
           borderRadius: BorderRadius.circular(18),
         ),
         child: Column(

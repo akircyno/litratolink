@@ -23,7 +23,7 @@ class NotificationItem extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.white,
         border: Border.all(
-          color: unread ? AppColors.softGold : AppColors.creamLine,
+          color: unread ? AppColors.brightGold : AppColors.creamLine,
         ),
         borderRadius: BorderRadius.circular(8),
       ),
@@ -32,7 +32,7 @@ class NotificationItem extends StatelessWidget {
         children: [
           Icon(
             unread ? Icons.notifications_active_outlined : Icons.notifications_none,
-            color: unread ? AppColors.softGold : AppColors.mutedInk,
+            color: unread ? AppColors.brightGold : AppColors.mutedInk,
           ),
           const SizedBox(width: 12),
           Expanded(

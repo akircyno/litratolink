@@ -49,27 +49,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
         onDestinationSelected: (index) => setState(() => currentIndex = index),
-        backgroundColor: AppColors.white,
-        indicatorColor: AppColors.warmCream,
+        backgroundColor: AppColors.warmCream,
+        indicatorColor: AppColors.velvetMaroon.withValues(alpha: 0.08),
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.photo_album_outlined),
-            selectedIcon: Icon(Icons.photo_album),
+            icon: Icon(Icons.photo_album_outlined, color: AppColors.featherTaupe),
+            selectedIcon: Icon(Icons.photo_album, color: AppColors.velvetMaroon),
             label: 'Albums',
           ),
           NavigationDestination(
-            icon: Icon(Icons.mail_outline),
-            selectedIcon: Icon(Icons.mail),
+            icon: Icon(Icons.mail_outline, color: AppColors.featherTaupe),
+            selectedIcon: Icon(Icons.mail, color: AppColors.velvetMaroon),
             label: 'Invites',
           ),
           NavigationDestination(
-            icon: Icon(Icons.notifications_none),
-            selectedIcon: Icon(Icons.notifications),
+            icon: Icon(Icons.notifications_none, color: AppColors.featherTaupe),
+            selectedIcon: Icon(Icons.notifications, color: AppColors.velvetMaroon),
             label: 'Activity',
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
+            icon: Icon(Icons.person_outline, color: AppColors.featherTaupe),
+            selectedIcon: Icon(Icons.person, color: AppColors.velvetMaroon),
             label: 'Profile',
           ),
         ],
@@ -84,6 +85,7 @@ class _AlbumsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final albumsAsync = ref.watch(albumListProvider);
+    final profile = ref.watch(currentUserProfileProvider);
     final albums = albumsAsync.when<List<Album>>(
       data: (albums) => albums,
       loading: () => const [],
@@ -93,13 +95,14 @@ class _AlbumsTab extends ConsumerWidget {
         albums.fold<int>(0, (total, album) => total + album.fileCount);
     final memberCount =
         albums.fold<int>(0, (total, album) => total + album.memberCount);
+    final initials = _initialsFor(profile?.displayName);
 
     return Stack(
       children: [
         ListView(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 86),
           children: [
-            const LitratoHeader(),
+            LitratoHeader(avatarInitials: initials),
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
               child: QualityPromiseCard(),
@@ -143,7 +146,7 @@ class _AlbumsTab extends ConsumerWidget {
                         ),
                         const SizedBox(height: 2),
                         const Text(
-                          'Invite-only spaces, sorted by recent activity.',
+                          'Only the people you choose can see these.',
                           style: TextStyle(
                               color: AppColors.mutedInk, fontSize: 11),
                         ),
@@ -242,7 +245,7 @@ class _InvitesTab extends ConsumerWidget {
       children: [
         const LitratoHeader(
           title: 'Invites',
-          subtitle: 'Manage album access',
+          subtitle: "Who's in your spaces.",
           showAvatar: false,
         ),
         const SizedBox(height: 14),
@@ -392,13 +395,13 @@ class _InviteAlbumRow extends StatelessWidget {
           Text(
             album.canManageMembers ? 'Manage' : 'View',
             style: const TextStyle(
-              color: AppColors.softGold,
+              color: AppColors.brightGold,
               fontSize: 11,
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(width: 4),
-          const Icon(Icons.chevron_right, color: AppColors.softGold, size: 18),
+          const Icon(Icons.chevron_right, color: AppColors.brightGold, size: 18),
         ],
       ),
     );
@@ -417,7 +420,7 @@ class _NotificationsTab extends ConsumerWidget {
       children: [
         const LitratoHeader(
           title: 'Activity',
-          subtitle: 'Recent updates from your albums',
+          subtitle: "What's been happening.",
           showAvatar: false,
         ),
         const SizedBox(height: 14),
@@ -637,20 +640,20 @@ class _ProfileTab extends ConsumerWidget {
     );
   }
 
-  String _initialsFor(String name) {
-    final parts = name
-        .trim()
-        .split(RegExp(r'\s+'))
-        .where((part) => part.isNotEmpty)
-        .toList();
-    if (parts.isEmpty) return 'LL';
-    if (parts.length == 1) {
-      return parts.first.characters.take(2).toString().toUpperCase();
-    }
+}
 
-    return '${parts.first.characters.first}${parts.last.characters.first}'
-        .toUpperCase();
+String _initialsFor(String? name) {
+  if (name == null || name.trim().isEmpty) return '?';
+  final parts = name
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((part) => part.isNotEmpty)
+      .toList();
+  if (parts.length == 1) {
+    return parts.first.characters.take(2).toString().toUpperCase();
   }
+  return '${parts.first.characters.first}${parts.last.characters.first}'
+      .toUpperCase();
 }
 
 class _GuaranteeRow extends StatelessWidget {

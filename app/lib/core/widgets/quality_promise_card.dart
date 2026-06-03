@@ -31,11 +31,14 @@ class QualityPromiseCard extends StatelessWidget {
             height: 46,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: AppColors.goldLight.withValues(alpha: 0.16),
-              border: Border.all(color: AppColors.goldLight.withValues(alpha: 0.36), width: 0.8),
+              color: AppColors.brightGold.withValues(alpha: 0.14),
+              border: Border.all(
+                  color: AppColors.brightGold.withValues(alpha: 0.32),
+                  width: 0.8),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.verified_outlined, color: AppColors.goldLight, size: 24),
+            child: const Icon(Icons.verified_outlined,
+                color: AppColors.brightGold, size: 24),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -43,15 +46,16 @@ class QualityPromiseCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Original quality is protected',
+                  'Every file, exactly as you took it.',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: AppColors.warmCream,
-                        fontSize: 18,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
                       ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Uploads and downloads keep the real file, not a compressed copy.',
+                  'Nothing gets compressed. What goes in comes back out.',
                   style: TextStyle(
                     color: AppColors.warmCream.withValues(alpha: 0.68),
                     fontSize: 12,

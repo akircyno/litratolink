@@ -64,6 +64,7 @@ class AlbumCard extends StatelessWidget {
                       style: const TextStyle(
                         color: AppColors.white,
                         fontSize: 10,
+                        letterSpacing: 0.5,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -98,14 +99,14 @@ class AlbumCard extends StatelessWidget {
                 Row(
                   children: [
                     const Icon(Icons.photo_outlined,
-                        color: AppColors.softGold, size: 14),
+                        color: AppColors.brightGold, size: 14),
                     const SizedBox(width: 4),
-                    Text('${album.fileCount} files',
+                    Text('${album.fileCount} originals',
                         style: const TextStyle(
                             color: AppColors.mutedInk, fontSize: 12)),
                     const SizedBox(width: 12),
                     const Icon(Icons.group_outlined,
-                        color: AppColors.softGold, size: 14),
+                        color: AppColors.brightGold, size: 14),
                     const SizedBox(width: 4),
                     Text('${album.memberCount} members',
                         style: const TextStyle(

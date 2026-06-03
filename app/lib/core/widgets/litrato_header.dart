@@ -5,21 +5,29 @@ import '../../app/theme.dart';
 class LitratoHeader extends StatelessWidget {
   const LitratoHeader({
     this.title = 'Potoos',
-    this.subtitle = 'Good morning, Maria',
+    this.subtitle,
+    this.avatarInitials,
     this.showAvatar = true,
     super.key,
   });
 
   final String title;
-  final String subtitle;
+  final String? subtitle;
+  final String? avatarInitials;
   final bool showAvatar;
 
   @override
   Widget build(BuildContext context) {
+    final greeting = _greeting();
+
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
       decoration: const BoxDecoration(
-        color: AppColors.deepMaroon,
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.midnightBurgundy, AppColors.deepMaroon],
+        ),
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
       child: Row(
@@ -31,7 +39,7 @@ class LitratoHeader extends StatelessWidget {
                 _HeaderTitle(title: title),
                 const SizedBox(height: 2),
                 Text(
-                  subtitle,
+                  subtitle ?? greeting,
                   style: TextStyle(
                     color: AppColors.warmCream.withValues(alpha: 0.60),
                     fontSize: 12,
@@ -51,20 +59,27 @@ class LitratoHeader extends StatelessWidget {
                   colors: [AppColors.softGold, AppColors.garnetHighlight],
                 ),
                 border: Border.all(
-                    color: AppColors.goldLight.withValues(alpha: 0.50),
+                    color: AppColors.brightGold.withValues(alpha: 0.45),
                     width: 1.5),
               ),
-              child: const Text(
-                'MA',
-                style: TextStyle(
+              child: Text(
+                avatarInitials ?? '?',
+                style: const TextStyle(
                     color: AppColors.white,
                     fontSize: 13,
-                    fontWeight: FontWeight.w500),
+                    fontWeight: FontWeight.w600),
               ),
             ),
         ],
       ),
     );
+  }
+
+  static String _greeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good morning.';
+    if (hour < 18) return 'Good afternoon.';
+    return 'Good evening.';
   }
 }
 

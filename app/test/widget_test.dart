@@ -24,6 +24,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 2000));
     await tester.pump();
 
-    expect(find.text('Original memories, safely shared.'), findsWidgets);
+    expect(find.text('Where your real memories live.'), findsWidgets);
   });
 }

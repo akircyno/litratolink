@@ -23,7 +23,8 @@ class GoogleLoginButton extends StatelessWidget {
           foregroundColor: AppColors.ink,
           elevation: 8,
           shadowColor: Colors.black.withValues(alpha: 0.25),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         onPressed: isLoading ? null : onPressed,
         icon: isLoading
