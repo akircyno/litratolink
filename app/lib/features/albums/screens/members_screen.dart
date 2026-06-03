@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
 import '../../../core/errors/app_error.dart';
-import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_empty_state.dart';
 import '../../../core/widgets/app_screen.dart';
 import '../../../core/widgets/invite_form.dart';
+import '../../../core/widgets/pressable_scale.dart';
 import '../../../core/widgets/role_chip.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../models/album.dart';
@@ -44,7 +45,6 @@ class MembersScreen extends ConsumerWidget {
     final leaveState = ref.watch(leaveAlbumControllerProvider);
     final currentProfile = ref.watch(currentUserProfileProvider);
 
-    // Navigate home after successful leave
     if (leaveState.left) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) {
@@ -59,199 +59,143 @@ class MembersScreen extends ConsumerWidget {
     final effectiveRole = currentMember?.role ?? album.role;
     final isAdmin = effectiveRole.toLowerCase() == 'admin';
     final memberCount = loadedMembers?.length ?? album.memberCount;
+    final bottomPad = MediaQuery.of(context).padding.bottom;
 
-    return Scaffold(
-      body: AppScreen(
-        padding: EdgeInsets.zero,
-        children: [
-          // ── Header ─────────────────────────────────────────────────────
-          Container(
-            padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
-            decoration: const BoxDecoration(
-              color: AppColors.deepMaroon,
-              borderRadius:
-                  BorderRadius.vertical(bottom: Radius.circular(28)),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: AppColors.warmCream,
+        body: Column(
+          children: [
+            _Header(
+              album: album,
+              memberCount: memberCount,
+              roleLabel: _roleLabel(effectiveRole),
+              onBack: () => Navigator.pop(context),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InkWell(
-                  onTap: () => Navigator.pop(context),
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: AppColors.white.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.chevron_left,
-                        color: AppColors.white, size: 18),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Members',
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineLarge
-                      ?.copyWith(color: AppColors.warmCream),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  album.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: AppColors.goldLight),
-                ),
-                const SizedBox(height: 8),
-                Row(
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(
+                    AppSpacing.md, AppSpacing.lg, AppSpacing.md, AppSpacing.lg + bottomPad),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.group_outlined,
-                        color: AppColors.warmCream, size: 12),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$memberCount member${memberCount == 1 ? '' : 's'}',
-                      style: TextStyle(
-                          color: AppColors.warmCream.withValues(alpha: 0.70),
-                          fontSize: 12),
-                    ),
-                    const SizedBox(width: 12),
-                    const Icon(Icons.verified_user_outlined,
-                        color: AppColors.warmCream, size: 12),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Your role: ${_roleLabel(effectiveRole)}',
-                      style: TextStyle(
-                          color: AppColors.warmCream.withValues(alpha: 0.70),
-                          fontSize: 12),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // ── Invite form (admin only) ────────────────────────────────────
-          if (isAdmin) ...[
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: AppCard(
-                child: InviteForm(
-                  isSending: inviteState.isSending,
-                  successMessage: inviteState.successMessage,
-                  errorMessage: inviteState.errorMessage,
-                  onInvite: (email, role) {
-                    return ref
-                        .read(inviteMemberControllerProvider.notifier)
-                        .invite(
-                          albumId: album.id,
-                          email: email,
-                          role: role,
-                        );
-                  },
-                ),
-              ),
-            ),
-          ],
-
-          // ── Member list ────────────────────────────────────────────────
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text('Members',
-                style: Theme.of(context).textTheme.titleLarge),
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: membersAsync.when(
-              loading: () => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child:
-                      CircularProgressIndicator(color: AppColors.softGold),
-                ),
-              ),
-              error: (err, _) => AppEmptyState(
-                title: 'Members unavailable',
-                message: AppError.messageFor(err),
-                actionLabel: 'Try Again',
-                onAction: () =>
-                    ref.invalidate(albumMembersProvider(album.id)),
-              ),
-              data: (members) => Column(
-                children: [
-                  for (final member in members) ...[
-                    _MemberRow(
-                      member: member,
-                      isCurrentUser: member.userId == currentProfile?.id,
-                      canManageMember:
-                          isAdmin && member.userId != currentProfile?.id,
-                      canEditRole: member.email?.isNotEmpty == true,
-                      isSaving: inviteState.isSending,
-                      onRoleSelected: (role) {
-                        final email = member.email;
-                        if (email == null || email.isEmpty) return;
-                        ref
-                            .read(inviteMemberControllerProvider.notifier)
-                            .invite(
-                              albumId: album.id,
-                              email: email,
-                              role: role,
-                            );
-                      },
-                      onRemoveSelected: () => _confirmRemoveMember(
-                        context,
-                        ref,
-                        album: album,
-                        member: member,
+                    // ── Invite form (admin only) ───────────────────────────
+                    if (isAdmin) ...[
+                      AppCard(
+                        child: InviteForm(
+                          isSending: inviteState.isSending,
+                          successMessage: inviteState.successMessage,
+                          errorMessage: inviteState.errorMessage,
+                          onInvite: (email, role) => ref
+                              .read(inviteMemberControllerProvider.notifier)
+                              .invite(
+                                albumId: album.id,
+                                email: email,
+                                role: role,
+                              ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                ],
-              ),
-            ),
-          ),
+                      const SizedBox(height: AppSpacing.lg),
+                    ],
 
-          // ── Leave button (non-admin only) ──────────────────────────────
-          if (!isAdmin) ...[
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: leaveState.errorMessage != null
-                  ? Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
+                    // ── Section heading ────────────────────────────────────
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 2, bottom: AppSpacing.sm),
                       child: Text(
-                        leaveState.errorMessage!,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                            color: AppColors.maroon,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700),
+                        'People in this space.',
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: AppButton(
-                label: leaveState.isLeaving ? 'Leaving...' : 'Leave this album',
-                icon: Icons.exit_to_app_outlined,
-                secondary: true,
-                onPressed: leaveState.isLeaving
-                    ? null
-                    : () => _confirmLeave(context, ref, album: album),
+                    ),
+
+                    // ── Member list ────────────────────────────────────────
+                    membersAsync.when(
+                      loading: () => const Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.brightGold,
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      ),
+                      error: (err, _) => AppEmptyState(
+                        title: 'Could not load members',
+                        message: AppError.messageFor(err),
+                        actionLabel: 'Try Again',
+                        onAction: () =>
+                            ref.invalidate(albumMembersProvider(album.id)),
+                      ),
+                      data: (members) => Column(
+                        children: [
+                          for (final member in members)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: AppSpacing.sm),
+                              child: _MemberRow(
+                                member: member,
+                                isCurrentUser:
+                                    member.userId == currentProfile?.id,
+                                canManageMember: isAdmin &&
+                                    member.userId != currentProfile?.id,
+                                canEditRole:
+                                    member.email?.isNotEmpty == true,
+                                isSaving: inviteState.isSending,
+                                onRoleSelected: (role) {
+                                  final email = member.email;
+                                  if (email == null || email.isEmpty) return;
+                                  ref
+                                      .read(inviteMemberControllerProvider
+                                          .notifier)
+                                      .invite(
+                                        albumId: album.id,
+                                        email: email,
+                                        role: role,
+                                      );
+                                },
+                                onRemoveSelected: () => _confirmRemoveMember(
+                                  context,
+                                  ref,
+                                  album: album,
+                                  member: member,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    // ── Leave button (non-admin) ───────────────────────────
+                    if (!isAdmin) ...[
+                      const SizedBox(height: AppSpacing.xl),
+                      if (leaveState.errorMessage != null) ...[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Text(
+                            leaveState.errorMessage!,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: AppColors.velvetMaroon,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                      _LeaveButton(
+                        isLeaving: leaveState.isLeaving,
+                        onLeave: leaveState.isLeaving
+                            ? null
+                            : () => _confirmLeave(context, ref, album: album),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ),
           ],
-
-          const SizedBox(height: 28),
-        ],
+        ),
       ),
     );
   }
@@ -274,7 +218,7 @@ class MembersScreen extends ConsumerWidget {
               ),
               FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.maroon,
+                  backgroundColor: AppColors.velvetMaroon,
                   foregroundColor: AppColors.white,
                 ),
                 onPressed: () => Navigator.of(ctx).pop(true),
@@ -301,9 +245,9 @@ class MembersScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Leave album?'),
+            title: const Text('Leave this space?'),
             content: Text(
-                'You will lose access to all files in "${album.name}". The Admin can re-invite you later.'),
+                'You\'ll lose access to all files in "${album.name}". The admin can invite you back later.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(false),
@@ -311,7 +255,7 @@ class MembersScreen extends ConsumerWidget {
               ),
               FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.maroon,
+                  backgroundColor: AppColors.velvetMaroon,
                   foregroundColor: AppColors.white,
                 ),
                 onPressed: () => Navigator.of(ctx).pop(true),
@@ -331,8 +275,8 @@ class MembersScreen extends ConsumerWidget {
 
   AlbumMember? _currentMember(List<AlbumMember>? members, String? profileId) {
     if (members == null || profileId == null || profileId.isEmpty) return null;
-    for (final member in members) {
-      if (member.userId == profileId) return member;
+    for (final m in members) {
+      if (m.userId == profileId) return m;
     }
     return null;
   }
@@ -340,6 +284,114 @@ class MembersScreen extends ConsumerWidget {
   String _roleLabel(String role) {
     if (role.isEmpty) return 'Viewer';
     return '${role[0].toUpperCase()}${role.substring(1).toLowerCase()}';
+  }
+}
+
+// ── Private widgets ───────────────────────────────────────────────────────────
+
+class _Header extends StatelessWidget {
+  const _Header({
+    required this.album,
+    required this.memberCount,
+    required this.roleLabel,
+    required this.onBack,
+  });
+
+  final Album album;
+  final int memberCount;
+  final String roleLabel;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    final top = MediaQuery.of(context).padding.top;
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: AppGradients.header,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+      ),
+      padding: EdgeInsets.fromLTRB(16, top + 12, 16, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          PressableScale(
+            onTap: onBack,
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              width: 32,
+              height: 32,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.white.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.chevron_left,
+                  color: AppColors.white, size: 20),
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'People in this space.',
+            style: TextStyle(
+              fontFamily: AppTheme.headingFont,
+              color: AppColors.pearlCream,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.3,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            album.name,
+            style: TextStyle(
+              color: AppColors.warmCream.withValues(alpha: 0.55),
+              fontSize: 13,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              _MetaChip(
+                icon: Icons.group_outlined,
+                label: '$memberCount member${memberCount == 1 ? '' : 's'}',
+              ),
+              const SizedBox(width: 10),
+              _MetaChip(
+                icon: Icons.verified_user_outlined,
+                label: roleLabel,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MetaChip extends StatelessWidget {
+  const _MetaChip({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon,
+            color: AppColors.warmCream.withValues(alpha: 0.55), size: 12),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: TextStyle(
+            color: AppColors.warmCream.withValues(alpha: 0.55),
+            fontSize: 12,
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -365,24 +417,51 @@ class _MemberRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final normalizedRole = member.role.toLowerCase();
+    final initial = member.title.isNotEmpty
+        ? member.title[0].toUpperCase()
+        : '?';
 
-    return AppCard(
-      padding: const EdgeInsets.all(12),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(
+          color: isCurrentUser
+              ? AppColors.velvetMaroon.withValues(alpha: 0.18)
+              : AppColors.creamLine,
+          width: 0.8,
+        ),
+        boxShadow: AppShadows.card,
+      ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: isCurrentUser
-                ? AppColors.maroon
-                : AppColors.maroonFaint,
-            foregroundColor:
-                isCurrentUser ? AppColors.white : AppColors.maroon,
+          // Avatar
+          Container(
+            width: 38,
+            height: 38,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: isCurrentUser
+                  ? AppColors.velvetMaroon
+                  : AppColors.maroonFaint,
+              shape: BoxShape.circle,
+            ),
             child: Text(
-              member.title.substring(0, 1).toUpperCase(),
-              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+              initial,
+              style: TextStyle(
+                fontFamily: AppTheme.headingFont,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                color: isCurrentUser
+                    ? AppColors.pearlCream
+                    : AppColors.velvetMaroon,
+              ),
             ),
           ),
           const SizedBox(width: 10),
+
+          // Name + subtitle
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -395,7 +474,10 @@ class _MemberRow extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                            fontWeight: FontWeight.w700, fontSize: 12),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                          color: AppColors.charcoalInk,
+                        ),
                       ),
                     ),
                     if (isCurrentUser) ...[
@@ -404,14 +486,18 @@ class _MemberRow extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppColors.maroonFaint,
+                          color: AppColors.velvetMaroon
+                              .withValues(alpha: 0.10),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: const Text('You',
-                            style: TextStyle(
-                                color: AppColors.maroon,
-                                fontSize: 9,
-                                fontWeight: FontWeight.w600)),
+                        child: const Text(
+                          'You',
+                          style: TextStyle(
+                            color: AppColors.velvetMaroon,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
                     ],
                   ],
@@ -421,20 +507,29 @@ class _MemberRow extends StatelessWidget {
                   member.subtitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style:
-                      const TextStyle(color: AppColors.mutedInk, fontSize: 11),
+                  style: const TextStyle(
+                    color: AppColors.featherTaupe,
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
           ),
+
+          // Role chip
           RoleChip(label: member.roleLabel, selected: true),
+
+          // Manage menu (admin only)
           if (canManageMember) ...[
-            const SizedBox(width: 4),
+            const SizedBox(width: 2),
             PopupMenuButton<String>(
               enabled: !isSaving,
               tooltip: 'Manage member',
               icon: const Icon(Icons.more_horiz,
-                  color: AppColors.mutedInk, size: 18),
+                  color: AppColors.featherTaupe, size: 18),
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(AppSpacing.radiusMd)),
               onSelected: (value) {
                 if (value == 'remove') {
                   onRemoveSelected?.call();
@@ -453,12 +548,64 @@ class _MemberRow extends StatelessWidget {
                 ],
                 const PopupMenuItem(
                   value: 'remove',
-                  child: Text('Remove member'),
+                  child: Text(
+                    'Remove member',
+                    style: TextStyle(color: AppColors.velvetMaroon),
+                  ),
                 ),
               ],
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _LeaveButton extends StatelessWidget {
+  const _LeaveButton({required this.isLeaving, required this.onLeave});
+
+  final bool isLeaving;
+  final VoidCallback? onLeave;
+
+  @override
+  Widget build(BuildContext context) {
+    return PressableScale(
+      onTap: onLeave,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+      child: Container(
+        height: 52,
+        width: double.infinity,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          border: Border.all(
+            color: AppColors.velvetMaroon.withValues(alpha: 0.30),
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              isLeaving
+                  ? Icons.hourglass_top_rounded
+                  : Icons.exit_to_app_outlined,
+              color: AppColors.velvetMaroon,
+              size: 17,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              isLeaving ? 'Leaving...' : 'Leave this album',
+              style: const TextStyle(
+                color: AppColors.velvetMaroon,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

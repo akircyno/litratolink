@@ -52,7 +52,7 @@ class _InviteFormState extends State<InviteForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Invite member', style: Theme.of(context).textTheme.titleLarge),
+        Text('Invite someone.', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12),
         TextField(
           controller: emailController,
