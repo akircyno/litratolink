@@ -5,27 +5,23 @@ import '../../app/theme.dart';
 enum PotoExpression { idle, happy, working, waiting, error }
 
 extension _PotoAsset on PotoExpression {
-  // State-specific PNGs in assets/mascot/ take priority.
-  // Falls back to the approved reference image until per-state exports land.
-  static const _reference =
-      'assets/branding/potoos/mascot/poto-app-icon-reference.png';
-
   String get assetPath {
     switch (this) {
       case PotoExpression.idle:
-        return 'assets/mascot/poto_idle.png';
+        return 'assets/mascot/poto_idle.webp';
       case PotoExpression.happy:
-        return 'assets/mascot/poto_happy.png';
+        return 'assets/mascot/poto_happy.webp';
       case PotoExpression.working:
-        return 'assets/mascot/poto_working.png';
+        return 'assets/mascot/poto_working.webp';
       case PotoExpression.waiting:
-        return 'assets/mascot/poto_waiting.png';
+        return 'assets/mascot/poto_waiting.webp';
       case PotoExpression.error:
-        return 'assets/mascot/poto_error.png';
+        return 'assets/mascot/poto_error.webp';
     }
   }
 
-  String get fallbackAssetPath => _reference;
+  // Fallback to idle when a specific expression file fails
+  String get fallbackAssetPath => 'assets/mascot/poto_idle.webp';
 
   String get fallbackEmoji {
     switch (this) {
@@ -62,7 +58,7 @@ class _PotoWaveState extends State<PotoWave> with TickerProviderStateMixin {
   late final Animation<double> _fade;
   late final Animation<double> _float;
 
-  static const _frameCount = 6;
+  static const _frameCount = 5;
 
   @override
   void initState() {
@@ -102,7 +98,7 @@ class _PotoWaveState extends State<PotoWave> with TickerProviderStateMixin {
         .floor()
         .clamp(0, _frameCount - 1);
     final n = (index + 1).toString().padLeft(2, '0');
-    return 'assets/mascot/poto_wave_$n.png';
+    return 'assets/mascot/poto_wave_$n.webp';
   }
 
   @override
@@ -118,14 +114,8 @@ class _PotoWaveState extends State<PotoWave> with TickerProviderStateMixin {
             width: widget.size,
             height: widget.size,
             fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) => Image.asset(
-              'assets/branding/potoos/mascot/poto-app-icon-reference.png',
-              width: widget.size,
-              height: widget.size,
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) =>
-                  SizedBox(width: widget.size, height: widget.size),
-            ),
+            errorBuilder: (_, __, ___) =>
+                SizedBox(width: widget.size, height: widget.size),
           ),
         ),
       ),
