@@ -1,20 +1,18 @@
 import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
 import '../../../core/errors/app_error.dart';
 import '../../../core/utils/quality_test_log.dart';
-import '../../../core/widgets/app_button.dart';
-import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_empty_state.dart';
-import '../../../core/widgets/app_progress_bar.dart';
 import '../../../core/widgets/app_screen.dart';
 import '../../../core/widgets/poto_mascot.dart';
-import '../../../core/widgets/save_all_ring.dart';
+import '../../../core/widgets/pressable_scale.dart';
 import '../../albums/models/album.dart';
 import '../../albums/models/media_file.dart';
 import '../../albums/providers/album_provider.dart';
@@ -22,10 +20,7 @@ import '../data/download_repository.dart';
 import '../models/downloaded_file.dart';
 
 class SaveAllArgs {
-  const SaveAllArgs({
-    required this.album,
-    required this.files,
-  });
+  const SaveAllArgs({required this.album, required this.files});
 
   final Album album;
   final List<MediaFile> files;
@@ -39,12 +34,12 @@ class SaveAllScreen extends ConsumerStatefulWidget {
 }
 
 class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
-  bool isSaving = false;
-  bool isComplete = false;
-  int activeIndex = -1;
-  int savedCount = 0;
-  double progress = 0;
-  String? errorMessage;
+  bool _isSaving = false;
+  bool _isComplete = false;
+  int _activeIndex = -1;
+  int _savedCount = 0;
+  double _progress = 0;
+  String? _errorMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +50,7 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
 
     if (album == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Save All')),
+        appBar: AppBar(title: const Text('Save Originals')),
         body: const AppScreen(
           children: [
             AppEmptyState(
@@ -73,15 +68,16 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
     final loadedMembers = membersAsync.asData?.value;
     final accessUnavailable = membersAsync.hasError ||
         (loadedMembers != null && loadedMembers.isEmpty);
+
     if (accessUnavailable) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Save All')),
+        appBar: AppBar(title: const Text('Save Originals')),
         body: AppScreen(
           children: [
             AppEmptyState(
               title: 'Album access unavailable',
               message:
-                  'You may have been removed from this album, or your access changed. Open Albums to refresh your private spaces.',
+                  'You may have been removed from this album. Go back to refresh your spaces.',
               expression: PotoExpression.error,
               actionLabel: 'Back to Albums',
               onAction: () =>
@@ -95,152 +91,193 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
     final resolvedFiles = filesAsync.asData?.value ?? files;
     final isLoadingFiles = filesAsync.isLoading && resolvedFiles.isEmpty;
     final totalFiles = resolvedFiles.length;
-    final headline = isComplete
-        ? 'All originals saved'
-        : isSaving
-            ? 'Saving your memories'
-            : 'Ready to save originals';
-    final subhead =
-        totalFiles == 1 ? '1 original file' : '$totalFiles original files';
+    final hasError = _errorMessage != null;
+    final bottomPad = MediaQuery.of(context).padding.bottom;
 
-    return Scaffold(
-      body: AppScreen(
-        padding: EdgeInsets.zero,
-        children: [
-          _SaveHeader(
-            album: album,
-            fileCount: totalFiles,
-            canCancel: !isSaving,
-            onCancel: () => Navigator.pop(context),
-          ),
-          const SizedBox(height: 14),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: AppCard(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  SaveAllRing(progress: progress),
-                  const SizedBox(height: 12),
-                  Text(
-                    headline,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: 16),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '$savedCount of $totalFiles files saved',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        color: AppColors.mutedInk, fontSize: 12),
-                  ),
-                  const SizedBox(height: 18),
-                  AppProgressBar(value: progress),
-                  const SizedBox(height: 16),
-                  if (isLoadingFiles)
-                    const Padding(
-                      padding: EdgeInsets.all(20),
-                      child:
-                          CircularProgressIndicator(color: AppColors.softGold),
-                    )
-                  else if (filesAsync.hasError && resolvedFiles.isEmpty)
-                    AppEmptyState(
-                      title: 'Files unavailable',
-                      message: AppError.messageFor(filesAsync.error),
-                      expression: PotoExpression.error,
-                      actionLabel: 'Try Again',
-                      onAction: () =>
-                          ref.invalidate(albumMediaFilesProvider(album.id)),
-                    )
-                  else if (resolvedFiles.isEmpty)
-                    const AppEmptyState(
-                      title: 'No completed files',
-                      message:
-                          'Upload completed originals before using Save All.',
-                    )
-                  else
-                    for (var index = 0;
-                        index < resolvedFiles.length;
-                        index++) ...[
-                      _SaveFileRow(
-                        file: resolvedFiles[index],
-                        status: _statusFor(index),
-                        state: _rowStateFor(index),
-                      ),
-                      if (index < resolvedFiles.length - 1)
-                        const SizedBox(height: 10),
-                    ],
-                  if (filesAsync.hasError && resolvedFiles.isNotEmpty) ...[
-                    const SizedBox(height: 14),
-                    const Text(
-                      'Showing files already loaded from the album screen.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.mutedInk, fontSize: 12),
-                    ),
-                  ],
-                  if (errorMessage != null) ...[
-                    const SizedBox(height: 14),
-                    Text(
-                      errorMessage!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: AppColors.maroon,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 18),
-                  AppButton(
-                    label: isSaving
-                        ? 'Saving...'
-                        : isComplete
-                            ? 'Save Again'
-                            : 'Save All Originals',
-                    icon: isComplete ? Icons.refresh : Icons.download,
-                    onPressed: isSaving || resolvedFiles.isEmpty
-                        ? null
-                        : () => _saveAll(album, resolvedFiles),
-                  ),
-                ],
+    final expression = _isComplete
+        ? PotoExpression.happy
+        : hasError
+            ? PotoExpression.error
+            : _isSaving
+                ? PotoExpression.working
+                : PotoExpression.idle;
+
+    final statusTitle = _isComplete
+        ? 'All $totalFiles original${totalFiles == 1 ? '' : 's'} are yours.'
+        : hasError
+            ? 'Download stopped.'
+            : _isSaving
+                ? '$_savedCount of $totalFiles packed so far.'
+                : 'Ready to save $totalFiles original${totalFiles == 1 ? '' : 's'}.';
+
+    final statusSub = _isComplete
+        ? 'Poto packed everything into one ZIP for you.'
+        : hasError
+            ? _errorMessage!
+            : _isSaving
+                ? 'Keep this screen open while downloading.'
+                : 'Your originals will be saved at full quality — no compression.';
+
+    return PopScope(
+      canPop: !_isSaving,
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: Scaffold(
+          backgroundColor: AppColors.warmCream,
+          body: Column(
+            children: [
+              // ── Header ───────────────────────────────────────────────
+              _Header(
+                albumName: album.name,
+                fileCount: totalFiles,
+                canClose: !_isSaving,
+                onClose: _isSaving
+                    ? null
+                    : () => Navigator.pop(context),
               ),
-            ),
-          ),
-          if (isSaving || isComplete)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-              child: Center(
-                child: PotoMascot(
-                  expression:
-                      isComplete ? PotoExpression.happy : PotoExpression.working,
-                  size: 80,
-                  caption: isComplete
-                      ? 'Poto packed your originals.'
-                      : 'Poto is packing your originals.',
+
+              // ── Scrollable body ──────────────────────────────────────
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.md, AppSpacing.xl, AppSpacing.md, AppSpacing.lg),
+                  child: Column(
+                    children: [
+                      // Poto — the hero
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 400),
+                        switchInCurve: Curves.easeOutCubic,
+                        transitionBuilder: (child, animation) =>
+                            FadeTransition(
+                          opacity: animation,
+                          child:
+                              ScaleTransition(scale: animation, child: child),
+                        ),
+                        child: PotoMascot(
+                          key: ValueKey(expression),
+                          expression: expression,
+                          size: 120,
+                        ),
+                      ),
+
+                      const SizedBox(height: AppSpacing.lg),
+
+                      // Status text
+                      Text(
+                        statusTitle,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: AppTheme.headingFont,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.deepMaroon,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        statusSub,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: hasError
+                              ? AppColors.velvetMaroon
+                              : AppColors.featherTaupe,
+                          fontSize: 13,
+                          height: 1.5,
+                        ),
+                      ),
+
+                      // Progress bar (saving or complete)
+                      if (_isSaving || _isComplete) ...[
+                        const SizedBox(height: AppSpacing.xl),
+                        _OverallProgress(
+                          value: _progress,
+                          saved: _savedCount,
+                          total: totalFiles,
+                          isComplete: _isComplete,
+                        ),
+                      ],
+
+                      const SizedBox(height: AppSpacing.lg),
+
+                      // File list
+                      if (isLoadingFiles)
+                        const Padding(
+                          padding: EdgeInsets.all(32),
+                          child: CircularProgressIndicator(
+                            color: AppColors.brightGold,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      else if (filesAsync.hasError && resolvedFiles.isEmpty)
+                        AppEmptyState(
+                          title: 'Files unavailable',
+                          message: AppError.messageFor(filesAsync.error),
+                          expression: PotoExpression.error,
+                          actionLabel: 'Try Again',
+                          onAction: () =>
+                              ref.invalidate(albumMediaFilesProvider(album.id)),
+                        )
+                      else if (resolvedFiles.isEmpty)
+                        const AppEmptyState(
+                          title: 'Nothing to save yet.',
+                          message:
+                              'Upload some originals first, then come back here.',
+                        )
+                      else
+                        Column(
+                          children: [
+                            for (var i = 0; i < resolvedFiles.length; i++)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: AppSpacing.sm),
+                                child: _FileRow(
+                                  file: resolvedFiles[i],
+                                  status: _statusFor(i),
+                                  rowState: _rowStateFor(i),
+                                ),
+                              ),
+                          ],
+                        ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-            child: Text(
-              '$subhead will download through Potoos original storage.',
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.mutedInk, fontSize: 11),
-            ),
+
+              // ── Sticky CTA ───────────────────────────────────────────
+              _BottomCTA(
+                isSaving: _isSaving,
+                isComplete: _isComplete,
+                hasError: hasError,
+                isEmpty: resolvedFiles.isEmpty,
+                bottomPad: bottomPad,
+                onSave: (_isSaving || resolvedFiles.isEmpty)
+                    ? null
+                    : () => _saveAll(album, resolvedFiles),
+                onBack: () => Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.albumDetails,
+                  ModalRoute.withName(AppRoutes.home),
+                  arguments: album,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
+  // ── Business logic (unchanged) ─────────────────────────────────────────────
+
   Future<void> _saveAll(Album album, List<MediaFile> files) async {
     setState(() {
-      isSaving = true;
-      isComplete = false;
-      activeIndex = 0;
-      savedCount = 0;
-      progress = 0;
-      errorMessage = null;
+      _isSaving = true;
+      _isComplete = false;
+      _activeIndex = 0;
+      _savedCount = 0;
+      _progress = 0;
+      _errorMessage = null;
     });
 
     try {
@@ -252,14 +289,14 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
       for (var index = 0; index < files.length; index++) {
         if (!mounted) return;
 
-        setState(() => activeIndex = index);
+        setState(() => _activeIndex = index);
         final original = await repository.downloadOriginalBytes(
           file: files[index],
           onProgress: (fileProgress) {
             if (!mounted) return;
             final totalProgress =
                 (index + (fileProgress.clamp(0, 1) * 0.9)) / files.length;
-            setState(() => progress = totalProgress);
+            setState(() => _progress = totalProgress);
           },
         );
         savedOriginals.add(original);
@@ -268,8 +305,8 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
 
         if (!mounted) return;
         setState(() {
-          savedCount = index + 1;
-          progress = (savedCount / files.length) * 0.9;
+          _savedCount = index + 1;
+          _progress = (_savedCount / files.length) * 0.9;
         });
       }
 
@@ -298,48 +335,43 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
 
       if (!mounted) return;
       setState(() {
-        isSaving = false;
-        isComplete = true;
-        activeIndex = files.length;
-        progress = 1;
+        _isSaving = false;
+        _isComplete = true;
+        _activeIndex = files.length;
+        _progress = 1;
       });
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        isSaving = false;
-        isComplete = false;
-        errorMessage = AppError.messageFor(error);
+        _isSaving = false;
+        _isComplete = false;
+        _errorMessage = AppError.messageFor(error);
       });
     }
   }
 
   String _statusFor(int index) {
-    if (index < savedCount) return 'Saved';
-    if (index == activeIndex && isSaving) return 'Saving...';
+    if (index < _savedCount) return 'Saved';
+    if (index == _activeIndex && _isSaving) return 'Saving...';
     return 'Queued';
   }
 
-  _SaveFileState _rowStateFor(int index) {
-    if (index < savedCount) return _SaveFileState.done;
-    if (index == activeIndex && isSaving) return _SaveFileState.active;
-    return _SaveFileState.waiting;
+  _RowState _rowStateFor(int index) {
+    if (index < _savedCount) return _RowState.done;
+    if (index == _activeIndex && _isSaving) return _RowState.active;
+    return _RowState.waiting;
   }
 }
 
-/// Produces a safe, readable ZIP filename stem from an album name.
-///
-/// - Replaces OS-unsafe chars with `_`, whitespace with `-`, lowercases.
-/// - Collapses runs of `-` and `_` to a single `-` and strips leading/trailing
-///   dashes so the result is always tidy (e.g. `"My!!!Album"` → `my-album`).
-/// - Caps at 50 characters to stay well within browser/OS filename limits
-///   before the `-originals.zip` suffix is appended.
+// ── Utility functions (unchanged — tested) ────────────────────────────────────
+
 @visibleForTesting
 String safeZipName(String albumName) {
   final rawName = albumName.trim();
   if (rawName.isEmpty) return 'potoos-album';
 
   var safe = rawName
-      .replaceAll(RegExp(r'[^\w\s-]'), '_') // replace any non-alphanumeric/space/dash
+      .replaceAll(RegExp(r'[^\w\s-]'), '_')
       .replaceAll(RegExp(r'\s+'), '-')
       .toLowerCase()
       .replaceAll(RegExp(r'[-_]+'), '-')
@@ -352,11 +384,6 @@ String safeZipName(String albumName) {
   return safe.isEmpty ? 'potoos-album' : safe;
 }
 
-/// Returns a deduplicated, OS-safe filename for an entry inside the ZIP.
-///
-/// Strips leading hyphens, underscores, spaces, and dots (e.g. `"-cover.jpg"`
-/// → `cover.jpg`). When the same base name appears more than once it appends
-/// a counter: `photo.jpg`, `photo (2).jpg`, `photo (3).jpg`, …
 @visibleForTesting
 String uniqueZipFilename(String filename, Set<String> usedNames) {
   final safeName = filename
@@ -377,71 +404,79 @@ String uniqueZipFilename(String filename, Set<String> usedNames) {
   }
 }
 
-class _SaveHeader extends StatelessWidget {
-  const _SaveHeader({
-    required this.album,
+// ── Private widgets ───────────────────────────────────────────────────────────
+
+class _Header extends StatelessWidget {
+  const _Header({
+    required this.albumName,
     required this.fileCount,
-    required this.canCancel,
-    required this.onCancel,
+    required this.canClose,
+    required this.onClose,
   });
 
-  final Album album;
+  final String albumName;
   final int fileCount;
-  final bool canCancel;
-  final VoidCallback onCancel;
+  final bool canClose;
+  final VoidCallback? onClose;
 
   @override
   Widget build(BuildContext context) {
+    final top = MediaQuery.of(context).padding.top;
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
       decoration: const BoxDecoration(
-        color: AppColors.deepMaroon,
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+        gradient: AppGradients.header,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
-      child: Column(
+      padding: EdgeInsets.fromLTRB(16, top + 12, 16, 20),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          InkWell(
-            onTap: canCancel ? onCancel : null,
-            borderRadius: BorderRadius.circular(8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+          PressableScale(
+            onTap: canClose ? onClose : null,
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              width: 32,
+              height: 32,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.white
+                    .withValues(alpha: canClose ? 0.14 : 0.06),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.close,
+                color: AppColors.white
+                    .withValues(alpha: canClose ? 1.0 : 0.3),
+                size: 17,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 28,
-                  height: 28,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: AppColors.white.withValues(alpha: 0.10),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child:
-                      const Icon(Icons.close, color: AppColors.white, size: 14),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Cancel',
+                const Text(
+                  'Save Originals',
                   style: TextStyle(
-                      color: AppColors.white.withValues(alpha: 0.70),
-                      fontSize: 13),
+                    fontFamily: AppTheme.headingFont,
+                    color: AppColors.pearlCream,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  albumName,
+                  style: TextStyle(
+                    color: AppColors.warmCream.withValues(alpha: 0.55),
+                    fontSize: 13,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Save All',
-            style: Theme.of(context)
-                .textTheme
-                .headlineLarge
-                ?.copyWith(color: AppColors.warmCream),
-          ),
-          const SizedBox(height: 5),
-          Text(
-            '${album.name} - $fileCount files',
-            style: TextStyle(
-                color: AppColors.warmCream.withValues(alpha: 0.60),
-                fontSize: 11),
           ),
         ],
       ),
@@ -449,63 +484,369 @@ class _SaveHeader extends StatelessWidget {
   }
 }
 
-enum _SaveFileState { waiting, active, done }
+class _OverallProgress extends StatelessWidget {
+  const _OverallProgress({
+    required this.value,
+    required this.saved,
+    required this.total,
+    required this.isComplete,
+  });
 
-class _SaveFileRow extends StatelessWidget {
-  const _SaveFileRow({
+  final double value;
+  final int saved;
+  final int total;
+  final bool isComplete;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              isComplete ? 'Complete' : 'Overall progress',
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.featherTaupe,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              '${(value * 100).round()}%',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: isComplete
+                    ? AppColors.brightGold
+                    : AppColors.velvetMaroon,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0, end: value),
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOut,
+          builder: (context, v, _) {
+            return Container(
+              height: 8,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppColors.creamLine,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: FractionallySizedBox(
+                widthFactor: v.clamp(0.0, 1.0),
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: isComplete
+                          ? [AppColors.velvetMaroon, AppColors.brightGold]
+                          : [AppColors.velvetMaroon, AppColors.garnetHighlight],
+                    ),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+enum _RowState { waiting, active, done }
+
+class _FileRow extends StatelessWidget {
+  const _FileRow({
     required this.file,
     required this.status,
-    required this.state,
+    required this.rowState,
   });
 
   final MediaFile file;
   final String status;
-  final _SaveFileState state;
+  final _RowState rowState;
 
   @override
   Widget build(BuildContext context) {
-    final icon = switch (state) {
-      _SaveFileState.done => Icons.check_circle,
-      _SaveFileState.active => Icons.download,
-      _SaveFileState.waiting => Icons.schedule,
-    };
-    final color = switch (state) {
-      _SaveFileState.done => const Color(0xFF3B6D11),
-      _SaveFileState.active => AppColors.maroon,
-      _SaveFileState.waiting => AppColors.mutedInk,
-    };
+    final isDone = rowState == _RowState.done;
+    final isActive = rowState == _RowState.active;
+    final isWaiting = rowState == _RowState.waiting;
 
-    return Row(
-      children: [
-        Icon(icon, color: color, size: 18),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                file.originalFilename,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 12),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                '${file.fileSizeLabel} - ${file.mimeType}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: AppColors.mutedInk, fontSize: 11),
-              ),
-            ],
+    final Color iconBg;
+    final Color iconColor;
+    final Color statusColor;
+
+    if (isDone) {
+      iconBg = AppColors.brightGold.withValues(alpha: 0.12);
+      iconColor = AppColors.brightGold;
+      statusColor = const Color(0xFF4A8C2A);
+    } else if (isActive) {
+      iconBg = AppColors.maroonFaint;
+      iconColor = AppColors.velvetMaroon;
+      statusColor = AppColors.velvetMaroon;
+    } else {
+      iconBg = AppColors.creamLine;
+      iconColor = AppColors.featherTaupe;
+      statusColor = AppColors.featherTaupe;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(
+          color: isDone
+              ? AppColors.brightGold.withValues(alpha: 0.20)
+              : AppColors.creamLine,
+          width: 0.8,
+        ),
+        boxShadow: AppShadows.card,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: iconBg,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+            ),
+            child: Icon(
+              isDone
+                  ? Icons.check
+                  : isActive
+                      ? Icons.download_outlined
+                      : Icons.schedule_outlined,
+              color: iconColor,
+              size: 17,
+            ),
           ),
-        ),
-        const SizedBox(width: 10),
-        Text(
-          status,
-          style: TextStyle(
-              color: color, fontSize: 11, fontWeight: FontWeight.w500),
-        ),
-      ],
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  file.originalFilename,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isWaiting
+                        ? AppColors.featherTaupe
+                        : AppColors.charcoalInk,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${file.fileSizeLabel} · ${file.mimeType}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: isWaiting
+                        ? AppColors.featherTaupe.withValues(alpha: 0.6)
+                        : AppColors.featherTaupe,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+            decoration: BoxDecoration(
+              color: isDone
+                  ? AppColors.brightGold.withValues(alpha: 0.10)
+                  : isActive
+                      ? AppColors.maroonFaint
+                      : AppColors.warmCream,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              status,
+              style: TextStyle(
+                color: statusColor,
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BottomCTA extends StatelessWidget {
+  const _BottomCTA({
+    required this.isSaving,
+    required this.isComplete,
+    required this.hasError,
+    required this.isEmpty,
+    required this.bottomPad,
+    required this.onSave,
+    required this.onBack,
+  });
+
+  final bool isSaving;
+  final bool isComplete;
+  final bool hasError;
+  final bool isEmpty;
+  final double bottomPad;
+  final VoidCallback? onSave;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        border:
+            const Border(top: BorderSide(color: AppColors.creamLine, width: 0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.midnightBurgundy.withValues(alpha: 0.06),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.fromLTRB(
+          AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.sm + bottomPad),
+      child: isComplete
+          ? Row(
+              children: [
+                Expanded(
+                  child: PressableScale(
+                    onTap: onSave,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                    child: Container(
+                      height: 50,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusLg),
+                        border: Border.all(
+                            color: AppColors.creamLine, width: 1.5),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.refresh,
+                              color: AppColors.charcoalInk, size: 16),
+                          SizedBox(width: 6),
+                          Text(
+                            'Save Again',
+                            style: TextStyle(
+                              color: AppColors.charcoalInk,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  flex: 2,
+                  child: PressableScale(
+                    onTap: onBack,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                    child: Container(
+                      height: 50,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: AppColors.velvetMaroon,
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusLg),
+                        boxShadow: AppShadows.primaryButton,
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.check_circle_outline,
+                              color: AppColors.pearlCream, size: 16),
+                          SizedBox(width: 6),
+                          Text(
+                            'Back to Album',
+                            style: TextStyle(
+                              color: AppColors.pearlCream,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : PressableScale(
+              onTap: onSave,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+              child: Container(
+                height: 54,
+                width: double.infinity,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: onSave != null
+                      ? AppColors.velvetMaroon
+                      : AppColors.creamLine,
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                  boxShadow:
+                      onSave != null ? AppShadows.primaryButton : null,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      isSaving
+                          ? Icons.hourglass_top_rounded
+                          : hasError
+                              ? Icons.refresh
+                              : Icons.download_outlined,
+                      color: onSave != null
+                          ? AppColors.pearlCream
+                          : AppColors.featherTaupe,
+                      size: 18,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(
+                      isSaving
+                          ? 'Packing originals...'
+                          : hasError
+                              ? 'Try Again'
+                              : isEmpty
+                                  ? 'Nothing to save'
+                                  : 'Save All Originals',
+                      style: TextStyle(
+                        color: onSave != null
+                            ? AppColors.pearlCream
+                            : AppColors.featherTaupe,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
     );
   }
 }
