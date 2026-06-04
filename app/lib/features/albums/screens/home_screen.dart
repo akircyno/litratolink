@@ -17,6 +17,7 @@ import '../providers/album_provider.dart';
 import '../widgets/album_card.dart';
 import '../../../core/widgets/app_toast.dart';
 import '../../../core/widgets/poto_mascot.dart';
+import '../../../core/widgets/pwa_install_banner.dart';
 import '../widgets/album_empty_state.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -37,16 +38,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: IndexedStack(
-          index: currentIndex,
-          children: const [
-            _AlbumsTab(),
-            _InvitesTab(),
-            _NotificationsTab(),
-            _ProfileTab(),
-          ],
-        ),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: IndexedStack(
+              index: currentIndex,
+              children: const [
+                _AlbumsTab(),
+                _InvitesTab(),
+                _NotificationsTab(),
+                _ProfileTab(),
+              ],
+            ),
+          ),
+          // PWA install banner — floats above bottom nav, slides in after delay
+          const Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: PwaInstallBanner(),
+          ),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,

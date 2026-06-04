@@ -1,49 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="LitratoLink is a private album app for sharing and downloading memories in original quality.">
-  <meta name="theme-color" content="#4A1220">
+  <meta name="description" content="Potoos — a private space for the people who were actually there. Every photo and video, exactly as you took it.">
+  <meta name="theme-color" content="#21070D">
   <meta name="color-scheme" content="light">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-  <!-- iOS meta tags & icons -->
+  <!-- iOS / Safari PWA -->
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="LitratoLink">
+  <meta name="apple-mobile-web-app-title" content="Potoos">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>LitratoLink</title>
+  <title>Potoos</title>
   <link rel="manifest" href="manifest.json">
+
+  <script>
+    // Capture the browser's install prompt so we can show it at the right moment.
+    // We prevent the automatic mini-bar and trigger it ourselves via Flutter.
+    window._deferredInstallPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      window._deferredInstallPrompt = e;
+    });
+
+    window.addEventListener('appinstalled', function() {
+      window._deferredInstallPrompt = null;
+    });
+
+    // Called by Flutter to check if the custom prompt is available
+    function pwaInstallAvailable() {
+      return !!window._deferredInstallPrompt;
+    }
+
+    // Called by Flutter to trigger the browser's native install dialog
+    function pwaPromptInstall() {
+      if (!window._deferredInstallPrompt) return;
+      window._deferredInstallPrompt.prompt();
+      window._deferredInstallPrompt.userChoice.then(function() {
+        window._deferredInstallPrompt = null;
+      });
+    }
+
+    // True when running as an installed PWA (standalone mode)
+    function pwaIsInstalled() {
+      return window.matchMedia('(display-mode: standalone)').matches
+          || window.navigator.standalone === true;
+    }
+  </script>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
