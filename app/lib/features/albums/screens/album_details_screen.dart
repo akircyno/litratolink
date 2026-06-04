@@ -17,6 +17,9 @@ import '../providers/album_provider.dart';
 import '../widgets/album_empty_state.dart';
 import '../widgets/gallery_tile.dart';
 
+// Album management menu values
+enum _MenuAction { rename, archive, delete }
+
 class AlbumDetailsScreen extends ConsumerWidget {
   const AlbumDetailsScreen({super.key});
 
@@ -85,7 +88,16 @@ class AlbumDetailsScreen extends ConsumerWidget {
     final effectiveRole = currentMember?.role ?? album.role;
     final effectiveRoleLabel = _roleLabel(effectiveRole);
     final canUpload = _canUploadRole(effectiveRole);
+    final isAdmin = effectiveRole.toLowerCase() == 'admin';
     final canSave = !selectionMode || hasSelection;
+
+    // Navigate home after archive or delete completes
+    ref.listen(albumManagementProvider, (_, next) {
+      if (next.done && context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, AppRoutes.home, (_) => false);
+      }
+    });
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
@@ -117,6 +129,56 @@ class AlbumDetailsScreen extends ConsumerWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   actions: [
+                    // Admin-only management menu
+                    if (isAdmin)
+                      PopupMenuButton<_MenuAction>(
+                        icon: const Icon(Icons.more_vert,
+                            color: AppColors.white, size: 20),
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(AppSpacing.radiusMd)),
+                        onSelected: (action) {
+                          switch (action) {
+                            case _MenuAction.rename:
+                              _showRenameSheet(context, ref, album);
+                            case _MenuAction.archive:
+                              _showArchiveDialog(context, ref, album);
+                            case _MenuAction.delete:
+                              _showDeleteDialog(context, ref, album);
+                          }
+                        },
+                        itemBuilder: (_) => const [
+                          PopupMenuItem(
+                            value: _MenuAction.rename,
+                            child: Row(children: [
+                              Icon(Icons.edit_outlined, size: 16),
+                              SizedBox(width: 10),
+                              Text('Rename'),
+                            ]),
+                          ),
+                          PopupMenuItem(
+                            value: _MenuAction.archive,
+                            child: Row(children: [
+                              Icon(Icons.inventory_2_outlined, size: 16),
+                              SizedBox(width: 10),
+                              Text('Archive'),
+                            ]),
+                          ),
+                          PopupMenuDivider(),
+                          PopupMenuItem(
+                            value: _MenuAction.delete,
+                            child: Row(children: [
+                              Icon(Icons.delete_forever_outlined,
+                                  size: 16, color: AppColors.velvetMaroon),
+                              SizedBox(width: 10),
+                              Text('Delete permanently',
+                                  style: TextStyle(
+                                      color: AppColors.velvetMaroon)),
+                            ]),
+                          ),
+                        ],
+                      ),
+                    // Role badge
                     Padding(
                       padding: const EdgeInsets.only(right: 14, top: 8),
                       child: Container(
@@ -375,6 +437,173 @@ class AlbumDetailsScreen extends ConsumerWidget {
   bool _canUploadRole(String role) {
     final r = role.toLowerCase();
     return r == 'admin' || r == 'contributor';
+  }
+
+  // ── Album management ──────────────────────────────────────────────────────
+
+  void _showRenameSheet(BuildContext context, WidgetRef ref, Album album) {
+    final controller = TextEditingController(text: album.name);
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.warmCream,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetCtx) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.lg,
+            AppSpacing.md,
+            AppSpacing.md + MediaQuery.of(sheetCtx).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Rename space.',
+                style: TextStyle(
+                  fontFamily: AppTheme.headingFont,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.deepMaroon,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              TextField(
+                controller: controller,
+                autofocus: true,
+                textCapitalization: TextCapitalization.sentences,
+                style: const TextStyle(fontSize: 16),
+                decoration: const InputDecoration(hintText: 'Album name'),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Row(
+                children: [
+                  Expanded(
+                    child: PressableScale(
+                      onTap: () => Navigator.pop(sheetCtx),
+                      borderRadius:
+                          BorderRadius.circular(AppSpacing.radiusLg),
+                      child: Container(
+                        height: 50,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusLg),
+                          border: Border.all(color: AppColors.creamLine),
+                        ),
+                        child: const Text('Cancel',
+                            style: TextStyle(
+                                color: AppColors.charcoalInk,
+                                fontWeight: FontWeight.w500)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    flex: 2,
+                    child: PressableScale(
+                      onTap: () {
+                        final name = controller.text.trim();
+                        if (name.isEmpty || name == album.name) {
+                          Navigator.pop(sheetCtx);
+                          return;
+                        }
+                        Navigator.pop(sheetCtx);
+                        ref
+                            .read(albumManagementProvider.notifier)
+                            .rename(albumId: album.id, name: name);
+                      },
+                      borderRadius:
+                          BorderRadius.circular(AppSpacing.radiusLg),
+                      child: Container(
+                        height: 50,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.velvetMaroon,
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusLg),
+                        ),
+                        child: const Text('Save',
+                            style: TextStyle(
+                                color: AppColors.pearlCream,
+                                fontWeight: FontWeight.w700)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showArchiveDialog(
+      BuildContext context, WidgetRef ref, Album album) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Archive this space?'),
+        content: const Text(
+            'The album will be hidden from your list. Files stay safe in storage. You can unarchive it later.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.velvetMaroon,
+              foregroundColor: AppColors.white,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Archive'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      ref
+          .read(albumManagementProvider.notifier)
+          .archive(albumId: album.id);
+    }
+  }
+
+  Future<void> _showDeleteDialog(
+      BuildContext context, WidgetRef ref, Album album) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete permanently?'),
+        content: Text(
+            '"${album.name}" and all its files will be removed from storage forever. This cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.velvetMaroon,
+              foregroundColor: AppColors.white,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Delete forever'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      ref
+          .read(albumManagementProvider.notifier)
+          .delete(albumId: album.id);
+    }
   }
 }
 

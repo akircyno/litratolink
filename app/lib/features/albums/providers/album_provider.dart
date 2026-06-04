@@ -156,6 +156,66 @@ class InviteMemberController extends Notifier<InviteMemberState> {
   }
 }
 
+// ── Album Management (Rename / Archive / Delete) ──────────────────────────
+
+final albumManagementProvider =
+    NotifierProvider.autoDispose<AlbumManagementController,
+        AlbumManagementState>(
+  AlbumManagementController.new,
+);
+
+class AlbumManagementState {
+  const AlbumManagementState({
+    this.isBusy = false,
+    this.errorMessage,
+    this.done = false,
+  });
+
+  final bool isBusy;
+  final String? errorMessage;
+  final bool done;
+}
+
+class AlbumManagementController extends Notifier<AlbumManagementState> {
+  @override
+  AlbumManagementState build() => const AlbumManagementState();
+
+  Future<void> rename({required String albumId, required String name}) async {
+    state = const AlbumManagementState(isBusy: true);
+    try {
+      await ref
+          .read(albumRepositoryProvider)
+          .renameAlbum(albumId: albumId, name: name);
+      ref.invalidate(albumListProvider);
+      state = const AlbumManagementState(done: true);
+    } catch (e) {
+      state = AlbumManagementState(errorMessage: AppError.messageFor(e));
+    }
+  }
+
+  Future<void> archive({required String albumId}) async {
+    state = const AlbumManagementState(isBusy: true);
+    try {
+      await ref.read(albumRepositoryProvider).archiveAlbum(albumId: albumId);
+      ref.invalidate(albumListProvider);
+      state = const AlbumManagementState(done: true);
+    } catch (e) {
+      state = AlbumManagementState(errorMessage: AppError.messageFor(e));
+    }
+  }
+
+  Future<void> delete({required String albumId}) async {
+    state = const AlbumManagementState(isBusy: true);
+    try {
+      await ref.read(albumRepositoryProvider).deleteAlbum(albumId: albumId);
+      ref.invalidate(albumListProvider);
+      state = const AlbumManagementState(done: true);
+    } catch (e) {
+      state = AlbumManagementState(errorMessage: AppError.messageFor(e));
+    }
+  }
+}
+
 // ── Leave Album ────────────────────────────────────────────────────────────
 
 final leaveAlbumControllerProvider =

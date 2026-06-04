@@ -49,6 +49,7 @@ class AlbumRepository {
           .select('id, name, description, updated_at')
           .inFilter('id', albumIds)
           .eq('is_deleted', false)
+          .eq('is_archived', false)
           .order('updated_at', ascending: false);
 
       final memberCounts = await _countRowsByAlbum('album_members', albumIds,
@@ -87,6 +88,30 @@ class AlbumRepository {
       },
       parser: (data) =>
           Album.fromCreateResponse(Map<String, dynamic>.from(data as Map)),
+    );
+  }
+
+  Future<void> renameAlbum({
+    required String albumId,
+    required String name,
+  }) async {
+    await supabaseService.client
+        .from('albums')
+        .update({'name': name.trim(), 'updated_at': DateTime.now().toIso8601String()})
+        .eq('id', albumId);
+  }
+
+  Future<void> archiveAlbum({required String albumId}) async {
+    await edgeFunctionService.callFunction<Object?>(
+      'archive-album',
+      body: {'album_id': albumId},
+    );
+  }
+
+  Future<void> deleteAlbum({required String albumId}) async {
+    await edgeFunctionService.callFunction<Object?>(
+      'delete-album',
+      body: {'album_id': albumId},
     );
   }
 

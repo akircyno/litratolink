@@ -216,6 +216,23 @@ export async function uploadFileBytesToDrive(params: UploadFileParams): Promise<
   return metadata as DriveFileMetadata;
 }
 
+export async function deleteDriveItem(fileId: string): Promise<void> {
+  const accessToken = await getGoogleAccessToken();
+
+  const response = await fetch(
+    `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}`,
+    {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  );
+
+  // 204 = deleted, 404 = already gone — both are acceptable
+  if (!response.ok && response.status !== 404) {
+    throw new Error(`Failed to delete Drive item ${fileId}: ${response.status}`);
+  }
+}
+
 function escapeDriveQueryValue(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
