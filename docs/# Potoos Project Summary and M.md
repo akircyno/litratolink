@@ -1,8 +1,8 @@
-# LitratoLink Project Summary and Master Index v1.0
+# Potoos Project Summary and Master Index v1.0
 
 ## 1. Document Purpose
 
-This document is the master index for the LitratoLink project.
+This document is the master index for the Potoos project.
 
 It summarizes all planning documents created so far.
 
@@ -10,7 +10,7 @@ The purpose of this document is to help organize the project before development 
 
 This document should help the developer, Codex, or any AI coding assistant understand:
 
-* What LitratoLink is
+* What Potoos is
 * What documents exist
 * What each document is for
 * What decisions are already confirmed
@@ -22,7 +22,7 @@ This document should help the developer, Codex, or any AI coding assistant under
 
 ## 2. Project Name
 
-**LitratoLink**
+**Potoos**
 
 ## 3. Tagline
 
@@ -32,7 +32,7 @@ This document should help the developer, Codex, or any AI coding assistant under
 
 ## 4. Product Summary
 
-LitratoLink is a private photo and video sharing app.
+Potoos is a private photo and video sharing app.
 
 It allows users to:
 
@@ -44,11 +44,11 @@ It allows users to:
 * Use Save All
 * Delete and restore their own uploaded files
 
-LitratoLink is designed to be simple.
+Potoos is designed to be simple.
 
 The app is not social media.
 
-LitratoLink has:
+Potoos has:
 
 * No public feed
 * No likes
@@ -63,7 +63,7 @@ The main idea is:
 
 ---
 
-## 5. Main Problem LitratoLink Solves
+## 5. Main Problem Potoos Solves
 
 Many people send photos and videos using chat apps.
 
@@ -76,13 +76,13 @@ The problem is:
 * Downloading from Google Drive can feel slow or manual.
 * Sharing with selected people can be confusing.
 
-LitratoLink solves this by giving users a simple private album system where original-quality files can be shared and saved easily.
+Potoos solves this by giving users a simple private album system where original-quality files can be shared and saved easily.
 
 ---
 
 ## 6. Main Product Promise
 
-The main promise of LitratoLink is:
+The main promise of Potoos is:
 
 **Share memories in original quality with selected people only.**
 
@@ -100,7 +100,7 @@ If a feature makes the app harder to use, less private, or lowers file quality, 
 
 ### Document Name
 
-**LitratoLink Master Product Plan v1.0**
+**Potoos Master Product Plan v1.0**
 
 ### Purpose
 
@@ -108,7 +108,7 @@ This is the main source-of-truth product document.
 
 It explains:
 
-* What LitratoLink is
+* What Potoos is
 * What problem it solves
 * Who it is for
 * What features are included in V1
@@ -131,7 +131,7 @@ If there is confusion about whether a feature belongs in V1, check the Master Pr
 
 ### Document Name
 
-**LitratoLink System Architecture Document v1.0**
+**Potoos System Architecture Document v1.0**
 
 ### Purpose
 
@@ -165,7 +165,7 @@ It helps explain how the app parts connect.
 
 ### Document Name
 
-**LitratoLink Database Design Document v1.0**
+**Potoos Database Design Document v1.0**
 
 ### Purpose
 
@@ -196,7 +196,7 @@ It helps define what data the app needs.
 
 ### Document Name
 
-**LitratoLink UI/UX Flow Document v1.0**
+**Potoos UI/UX Flow Document v1.0**
 
 ### Purpose
 
@@ -229,7 +229,7 @@ It helps make sure the app stays simple and easy to use.
 
 ### Document Name
 
-**LitratoLink Development Roadmap v1.0**
+**Potoos Development Roadmap v1.0**
 
 ### Purpose
 
@@ -261,7 +261,7 @@ It prevents building too many features too early.
 
 ### Document Name
 
-**LitratoLink Codex Development Instructions v1.0**
+**Potoos Codex Development Instructions v1.0**
 
 ### Purpose
 
@@ -292,7 +292,7 @@ This document should be included in the development prompt.
 
 ### Document Name
 
-**LitratoLink API and Edge Functions Specification v1.0**
+**Potoos API and Edge Functions Specification v1.0**
 
 ### Purpose
 
@@ -322,7 +322,7 @@ Use this when creating Supabase Edge Functions and backend logic.
 
 ### Document Name
 
-**LitratoLink Supabase SQL and RLS Planning Document v1.0**
+**Potoos Supabase SQL and RLS Planning Document v1.0**
 
 ### Purpose
 
@@ -352,7 +352,7 @@ It helps make sure the database is secure and organized.
 
 ### Document Name
 
-**LitratoLink App Store and TestFlight Preparation Document v1.0**
+**Potoos App Store and TestFlight Preparation Document v1.0**
 
 ### Purpose
 
@@ -382,7 +382,7 @@ Use this before TestFlight and App Store submission.
 
 ### Document Name
 
-**LitratoLink Privacy Policy and Terms Planning Document v1.0**
+**Potoos Privacy Policy and Terms Planning Document v1.0**
 
 ### Purpose
 
@@ -411,7 +411,7 @@ Use this before creating the final public Privacy Policy and Terms of Use.
 
 ### Document Name
 
-**LitratoLink MVP Checklist and Testing Plan v1.0**
+**Potoos MVP Checklist and Testing Plan v1.0**
 
 ### Purpose
 
@@ -445,7 +445,7 @@ Use this during testing and before TestFlight release.
 
 ## 18. Confirmed App Identity
 
-* App name: LitratoLink
+* App name: Potoos
 * Tagline: Share Memories in Original Quality
 * App type: Private cloud sharing app
 * Main color direction: Maroon-based palette
@@ -455,7 +455,7 @@ Use this during testing and before TestFlight release.
 
 ## 19. Confirmed Product Direction
 
-LitratoLink is:
+Potoos is:
 
 * Private
 * Album-based
@@ -463,7 +463,7 @@ LitratoLink is:
 * Original-quality focused
 * Simple and clean
 
-LitratoLink is not:
+Potoos is not:
 
 * Social media
 * Messaging app
@@ -546,7 +546,7 @@ Google Login only for V1
 
 ### Storage
 
-LitratoLink-managed Google Drive / Google One-backed storage for V1
+Potoos-managed Google Drive / Google One-backed storage for V1
 
 ### Notifications
 
@@ -631,7 +631,7 @@ Cannot:
 
 ## 24. Confirmed Delete and Restore Rule
 
-LitratoLink uses soft delete.
+Potoos uses soft delete.
 
 Rules:
 
@@ -650,7 +650,7 @@ Rules:
 
 For V1:
 
-* LitratoLink manages storage.
+* Potoos manages storage.
 * Users do not need their own Google One subscription.
 * Users do not need to connect their own Google Drive.
 * Users only use the app.
@@ -1005,18 +1005,18 @@ Prepare for future monetization and storage migration, but do not fully implemen
 
 Completed planning documents:
 
-1. LitratoLink Master Product Plan v1.0
-2. LitratoLink System Architecture Document v1.0
-3. LitratoLink Database Design Document v1.0
-4. LitratoLink UI/UX Flow Document v1.0
-5. LitratoLink Development Roadmap v1.0
-6. LitratoLink Codex Development Instructions v1.0
-7. LitratoLink API and Edge Functions Specification v1.0
-8. LitratoLink Supabase SQL and RLS Planning Document v1.0
-9. LitratoLink App Store and TestFlight Preparation Document v1.0
-10. LitratoLink Privacy Policy and Terms Planning Document v1.0
-11. LitratoLink MVP Checklist and Testing Plan v1.0
-12. LitratoLink Project Summary and Master Index v1.0
+1. Potoos Master Product Plan v1.0
+2. Potoos System Architecture Document v1.0
+3. Potoos Database Design Document v1.0
+4. Potoos UI/UX Flow Document v1.0
+5. Potoos Development Roadmap v1.0
+6. Potoos Codex Development Instructions v1.0
+7. Potoos API and Edge Functions Specification v1.0
+8. Potoos Supabase SQL and RLS Planning Document v1.0
+9. Potoos App Store and TestFlight Preparation Document v1.0
+10. Potoos Privacy Policy and Terms Planning Document v1.0
+11. Potoos MVP Checklist and Testing Plan v1.0
+12. Potoos Project Summary and Master Index v1.0
 
 ---
 
@@ -1024,7 +1024,7 @@ Completed planning documents:
 
 The next recommended document is:
 
-**LitratoLink Implementation Starter Pack v1.0**
+**Potoos Implementation Starter Pack v1.0**
 
 This document should prepare the project for actual coding.
 
@@ -1046,7 +1046,7 @@ It should include:
 
 ## 52. Final Summary
 
-LitratoLink is now clearly planned.
+Potoos is now clearly planned.
 
 The project has:
 

@@ -1,5 +1,5 @@
 -- =========================================================
--- LitratoLink Sprint 1 Core Migration
+-- Potoos Sprint 1 Core Migration
 -- Purpose: original-quality upload/download proof
 -- =========================================================
 

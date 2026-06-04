@@ -1,15 +1,15 @@
-# LitratoLink Development Roadmap v1.0
+# Potoos Development Roadmap v1.0
 
 ## 1. Document Purpose
 
-This document explains the development roadmap for LitratoLink.
+This document explains the development roadmap for Potoos.
 
 This document is based on:
 
-* LitratoLink Master Product Plan v1.0
-* LitratoLink System Architecture Document v1.0
-* LitratoLink Database Design Document v1.0
-* LitratoLink UI/UX Flow Document v1.0
+* Potoos Master Product Plan v1.0
+* Potoos System Architecture Document v1.0
+* Potoos Database Design Document v1.0
+* Potoos UI/UX Flow Document v1.0
 
 The goal of this document is to define:
 
@@ -26,13 +26,13 @@ The goal of this document is to define:
 
 ## 2. App Summary
 
-**App Name:** LitratoLink
+**App Name:** Potoos
 **Tagline:** Share Memories in Original Quality
 **Product Type:** Private cloud sharing app
 
-LitratoLink allows users to create private albums, invite selected people, upload original-quality photos and videos, and download files without losing quality.
+Potoos allows users to create private albums, invite selected people, upload original-quality photos and videos, and download files without losing quality.
 
-LitratoLink is not social media.
+Potoos is not social media.
 
 The app has:
 
@@ -50,7 +50,7 @@ The main goal is simple:
 
 ## 3. Development Strategy
 
-LitratoLink should not be built all at once.
+Potoos should not be built all at once.
 
 The app should be built in clear phases.
 
@@ -113,7 +113,7 @@ Set up:
 
 Prepare:
 
-* App name: LitratoLink
+* App name: Potoos
 * Tagline: Share Memories in Original Quality
 * Maroon-based color palette
 * Temporary app icon if final logo is not ready yet
@@ -225,7 +225,7 @@ A logged-in user can:
 3. See it in the album.
 4. Download the original file.
 
-This is the first working proof that LitratoLink is possible.
+This is the first working proof that Potoos is possible.
 
 ---
 
@@ -233,7 +233,7 @@ This is the first working proof that LitratoLink is possible.
 
 ## 6.5.1 Goal
 
-After the Sprint 1 proof works, deploy LitratoLink as a Flutter Web PWA so early testers can open the app through a browser link before TestFlight or App Store release.
+After the Sprint 1 proof works, deploy Potoos as a Flutter Web PWA so early testers can open the app through a browser link before TestFlight or App Store release.
 
 This phase is for fast feedback, not public launch.
 
@@ -276,7 +276,7 @@ During this phase:
 
 At the end of Phase 1.5:
 
-* Early testers can open LitratoLink through a browser link.
+* Early testers can open Potoos through a browser link.
 * Google login works on the hosted web URL.
 * Testers can create albums, upload originals, invite members, download originals, and test Save All.
 * Feedback can be collected before native TestFlight work begins.
@@ -491,7 +491,7 @@ Receivers can:
 * Select files and download them.
 * Tap Save All to download many original files.
 
-This phase makes LitratoLink clearly better than manual Google Drive downloading.
+This phase makes Potoos clearly better than manual Google Drive downloading.
 
 ---
 
@@ -650,7 +650,7 @@ Build or improve:
 
 Use:
 
-* LitratoLink name
+* Potoos name
 * Tagline: Share Memories in Original Quality
 * Maroon-based color palette
 * Warm and private feeling
@@ -776,7 +776,7 @@ Test:
 
 At the end of Phase 9:
 
-Selected iOS users can install and use LitratoLink through TestFlight.
+Selected iOS users can install and use Potoos through TestFlight.
 
 ---
 
@@ -823,7 +823,7 @@ The app should be ready for App Store preparation if feedback is good.
 
 ## 16.1 Goal
 
-Prepare LitratoLink for public App Store release.
+Prepare Potoos for public App Store release.
 
 ## 16.2 Required Items
 
@@ -846,7 +846,7 @@ Prepare:
 
 Simple description:
 
-**LitratoLink helps you create private albums and share original-quality photos and videos with selected people. No social feed. No likes. No comments. Just private memories in original quality.**
+**Potoos helps you create private albums and share original-quality photos and videos with selected people. No social feed. No likes. No comments. Just private memories in original quality.**
 
 ## 16.4 Privacy Policy Must Explain
 
@@ -865,7 +865,7 @@ Privacy policy should explain:
 
 At the end of Phase 11:
 
-LitratoLink is ready for App Store submission.
+Potoos is ready for App Store submission.
 
 ---
 
@@ -873,7 +873,7 @@ LitratoLink is ready for App Store submission.
 
 ## 17.1 Goal
 
-Release LitratoLink publicly or semi-publicly.
+Release Potoos publicly or semi-publicly.
 
 ## 17.2 Release Strategy
 
@@ -908,7 +908,7 @@ Monitor:
 
 At the end of Phase 12:
 
-LitratoLink is live and usable by real users.
+Potoos is live and usable by real users.
 
 ---
 
@@ -1311,7 +1311,7 @@ Test:
 
 # 21. Release Criteria
 
-LitratoLink should not be released to TestFlight until:
+Potoos should not be released to TestFlight until:
 
 * Google Login works.
 * Create album works.
@@ -1324,7 +1324,7 @@ LitratoLink should not be released to TestFlight until:
 * Main iOS permissions work.
 * App does not crash during normal use.
 
-LitratoLink should not be released to App Store until:
+Potoos should not be released to App Store until:
 
 * TestFlight feedback is good.
 * Main bugs are fixed.
@@ -1493,7 +1493,7 @@ Download in safe batches, show progress, and allow retry.
 
 Risk:
 
-LitratoLink-managed Google storage may become full.
+Potoos-managed Google storage may become full.
 
 Solution:
 
@@ -1597,6 +1597,6 @@ The project now has:
 
 The next recommended document is:
 
-**LitratoLink Codex Development Instructions v1.0**
+**Potoos Codex Development Instructions v1.0**
 
 This next document should explain how Codex or an AI coding assistant should build the project step by step, including rules, coding style, folder structure, and what not to change.

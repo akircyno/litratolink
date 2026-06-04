@@ -2,40 +2,38 @@
 
 Last updated: 2026-06-02
 
-This is the practical handoff for continuing LitratoLink development in Claude Code Pro.
+This is the practical handoff for continuing Potoos development in Claude Code Pro.
 
 ## Project Snapshot
 
-LitratoLink is a Flutter Web PWA for private, invite-only photo/video albums with original-quality upload and download.
+Potoos is a Flutter Web PWA for private, invite-only photo/video albums with original-quality upload and download.
 
 Current public beta URL:
 
 ```text
-https://akircyno.github.io/litratolink/
+https://akircyno.github.io/potoos/
 ```
 
-Current working app name: **LitratoLink**
-
-Planned future brand: **Potoos**
+Current app name: **Potoos**
 
 Mascot: **Poto**
 
 Tagline: **Original memories, safely shared.**
 
-Do **not** rename the app yet. The Potoos rename should happen later as one clean migration after PWA/Sprint 1 QA is stable.
+The Potoos rename is complete. Do not reintroduce predecessor naming, old URLs, or old package imports.
 
 ## Repo And App Paths
 
 Root repo:
 
 ```text
-C:\dev\LitratoLink
+C:\dev\Potoos
 ```
 
 Flutter app:
 
 ```text
-C:\dev\LitratoLink\app
+C:\dev\Potoos\app
 ```
 
 Important docs:
@@ -52,7 +50,7 @@ docs/potoos-brand/README.md
 UI source of truth:
 
 ```text
-docs/ui-reference/litratolink_mobile_ui.html
+docs/ui-reference/potoos_mobile_ui.html
 ```
 
 Do not redesign the UI unless explicitly requested. Match the HTML mockup's layout, navigation, colors, hierarchy, and flow.
@@ -106,7 +104,7 @@ Core components:
 Root git workflow:
 
 ```powershell
-cd C:\dev\LitratoLink
+cd C:\dev\Potoos
 git status --short
 git add <specific files only>
 git commit -m "<message>"
@@ -191,27 +189,27 @@ Symptom if this regresses: the hosted PWA shows
 asset 404s and `flutter_dotenv` loads nothing. Verify a deploy with:
 
 ```text
-https://akircyno.github.io/litratolink/assets/env.properties
+https://akircyno.github.io/potoos/assets/env.properties
 ```
 
 It must return HTTP 200 with a non-empty `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
 Do not reintroduce a dot-prefixed config asset for the hosted build, and keep
-this in mind during the future Potoos repo/URL migration.
+this in mind for any future URL or custom-domain migration.
 
 ## Manual Setup Still Needed
 
 Supabase Auth URL Configuration is confirmed applied (hosted Google login
-returns to Home). Kept here for reference and the future Potoos migration.
+returns to Home). Kept here for reference for any future URL changes.
 
 Supabase Auth URL Configuration:
 
 ```text
 Site URL:
-https://akircyno.github.io/litratolink/
+https://akircyno.github.io/potoos/
 
 Redirect URLs:
 http://localhost:8080/**
-https://akircyno.github.io/litratolink/**
+https://akircyno.github.io/potoos/**
 ```
 
 Google OAuth client should include:
@@ -226,11 +224,11 @@ Authorized redirect URIs:
 https://srquwfxaknsoiuvmlrxy.supabase.co/auth/v1/callback
 ```
 
-Do not rename GitHub repo, Supabase project, OAuth app, or storage email yet unless the user explicitly starts the Potoos migration.
+The GitHub repo, Supabase URL config, OAuth app name, and storage email are aligned to Potoos. Keep them in sync if the URL or custom domain changes.
 
 ## Live PWA QA Status (Sprint 1) — PASSED
 
-Live QA on `https://akircyno.github.io/litratolink/` is complete. All of the
+Live QA on `https://akircyno.github.io/potoos/` is complete. All of the
 following were verified on the hosted PWA on 2026-06-02:
 
 1. Hosted Google login returns to Home, not stuck on Login. ✓
@@ -254,7 +252,6 @@ decision and has not been started. Candidate directions:
 - Production upload hardening (resumable/chunked, replacing the base64 JSON
   path noted in `docs/SPRINT1_FINAL_REVIEW.md`).
 - Sprint 2 feature work.
-- Potoos rename migration — still deferred until explicitly started.
 
 ## Likely Next Code Work If QA Finds Issues
 
@@ -276,7 +273,7 @@ Avoid:
 
 ## Potoos Brand Planning
 
-Potoos planning docs exist, but they are not implementation instructions yet:
+Potoos brand planning docs exist for mascot, motion, and future creative work:
 
 ```text
 docs/potoos-brand/README.md
@@ -296,13 +293,12 @@ Tagline: Original memories, safely shared.
 Mascot role: Your memory guardian.
 ```
 
-Rename later in one migration:
+Future brand or URL changes should be handled in one verified pass:
 
-1. Finalize mascot reference and app icon.
-2. Update app display name, PWA manifest, browser title, and UI copy.
-3. Update GitHub Pages URL/base href only if repo is renamed.
-4. Update Supabase redirect URLs and Google OAuth origins after URL changes.
-5. Re-test OAuth, albums, upload, download, Save All, invites, and route refresh.
+1. Update app display name, PWA manifest, browser title, and UI copy.
+2. Update GitHub Pages URL/base href if the repo or domain changes.
+3. Update Supabase redirect URLs and Google OAuth origins after URL changes.
+4. Re-test OAuth, albums, upload, download, Save All, invites, and route refresh.
 
 ## How To Start A Claude Session
 
@@ -310,7 +306,7 @@ Suggested first prompt to Claude Code Pro:
 
 ```text
 Read docs/CLAUDE_CODE_HANDOFF.md and docs/CODEX_PROJECT_WORKFLOW.md first.
-Do not redesign the UI and do not start the Potoos rename yet.
+Do not redesign the UI and do not reintroduce predecessor naming.
 Continue from the live PWA beta QA step. If I report a failing test, inspect the Flutter app and fix only the relevant issue.
 Never commit secrets or unrelated local tool files.
 ```
@@ -320,7 +316,7 @@ Never commit secrets or unrelated local tool files.
 Run from Flutter app folder:
 
 ```powershell
-cd C:\dev\LitratoLink\app
+cd C:\dev\Potoos\app
 flutter test
 flutter analyze
 flutter build web --release
@@ -329,7 +325,7 @@ flutter build web --release
 Preview locally:
 
 ```powershell
-cd C:\dev\LitratoLink\app
+cd C:\dev\Potoos\app
 flutter build web --release
 py -m http.server 8080 --directory build\web
 ```

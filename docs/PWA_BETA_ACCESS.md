@@ -1,17 +1,17 @@
-# LitratoLink PWA Beta Access
+# Potoos PWA Beta Access
 
 Use this after Sprint 1 proof works and before TestFlight.
 
 ## Goal
 
-Deploy Flutter Web as a private beta link so trusted testers can use LitratoLink in a browser.
+Deploy Flutter Web as a private beta link so trusted testers can use Potoos in a browser.
 
 ## Local Preview
 
 From VS Code terminal:
 
 ```powershell
-cd C:\dev\LitratoLink\app
+cd C:\dev\Potoos\app
 flutter build web --release
 py -m http.server 8091 --directory build\web
 ```
@@ -41,21 +41,21 @@ Supabase Auth URL Configuration:
 
 ```text
 Site URL:
-https://akircyno.github.io/litratolink/
+https://akircyno.github.io/potoos/
 
 Redirect URLs:
 http://localhost:8080/**
-https://akircyno.github.io/litratolink/**
+https://akircyno.github.io/potoos/**
 ```
 
 The wildcard covers hash routes such as:
 
 ```text
-https://akircyno.github.io/litratolink/#/login
-https://akircyno.github.io/litratolink/#/home
+https://akircyno.github.io/potoos/#/login
+https://akircyno.github.io/potoos/#/home
 ```
 
-The Flutter app sends the current app root as `redirectTo` during web Google login. This keeps local login returning to `http://localhost:8080/` and hosted login returning to `https://akircyno.github.io/litratolink/` instead of relying only on the Supabase Site URL default.
+The Flutter app sends the current app root as `redirectTo` during web Google login. This keeps local login returning to `http://localhost:8080/` and hosted login returning to `https://akircyno.github.io/potoos/` instead of relying only on the Supabase Site URL default.
 
 Google OAuth client:
 
@@ -69,7 +69,7 @@ Authorized redirect URIs:
 https://srquwfxaknsoiuvmlrxy.supabase.co/auth/v1/callback
 ```
 
-If the GitHub repository is renamed later from `litratolink` to `potoos`, update the GitHub Pages URL, Flutter web base href, Supabase redirect URLs, and Google OAuth origins in the same rename pass.
+The GitHub repository and GitHub Pages base path are now `potoos`. If the URL changes again, update the Flutter web base href, Supabase redirect URLs, and Google OAuth origins in the same pass.
 
 ## GitHub Pages Beta Deploy
 
@@ -92,7 +92,7 @@ To use it:
 Expected beta URL:
 
 ```text
-https://akircyno.github.io/litratolink/
+https://akircyno.github.io/potoos/
 ```
 
 After the first successful deploy, add this URL to:

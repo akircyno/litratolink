@@ -1,12 +1,12 @@
-# LitratoLink Codex Project Workflow
+# Potoos Codex Project Workflow
 
 Use this file as the short working agreement for future Codex sessions so we do not repeat the same setup and workflow prompts.
 
 ## Source Of Truth
 
-- UI reference: `docs/ui-reference/litratolink_mobile_ui.html`
-- Product/backend direction: `docs/# LitratoLink Master Product Plan v.md`
-- Sprint execution order: `docs/# LitratoLink Sprint 1 Build Prompt.md`
+- UI reference: `docs/ui-reference/potoos_mobile_ui.html`
+- Product/backend direction: `docs/# Potoos Master Product Plan v.md`
+- Sprint execution order: `docs/# Potoos Sprint 1 Build Prompt.md`
 - Manual Sprint 1 QA checklist: `docs/SPRINT1_TEST_CHECKLIST.md`
 - Sprint 1 final review/status: `docs/SPRINT1_FINAL_REVIEW.md`
 - Sprint 1 rules review: `docs/SPRINT1_RULES_REVIEW.md`
@@ -48,18 +48,18 @@ Use this file as the short working agreement for future Codex sessions so we do 
   - `flutter test`
   - `flutter build web --release`
 - Start/restart local preview when needed:
-  - `cd C:\dev\LitratoLink\app`
+  - `cd C:\dev\Potoos\app`
   - `py -m http.server 8080 --directory build\web`
 - Local preview URL:
   - `http://localhost:8080`
 
 ## Git Workflow
 
-- Main repo path: `C:\dev\LitratoLink`
+- Main repo path: `C:\dev\Potoos`
 - `app/` is now tracked as a normal folder in the root repo.
-- Do not commit from `C:\dev\LitratoLink\app`.
+- Do not commit from `C:\dev\Potoos\app`.
 - Use only the root repo:
-  - `cd C:\dev\LitratoLink`
+  - `cd C:\dev\Potoos`
   - `git add ...`
   - `git commit -m "..."`
   - `git push origin main`
@@ -150,7 +150,7 @@ Use this file as the short working agreement for future Codex sessions so we do 
   - `flutter test`
   - `flutter build web --release`
 - Verified with an unregistered email:
-  - App shows `Ask this person to sign in to LitratoLink once before inviting them.`
+  - App shows `Ask this person to sign in to Potoos once before inviting them.`
 - Still useful to test with a second real registered account before expanding roles deeper.
 - Still useful to test removing and re-adding a second registered account from the Admin UI.
 - Save All is implemented for completed album files, but should be manually tested with more than one file.
@@ -162,7 +162,7 @@ Continue the Invite / Album Members feature QA:
 
 1. Admin opens Album Details.
 2. App shows member list.
-3. Admin enters an existing LitratoLink user email.
+3. Admin enters an existing Potoos user email.
 4. Admin chooses Admin, Contributor, or Viewer.
 5. Edge Function validates admin permission and adds/restores membership.
 6. App refreshes members and album counts.

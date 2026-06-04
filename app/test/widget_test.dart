@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:litratolink/app/app.dart';
-import 'package:litratolink/config/env.dart';
+import 'package:potoos/app/app.dart';
+import 'package:potoos/config/env.dart';
 
 void main() {
   testWidgets('shows the Potoos splash screen', (tester) async {

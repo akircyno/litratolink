@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:litratolink/core/errors/app_error.dart';
-import 'package:litratolink/features/albums/models/album.dart';
-import 'package:litratolink/features/downloads/screens/save_all_screen.dart';
-import 'package:litratolink/features/albums/models/album_member.dart';
-import 'package:litratolink/features/albums/models/media_file.dart';
-import 'package:litratolink/features/auth/data/auth_repository.dart';
-import 'package:litratolink/features/downloads/models/downloaded_file.dart';
+import 'package:potoos/core/errors/app_error.dart';
+import 'package:potoos/features/albums/models/album.dart';
+import 'package:potoos/features/downloads/screens/save_all_screen.dart';
+import 'package:potoos/features/albums/models/album_member.dart';
+import 'package:potoos/features/albums/models/media_file.dart';
+import 'package:potoos/features/auth/data/auth_repository.dart';
+import 'package:potoos/features/downloads/models/downloaded_file.dart';
 
 void main() {
   group('Album role helpers', () {
@@ -202,10 +202,10 @@ void main() {
   group('OAuth redirect helper', () {
     test('keeps GitHub Pages base path and removes hash route', () {
       final redirectTo = webOAuthRedirectTo(
-        Uri.parse('https://akircyno.github.io/litratolink/#/login'),
+        Uri.parse('https://akircyno.github.io/potoos/#/login'),
       );
 
-      expect(redirectTo, 'https://akircyno.github.io/litratolink/');
+      expect(redirectTo, 'https://akircyno.github.io/potoos/');
     });
 
     test('keeps localhost origin and removes transient error query', () {

@@ -1,4 +1,4 @@
-# LitratoLink Sprint 1 Test Checklist
+# Potoos Sprint 1 Test Checklist
 
 Use this checklist when manually verifying the Sprint 1 original-quality flow.
 
@@ -22,7 +22,7 @@ Use this checklist when manually verifying the Sprint 1 original-quality flow.
 - Open Album Details as an Admin.
 - Confirm the members list shows the current user as `ADMIN`.
 - Try inviting an email that has not signed in yet.
-- Confirm the app shows: `Ask this person to sign in to LitratoLink once before inviting them.`
+- Confirm the app shows: `Ask this person to sign in to Potoos once before inviting them.`
 - Sign in once with a second real account.
 - Invite that account as `Viewer`.
 - Confirm both accounts can see each member's name/email in the member list.

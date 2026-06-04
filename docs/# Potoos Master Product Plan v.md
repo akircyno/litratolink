@@ -1,19 +1,19 @@
-# LitratoLink Master Product Plan v1.0
+# Potoos Master Product Plan v1.0
 
 ## 1. Project Name
 
-**App Name:** LitratoLink
+**App Name:** Potoos
 **Tagline:** Share Memories in Original Quality
 
 ## 2. Executive Summary
 
-LitratoLink is a private photo and video sharing app.
+Potoos is a private photo and video sharing app.
 
-The main goal of LitratoLink is to help users share photos and videos with selected people without losing quality.
+The main goal of Potoos is to help users share photos and videos with selected people without losing quality.
 
 Many people use Messenger, Viber, WhatsApp, or other messaging apps to send photos. The problem is that these apps often compress photos and videos. The quality becomes lower. Google Drive can keep original quality, but it can feel hard to use because users need to open folders, find files, download one by one, and manage links.
 
-LitratoLink solves this problem by making the process simple:
+Potoos solves this problem by making the process simple:
 
 1. Create an album.
 2. Invite selected people.
@@ -21,7 +21,7 @@ LitratoLink solves this problem by making the process simple:
 4. Receiver opens the app.
 5. Receiver can download one by one or tap **Save All**.
 
-LitratoLink is not a social media app. It has no likes, no comments, no followers, and no public feed. It is a private cloud sharing app for memories.
+Potoos is not a social media app. It has no likes, no comments, no followers, and no public feed. It is a private cloud sharing app for memories.
 
 ---
 
@@ -76,26 +76,26 @@ Problems:
 
 ## 4. Vision Statement
 
-LitratoLink aims to become the simplest way to share original-quality photos and videos with the people who matter most.
+Potoos aims to become the simplest way to share original-quality photos and videos with the people who matter most.
 
 ---
 
 ## 5. Mission Statement
 
-LitratoLink helps users share memories easily, privately, and in original quality.
+Potoos helps users share memories easily, privately, and in original quality.
 
 ---
 
 ## 6. Product Identity
 
-LitratoLink is:
+Potoos is:
 
 * A private cloud sharing app.
 * An original-quality photo and video sharing app.
 * An album-based sharing app.
 * An invite-only memory sharing platform.
 
-LitratoLink is not:
+Potoos is not:
 
 * A social media app.
 * A public photo feed.
@@ -169,7 +169,7 @@ Event teams can distribute original files to clients or members.
 
 ## 8. Core Value Proposition
 
-LitratoLink gives users:
+Potoos gives users:
 
 1. Original-quality uploads.
 2. Original-quality downloads.
@@ -208,7 +208,7 @@ The app should feel private, simple, and safe.
 
 ## 10. V1 Main Goal
 
-The V1 goal is to build the simplest working version of LitratoLink.
+The V1 goal is to build the simplest working version of Potoos.
 
 V1 should allow users to:
 
@@ -244,7 +244,7 @@ Future login options will be listed under Future Enhancements.
 
 ### 11.2 Album-Based Structure
 
-LitratoLink will be based on albums.
+Potoos will be based on albums.
 
 Users do not upload to one giant storage area. Users upload inside albums.
 
@@ -428,7 +428,7 @@ The downloaded file must not use the thumbnail or preview file.
 
 ## 15. Save All Feature
 
-The **Save All** feature is one of the most important features of LitratoLink.
+The **Save All** feature is one of the most important features of Potoos.
 
 Purpose:
 
@@ -452,14 +452,14 @@ V1 must prioritize simple and reliable downloading.
 
 ## 16. Storage Plan for V1
 
-V1 will use a LitratoLink-managed Google Drive / Google One-backed storage setup.
+V1 will use a Potoos-managed Google Drive / Google One-backed storage setup.
 
 This means:
 
 * Users do not need to connect their own Google Drive.
 * Users do not need their own Google One subscription.
 * Users do not need to manage storage folders.
-* Users only use the LitratoLink app.
+* Users only use the Potoos app.
 
 Reason:
 
@@ -473,7 +473,7 @@ Problems with user-owned storage:
 * Uploads may fail because of storage limits.
 * It removes the simple “upload and done” experience.
 
-For V1, LitratoLink should manage the storage layer.
+For V1, Potoos should manage the storage layer.
 
 Future storage upgrade options can be added later.
 
@@ -519,7 +519,7 @@ Real limits will depend on:
 
 ## 18. Soft Delete Policy
 
-LitratoLink will use soft delete.
+Potoos will use soft delete.
 
 This means deleted files are not permanently deleted immediately.
 
@@ -581,7 +581,7 @@ Recommended V1 approach:
 
 ## 20. Push Notifications
 
-LitratoLink should support push notifications.
+Potoos should support push notifications.
 
 Example notifications:
 
@@ -611,7 +611,7 @@ Better notification:
 
 ## 21. Privacy Rules
 
-Privacy is one of the most important parts of LitratoLink.
+Privacy is one of the most important parts of Potoos.
 
 Rules:
 
@@ -647,7 +647,7 @@ Basic security rules:
 
 ## 23. Platform Support
 
-LitratoLink should support:
+Potoos should support:
 
 ### V1 Priority
 
@@ -694,7 +694,7 @@ Permission messages should be simple and clear.
 
 Example:
 
-“LitratoLink needs photo access so you can upload and save original-quality memories.”
+“Potoos needs photo access so you can upload and save original-quality memories.”
 
 ---
 
@@ -702,7 +702,7 @@ Example:
 
 ### App Name
 
-LitratoLink
+Potoos
 
 ### Tagline
 
@@ -936,7 +936,7 @@ Example:
 
 ### 29.5 White Label
 
-Businesses can use LitratoLink under their own brand.
+Businesses can use Potoos under their own brand.
 
 Example:
 
@@ -1096,7 +1096,7 @@ Release when stable.
 
 ## 33. Success Metrics
 
-LitratoLink is successful if:
+Potoos is successful if:
 
 1. Users can upload original quality photos and videos.
 2. Receivers can download original files easily.
@@ -1113,7 +1113,7 @@ LitratoLink is successful if:
 
 ## 34. Main Product Rule
 
-LitratoLink must always protect the main promise:
+Potoos must always protect the main promise:
 
 **Share memories in original quality with selected people only.**
 
@@ -1134,7 +1134,7 @@ then it should not be added to V1.
 
 Confirmed V1 decisions:
 
-* App name: LitratoLink
+* App name: Potoos
 * Tagline: Share Memories in Original Quality
 * Product type: Private cloud sharing app
 * No social feed
@@ -1149,7 +1149,7 @@ Confirmed V1 decisions:
 * Photos and videos supported
 * Original quality only
 * No app-level file size limit
-* LitratoLink-managed Google One-backed storage for V1
+* Potoos-managed Google One-backed storage for V1
 * Supabase backend
 * Flutter frontend
 * Push notifications supported
@@ -1168,7 +1168,7 @@ The product vision is clear.
 
 The next recommended document is:
 
-**LitratoLink System Architecture Document v1.0**
+**Potoos System Architecture Document v1.0**
 
 After that:
 

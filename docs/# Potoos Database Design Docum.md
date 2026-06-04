@@ -1,13 +1,13 @@
-# LitratoLink Database Design Document v1.0
+# Potoos Database Design Document v1.0
 
 ## 1. Document Purpose
 
-This document explains the database design for LitratoLink.
+This document explains the database design for Potoos.
 
 This document is based on:
 
-* LitratoLink Master Product Plan v1.0
-* LitratoLink System Architecture Document v1.0
+* Potoos Master Product Plan v1.0
+* Potoos System Architecture Document v1.0
 
 The goal of this document is to define:
 
@@ -30,7 +30,7 @@ This is not final SQL code yet. This is the database planning document before ac
 
 ## 2. Database System
 
-LitratoLink will use:
+Potoos will use:
 
 **Supabase Postgres**
 
@@ -54,7 +54,7 @@ The database will only store file information and storage references.
 
 Original files will be stored in:
 
-**LitratoLink-managed Google Drive / Google One-backed storage**
+**Potoos-managed Google Drive / Google One-backed storage**
 
 ---
 
@@ -546,7 +546,7 @@ They must never replace the original file.
 
 ## 12.1 Purpose
 
-This table stores the storage providers used by LitratoLink.
+This table stores the storage providers used by Potoos.
 
 V1 will use Google Drive-backed storage.
 
@@ -1667,7 +1667,7 @@ If a user is not an active member of an album, they must not be able to see, upl
 
 The next recommended document is:
 
-**LitratoLink UI/UX Flow Document v1.0**
+**Potoos UI/UX Flow Document v1.0**
 
 This document should define:
 

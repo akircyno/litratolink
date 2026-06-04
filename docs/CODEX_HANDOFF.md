@@ -42,7 +42,7 @@ Potoos is a **private, invite-only photo and video sharing app** built with Flut
 ## 3. Repository Structure
 
 ```
-c:/dev/LitratoLink/
+c:/dev/Potoos/
 ├── app/                          ← Flutter app
 │   ├── lib/
 │   │   ├── app/                  ← theme, routes, app.dart, main.dart
@@ -127,7 +127,7 @@ Same keys as above, set in repo Settings → Secrets → Actions.
 ## 5. Running the App Locally
 
 ```bash
-cd c:/dev/LitratoLink/app
+cd c:/dev/Potoos/app
 
 # Install deps
 flutter pub get
@@ -142,7 +142,7 @@ flutter run -d chrome --web-port 5000
 
 ### Deploying Edge Functions
 ```bash
-cd c:/dev/LitratoLink
+cd c:/dev/Potoos
 npx supabase functions deploy <function-name>
 # Example: npx supabase functions deploy invite-album-member
 ```
@@ -405,7 +405,7 @@ The deployed URL is: `https://akircyno.github.io/potoos/`
 ## 15. Conversation Context
 
 This project was built over multiple sessions with Claude Sonnet 4.6. The previous sessions covered:
-- Full infrastructure rename (LitratoLink → Potoos)
+- Full infrastructure rename to Potoos
 - Complete UI/UX redesign from scratch
 - Design system implementation
 - All screen redesigns

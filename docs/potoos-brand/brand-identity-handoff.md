@@ -10,7 +10,7 @@ Tagline: **Original memories, safely shared.**
 
 Mascot role: **Your memory guardian.**
 
-Current implementation name: **LitratoLink**
+Current implementation name: **Potoos**
 
 Future implementation name: **Potoos**
 
@@ -186,7 +186,7 @@ Avoid using Poto on every screen. Too much mascot presence will make the app fee
 
 When implementation starts, Claude should treat this folder as the brand handoff and follow this order:
 
-1. Rename visible app copy from LitratoLink to Potoos.
+1. Rename visible app copy from Potoos to Potoos.
 2. Update app icon, PWA manifest, browser title, and splash metadata.
 3. Update Flutter theme color tokens to the approved Potoos palette.
 4. Keep layouts and user flows from the current Sprint 1 UI unless the user explicitly asks for redesign.
@@ -200,7 +200,7 @@ Do not rename everything immediately. Rename in this order later:
 1. Finalize mascot reference.
 2. Finalize app icon and logo.
 3. Update app display name and PWA metadata.
-4. Update UI text from LitratoLink to Potoos.
+4. Update UI text from Potoos to Potoos.
 5. Update docs.
 6. Update Supabase/Google/GitHub URLs only if project URLs change.
 7. Test OAuth redirect after every hosted-domain change.

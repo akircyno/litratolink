@@ -1,23 +1,23 @@
-# LitratoLink MVP Checklist and Testing Plan v1.0
+# Potoos MVP Checklist and Testing Plan v1.0
 
 ## 1. Document Purpose
 
-This document explains how to check and test the LitratoLink MVP before TestFlight and App Store release.
+This document explains how to check and test the Potoos MVP before TestFlight and App Store release.
 
 This document is based on:
 
-* LitratoLink Master Product Plan v1.0
-* LitratoLink System Architecture Document v1.0
-* LitratoLink Database Design Document v1.0
-* LitratoLink UI/UX Flow Document v1.0
-* LitratoLink Development Roadmap v1.0
-* LitratoLink Codex Development Instructions v1.0
-* LitratoLink API and Edge Functions Specification v1.0
-* LitratoLink Supabase SQL and RLS Planning Document v1.0
-* LitratoLink App Store and TestFlight Preparation Document v1.0
-* LitratoLink Privacy Policy and Terms Planning Document v1.0
+* Potoos Master Product Plan v1.0
+* Potoos System Architecture Document v1.0
+* Potoos Database Design Document v1.0
+* Potoos UI/UX Flow Document v1.0
+* Potoos Development Roadmap v1.0
+* Potoos Codex Development Instructions v1.0
+* Potoos API and Edge Functions Specification v1.0
+* Potoos Supabase SQL and RLS Planning Document v1.0
+* Potoos App Store and TestFlight Preparation Document v1.0
+* Potoos Privacy Policy and Terms Planning Document v1.0
 
-The goal of this document is to make sure LitratoLink works correctly before real users use it.
+The goal of this document is to make sure Potoos works correctly before real users use it.
 
 This document includes:
 
@@ -38,7 +38,7 @@ This document includes:
 
 ## 2. MVP Definition
 
-The MVP means the first usable version of LitratoLink.
+The MVP means the first usable version of Potoos.
 
 The MVP must prove that the app can do the main promise:
 
@@ -924,7 +924,7 @@ Backend blocks unauthorized actions.
 
 ## 38. Before TestFlight Checklist
 
-LitratoLink is ready for TestFlight only if:
+Potoos is ready for TestFlight only if:
 
 * App builds on iOS.
 * App opens on iPhone.
@@ -955,8 +955,8 @@ App can be used by girlfriend, friends, and family for real testing.
 Give testers simple instructions:
 
 1. Install TestFlight.
-2. Open the LitratoLink invite.
-3. Install LitratoLink.
+2. Open the Potoos invite.
+3. Install Potoos.
 4. Log in with Google.
 5. Accept album invite or create album.
 6. Upload photos or videos.
@@ -1119,7 +1119,7 @@ The MVP is ready when:
 
 ## 44. App Store Ready Checklist
 
-LitratoLink is App Store ready when:
+Potoos is App Store ready when:
 
 * TestFlight feedback is good.
 * Main bugs are fixed.
@@ -1196,7 +1196,7 @@ Main things to verify:
 
 The next recommended document is:
 
-**LitratoLink Project Summary and Master Index v1.0**
+**Potoos Project Summary and Master Index v1.0**
 
 This document should summarize all created documents and explain what each document is for.
 

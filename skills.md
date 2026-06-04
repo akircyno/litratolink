@@ -1,6 +1,6 @@
 # skills.md
 
-Skills available when working on LitratoLink. Skills are reusable agent
+Skills available when working on Potoos. Skills are reusable agent
 capabilities; project skills live in `.agents/skills/` (this repo) and global
 skills live in `~/.claude/skills` (all projects on this machine).
 
@@ -28,7 +28,7 @@ review before heavy use.
 | `ckm-ui-styling` | UI styling |
 
 > Reminder: the UI source of truth is
-> `docs/ui-reference/litratolink_mobile_ui.html`. Do not redesign the UI unless
+> `docs/ui-reference/potoos_mobile_ui.html`. Do not redesign the UI unless
 > explicitly asked — use design skills for analysis/critique, not unrequested
 > redesigns.
 

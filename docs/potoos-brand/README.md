@@ -1,8 +1,8 @@
 # Potoos Brand Planning Folder
 
-This folder is the planning and handoff package for the Potoos rename and Poto mascot direction.
+This folder is the planning and handoff package for the Potoos brand and Poto mascot direction.
 
-Status: **planning only**. No app rename, asset swap, OAuth change, Supabase rename, or UI redesign should happen until the mascot reference and brand direction are approved.
+Status: **brand reference and future asset planning**. The app rename is complete; use this folder for mascot, motion, and future creative work.
 
 ## Final Direction
 
@@ -32,7 +32,7 @@ Mascot role: **Your memory guardian.**
 Use this folder for:
 
 - ChatGPT mascot reference prompts
-- Claude implementation handoff later
+- implementation handoff notes
 - short video production planning
 - CapCut editing workflow
 - future sprite sheet planning
@@ -41,4 +41,4 @@ When the final Poto image is ready, add it to a future assets folder and update 
 
 ## Important Rule
 
-Do not rename the app in code yet. Finish mascot references and brand direction first, then do the rename in one clean implementation pass.
+Do not rebrand away from Potoos or redesign the UI without explicit direction. Keep future mascot and motion work aligned with the current Potoos app.

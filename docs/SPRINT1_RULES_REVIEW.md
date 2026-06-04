@@ -1,4 +1,4 @@
-# LitratoLink Sprint 1 Rules Review
+# Potoos Sprint 1 Rules Review
 
 Last updated: 2026-06-01
 

@@ -1,21 +1,21 @@
-# LitratoLink First Sprint Task List v1.0
+# Potoos First Sprint Task List v1.0
 
 ## 1. Document Purpose
 
-This document explains the first sprint tasks for LitratoLink.
+This document explains the first sprint tasks for Potoos.
 
 This document is based on:
 
-* LitratoLink Master Product Plan v1.0
-* LitratoLink System Architecture Document v1.0
-* LitratoLink Database Design Document v1.0
-* LitratoLink UI/UX Flow Document v1.0
-* LitratoLink Development Roadmap v1.0
-* LitratoLink Codex Development Instructions v1.0
-* LitratoLink API and Edge Functions Specification v1.0
-* LitratoLink Supabase SQL and RLS Planning Document v1.0
-* LitratoLink Implementation Starter Pack v1.0
-* LitratoLink Google Drive API Proof Plan v1.0
+* Potoos Master Product Plan v1.0
+* Potoos System Architecture Document v1.0
+* Potoos Database Design Document v1.0
+* Potoos UI/UX Flow Document v1.0
+* Potoos Development Roadmap v1.0
+* Potoos Codex Development Instructions v1.0
+* Potoos API and Edge Functions Specification v1.0
+* Potoos Supabase SQL and RLS Planning Document v1.0
+* Potoos Implementation Starter Pack v1.0
+* Potoos Google Drive API Proof Plan v1.0
 
 The goal of this sprint is to start development in the correct order.
 
@@ -31,7 +31,7 @@ This sprint should focus only on the first proof of concept.
 
 ## 3. Sprint Goal
 
-The goal of Sprint 1 is to prove that LitratoLink can:
+The goal of Sprint 1 is to prove that Potoos can:
 
 1. Log in with Google.
 2. Create a private album.
@@ -101,14 +101,14 @@ Create the main project folder.
 
 ### Folder Name
 
-`litratolink`
+`potoos`
 
 ### Folder Structure
 
 Create:
 
 ```text
-litratolink/
+potoos/
   app/
   supabase/
   docs/
@@ -133,7 +133,7 @@ Set up version control.
 ### Steps
 
 1. Create GitHub repository.
-2. Name it `litratolink`.
+2. Name it `potoos`.
 3. Initialize Git locally.
 4. Add `.gitignore`.
 5. Commit the first project structure.
@@ -142,7 +142,7 @@ Set up version control.
 ### First Commit Message
 
 ```text
-Initial project setup for LitratoLink
+Initial project setup for Potoos
 ```
 
 ### Done When
@@ -293,7 +293,7 @@ Do not put all logic inside `main.dart`.
 
 ### Goal
 
-Add a simple LitratoLink theme.
+Add a simple Potoos theme.
 
 ### Temporary Theme Direction
 
@@ -392,7 +392,7 @@ Create the development Supabase project.
 
 ### Project Name
 
-`litratolink-dev`
+`potoos-dev`
 
 ### Done When
 
@@ -547,11 +547,11 @@ For Sprint 1:
 
 ### Goal
 
-Create Google Cloud project for LitratoLink.
+Create Google Cloud project for Potoos.
 
 ### Project Name
 
-`LitratoLink`
+`Potoos`
 
 ### Done When
 
@@ -608,12 +608,12 @@ Do not place these in Flutter.
 
 ### Goal
 
-Create root folder for LitratoLink storage.
+Create root folder for Potoos storage.
 
 ### Folder Name
 
 ```text
-LitratoLink Storage
+Potoos Storage
 ```
 
 ### Inside It
@@ -851,7 +851,7 @@ Allow user to log in with Google.
 
 Show:
 
-* LitratoLink name
+* Potoos name
 * Tagline
 * Continue with Google button
 
@@ -1267,9 +1267,9 @@ Review storage plan.
 Use this prompt when starting Sprint 1 with Codex:
 
 ```text
-You are helping me build LitratoLink.
+You are helping me build Potoos.
 
-LitratoLink is a private photo and video sharing app.
+Potoos is a private photo and video sharing app.
 
 Main rule:
 The app must upload, store, and download original-quality files. Do not compress, resize, convert, or replace original files. Thumbnails are allowed only later and must be separate.
@@ -1329,7 +1329,7 @@ Important rules:
 
 ## 52. Final Sprint 1 Summary
 
-Sprint 1 should prove the core idea of LitratoLink.
+Sprint 1 should prove the core idea of Potoos.
 
 The core idea is not albums, not invites, not notifications, and not UI polish.
 
@@ -1347,7 +1347,7 @@ If the answer is no, fix the storage and quality system before building anything
 
 The next recommended document is:
 
-**LitratoLink Actual SQL Migration Draft v1.0**
+**Potoos Actual SQL Migration Draft v1.0**
 
 This document should create the first real Supabase SQL migration for Sprint 1.
 

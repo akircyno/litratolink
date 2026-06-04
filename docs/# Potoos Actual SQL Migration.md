@@ -1,8 +1,8 @@
-# LitratoLink Actual SQL Migration Draft v1.0
+# Potoos Actual SQL Migration Draft v1.0
 
 ## 1. Document Purpose
 
-This document contains the first actual SQL migration draft for LitratoLink Sprint 1.
+This document contains the first actual SQL migration draft for Potoos Sprint 1.
 
 This SQL is for the first proof of concept only.
 
@@ -29,7 +29,7 @@ Use this first in a development Supabase project.
 
 Recommended project:
 
-`litratolink-dev`
+`potoos-dev`
 
 Do not run this directly in production without testing.
 
@@ -66,7 +66,7 @@ Those will be added later.
 
 ```sql
 -- =========================================================
--- LitratoLink Sprint 1 SQL Migration Draft v1.0
+-- Potoos Sprint 1 SQL Migration Draft v1.0
 -- Purpose:
 -- Core Original Quality Proof
 -- =========================================================
@@ -848,7 +848,7 @@ The database setup is done when:
 
 The next recommended document is:
 
-**LitratoLink Edge Functions Implementation Plan v1.0**
+**Potoos Edge Functions Implementation Plan v1.0**
 
 This document should define the exact implementation plan for Sprint 1 Edge Functions:
 

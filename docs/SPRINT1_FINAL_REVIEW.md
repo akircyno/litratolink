@@ -1,4 +1,4 @@
-# LitratoLink Sprint 1 Final Review
+# Potoos Sprint 1 Final Review
 
 Last updated: 2026-06-02
 
@@ -27,7 +27,7 @@ Sprint 1 now supports the core private original-quality flow:
 - Save All bundles originals into one ZIP for browser downloads and keeps the batch screen stable while active.
 - Invites tab uses real album data and links Admins to member management.
 - Profile tab uses the signed-in account and real album totals instead of placeholder content.
-- Admins can invite existing LitratoLink users by email and role.
+- Admins can invite existing Potoos users by email and role.
 - Admins can update an existing member's role from the same invite form.
 - Admins can update another member's role from the member row menu.
 - Admins can remove another member from the member row menu after confirmation.

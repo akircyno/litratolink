@@ -1,14 +1,14 @@
-# LitratoLink UI/UX Flow Document v1.0
+# Potoos UI/UX Flow Document v1.0
 
 ## 1. Document Purpose
 
-This document explains the user interface and user experience flow for LitratoLink.
+This document explains the user interface and user experience flow for Potoos.
 
 This document is based on:
 
-* LitratoLink Master Product Plan v1.0
-* LitratoLink System Architecture Document v1.0
-* LitratoLink Database Design Document v1.0
+* Potoos Master Product Plan v1.0
+* Potoos System Architecture Document v1.0
+* Potoos Database Design Document v1.0
 
 The goal of this document is to define:
 
@@ -31,7 +31,7 @@ This document should guide the app design and development.
 
 ## 2. Product UI Goal
 
-LitratoLink should feel:
+Potoos should feel:
 
 * Simple
 * Private
@@ -79,7 +79,7 @@ Receiver:
 
 ## 4. App Personality
 
-LitratoLink should not feel cold like a file storage app.
+Potoos should not feel cold like a file storage app.
 
 It should feel like a private memory-sharing app.
 
@@ -99,7 +99,7 @@ Recommended style:
 
 ### App Name
 
-LitratoLink
+Potoos
 
 ### Tagline
 
@@ -173,13 +173,13 @@ The Splash Screen appears when the app opens.
 
 Show:
 
-* LitratoLink logo
+* Potoos logo
 * App name
 * Tagline
 
 Text:
 
-**LitratoLink**
+**Potoos**
 Share Memories in Original Quality
 
 ## 8.3 Behavior
@@ -688,7 +688,7 @@ If internet error:
 
 ## 17.1 Purpose
 
-Save All is a core feature of LitratoLink.
+Save All is a core feature of Potoos.
 
 It allows users to download many original files without downloading one by one.
 
@@ -1173,7 +1173,7 @@ When user taps Logout:
 
 Dialog:
 
-**Log out of LitratoLink?**
+**Log out of Potoos?**
 
 Buttons:
 
@@ -1216,19 +1216,19 @@ Future settings:
 
 Message:
 
-**LitratoLink needs photo access so you can upload original-quality photos and videos.**
+**Potoos needs photo access so you can upload original-quality photos and videos.**
 
 ## 28.2 Save to Photos Permission
 
 Message:
 
-**LitratoLink needs permission to save original-quality files to your Photos.**
+**Potoos needs permission to save original-quality files to your Photos.**
 
 ## 28.3 File Access Permission
 
 Message:
 
-**LitratoLink needs file access so you can choose and save files.**
+**Potoos needs file access so you can choose and save files.**
 
 ## 28.4 Notification Permission
 
@@ -1697,7 +1697,7 @@ Restore within 30 days
 
 Confirmed UI/UX decisions:
 
-* App name is LitratoLink.
+* App name is Potoos.
 * Tagline is Share Memories in Original Quality.
 * Design should be maroon-based.
 * App should feel private, warm, and simple.
@@ -1728,7 +1728,7 @@ Confirmed UI/UX decisions:
 
 The next recommended document is:
 
-**LitratoLink Development Roadmap v1.0**
+**Potoos Development Roadmap v1.0**
 
 This document should define:
 

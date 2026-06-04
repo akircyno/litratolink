@@ -1,4 +1,4 @@
-# LitratoLink Reviewer Brief
+# Potoos Reviewer Brief
 
 Last updated: 2026-06-01
 
@@ -6,21 +6,21 @@ This file is the short answer sheet for reviewers, classmates, testers, or anyon
 
 ## One-Sentence Answer
 
-LitratoLink is a private, invite-only photo and video sharing app that lets people upload, share, and download memories in original quality.
+Potoos is a private, invite-only photo and video sharing app that lets people upload, share, and download memories in original quality.
 
-## Future Brand Note
+## Brand Note
 
-The planned international brand is **Potoos**, with mascot **Poto** and tagline:
+The product brand is **Potoos**, with mascot **Poto** and tagline:
 
 ```text
 Original memories, safely shared.
 ```
 
-The current working app and codebase still use **LitratoLink** until the rename is done in one clean migration.
+The app and codebase now use the Potoos name.
 
 ## Problem It Solves
 
-Many messaging and social apps compress photos and videos. LitratoLink is designed for moments where original quality matters, such as family albums, events, school projects, client shoots, and shared memories that should not be reduced by compression.
+Many messaging and social apps compress photos and videos. Potoos is designed for moments where original quality matters, such as family albums, events, school projects, client shoots, and shared memories that should not be reduced by compression.
 
 ## What Makes It Different
 
@@ -86,7 +86,7 @@ Many messaging and social apps compress photos and videos. LitratoLink is design
 ## Current Beta Link
 
 ```text
-https://akircyno.github.io/litratolink/
+https://akircyno.github.io/potoos/
 ```
 
 ## Current Testing Status
@@ -114,7 +114,7 @@ Still important to test:
 
 ## Safe Short Pitch
 
-LitratoLink is for sharing private albums without losing the real file quality. Instead of posting memories publicly or sending compressed copies through chat apps, users create an invite-only album where trusted people can upload, view, and download the originals.
+Potoos is for sharing private albums without losing the real file quality. Instead of posting memories publicly or sending compressed copies through chat apps, users create an invite-only album where trusted people can upload, view, and download the originals.
 
 ## What Not To Claim Yet
 
@@ -126,4 +126,3 @@ Do not claim these until they are implemented and verified:
 - video upload production readiness
 - unlimited large-file support
 - payment or subscription support
-- full Potoos rebrand in the live app

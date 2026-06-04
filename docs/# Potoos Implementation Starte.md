@@ -1,10 +1,10 @@
-# LitratoLink Implementation Starter Pack v1.0
+# Potoos Implementation Starter Pack v1.0
 
 ## 1. Document Purpose
 
-This document prepares LitratoLink for actual development.
+This document prepares Potoos for actual development.
 
-This document is based on all previous LitratoLink planning documents.
+This document is based on all previous Potoos planning documents.
 
 The goal of this document is to help start coding the project in the correct order.
 
@@ -30,11 +30,11 @@ This document includes:
 
 ## 2. Project Summary
 
-**App Name:** LitratoLink
+**App Name:** Potoos
 **Tagline:** Share Memories in Original Quality
 **App Type:** Private cloud sharing app
 
-LitratoLink allows users to:
+Potoos allows users to:
 
 * Log in with Google
 * Create private albums
@@ -44,7 +44,7 @@ LitratoLink allows users to:
 * Use Save All
 * Delete and restore their own uploaded files
 
-LitratoLink is not social media.
+Potoos is not social media.
 
 V1 must not include:
 
@@ -218,12 +218,12 @@ Optional but useful for Google Cloud setup.
 
 Recommended folder name:
 
-`litratolink`
+`potoos`
 
 Recommended structure:
 
 ```text
-litratolink/
+potoos/
   app/
   supabase/
   docs/
@@ -246,14 +246,14 @@ Explanation:
 Steps:
 
 1. Create GitHub repository.
-2. Name it `litratolink`.
+2. Name it `potoos`.
 3. Initialize Git locally.
 4. Add `.gitignore`.
 5. Push initial commit.
 
 Recommended first commit message:
 
-`Initial project setup for LitratoLink`
+`Initial project setup for Potoos`
 
 ---
 
@@ -594,11 +594,11 @@ Create one Supabase project first for development.
 
 Recommended project name:
 
-`litratolink-dev`
+`potoos-dev`
 
 Later create:
 
-`litratolink-prod`
+`potoos-prod`
 
 Do not mix development and production data.
 
@@ -620,7 +620,7 @@ Do not enable Apple Login or Email Login in V1 unless decided later.
 
 Create tables based on:
 
-**LitratoLink Supabase SQL and RLS Planning Document v1.0**
+**Potoos Supabase SQL and RLS Planning Document v1.0**
 
 Main tables:
 
@@ -717,7 +717,7 @@ Create Google Cloud project.
 
 Recommended name:
 
-`LitratoLink`
+`Potoos`
 
 Needed for:
 
@@ -763,7 +763,7 @@ Important:
 
 The app users should not need to connect their own Drive.
 
-LitratoLink-managed storage handles files behind the scenes.
+Potoos-managed storage handles files behind the scenes.
 
 ---
 
@@ -772,7 +772,7 @@ LitratoLink-managed storage handles files behind the scenes.
 Recommended structure inside managed storage:
 
 ```text
-LitratoLink Storage/
+Potoos Storage/
   development/
     albums/
       album_id/
@@ -902,7 +902,7 @@ To build for iOS, you need:
 Recommended bundle ID:
 
 ```text
-com.litratolink.app
+com.potoos.app
 ```
 
 ---
@@ -914,13 +914,13 @@ Prepare permission text for:
 ### Photo Access
 
 ```text
-LitratoLink needs photo access so you can upload original-quality photos and videos.
+Potoos needs photo access so you can upload original-quality photos and videos.
 ```
 
 ### Save to Photos
 
 ```text
-LitratoLink needs permission to save original-quality files to your Photos.
+Potoos needs permission to save original-quality files to your Photos.
 ```
 
 ### Notifications
@@ -961,7 +961,7 @@ Important iOS tests:
 Recommended package name:
 
 ```text
-com.litratolink.app
+com.potoos.app
 ```
 
 ---
@@ -1000,7 +1000,7 @@ Test:
 
 The first proof of concept must prove the most important technical question:
 
-**Can LitratoLink upload and download original-quality files using the planned stack?**
+**Can Potoos upload and download original-quality files using the planned stack?**
 
 ---
 
@@ -1074,9 +1074,9 @@ If these do not match, check:
 Use this prompt when starting development with Codex:
 
 ```text
-You are helping me build LitratoLink, a private photo and video sharing app.
+You are helping me build Potoos, a private photo and video sharing app.
 
-App name: LitratoLink
+App name: Potoos
 Tagline: Share Memories in Original Quality
 
 Main rule:
@@ -1287,14 +1287,14 @@ This makes future migration easier.
 
 After this starter pack, the next useful documents are:
 
-1. **LitratoLink Actual SQL Migration v1.0**
-2. **LitratoLink Flutter Project Structure Guide v1.0**
-3. **LitratoLink Google Drive API Proof Plan v1.0**
-4. **LitratoLink First Sprint Task List v1.0**
+1. **Potoos Actual SQL Migration v1.0**
+2. **Potoos Flutter Project Structure Guide v1.0**
+3. **Potoos Google Drive API Proof Plan v1.0**
+4. **Potoos First Sprint Task List v1.0**
 
 Recommended next document:
 
-**LitratoLink Google Drive API Proof Plan v1.0**
+**Potoos Google Drive API Proof Plan v1.0**
 
 Reason:
 
@@ -1329,4 +1329,4 @@ Do not build the full app until this core proof works.
 
 Main rule:
 
-**LitratoLink must share memories in original quality.**
+**Potoos must share memories in original quality.**

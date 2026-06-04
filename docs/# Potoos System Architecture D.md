@@ -1,10 +1,10 @@
-# LitratoLink System Architecture Document v1.0
+# Potoos System Architecture Document v1.0
 
 ## 1. Document Purpose
 
-This document explains how the LitratoLink app will be built from a technical point of view.
+This document explains how the Potoos app will be built from a technical point of view.
 
-This document is based on the approved **LitratoLink Master Product Plan v1.0**.
+This document is based on the approved **Potoos Master Product Plan v1.0**.
 
 The goal of this document is to explain:
 
@@ -25,15 +25,15 @@ This is not yet the final code. This is the technical guide before development.
 
 ## 2. Product Summary
 
-**App Name:** LitratoLink
+**App Name:** Potoos
 **Tagline:** Share Memories in Original Quality
 **Product Type:** Private cloud sharing app
 
-LitratoLink is an app for sharing original-quality photos and videos with selected people.
+Potoos is an app for sharing original-quality photos and videos with selected people.
 
 The app is not social media.
 
-LitratoLink has:
+Potoos has:
 
 * No likes
 * No comments
@@ -53,7 +53,7 @@ The app is focused on:
 
 ## 3. Main Architecture Summary
 
-LitratoLink will use this main architecture:
+Potoos will use this main architecture:
 
 **Flutter App**
 → user interface for Android, iPhone, iPad, web, and PC
@@ -104,7 +104,7 @@ Supabase will be used for:
 * Device tokens
 * Notification records
 
-Supabase is a good fit because LitratoLink needs clear relationship data.
+Supabase is a good fit because Potoos needs clear relationship data.
 
 Example relationships:
 
@@ -158,14 +158,14 @@ These are future enhancements and not part of V1.
 
 ### 4.5 Storage
 
-**V1 Storage:** LitratoLink-managed Google Drive / Google One-backed storage
+**V1 Storage:** Potoos-managed Google Drive / Google One-backed storage
 
 This means:
 
 * Users do not need to connect their own Google Drive.
 * Users do not need their own Google One plan.
 * Users do not need to manage Drive folders.
-* LitratoLink manages the storage experience for them.
+* Potoos manages the storage experience for them.
 
 The app must store the original uploaded file.
 
@@ -926,7 +926,7 @@ The app must ask permission clearly.
 
 Example message:
 
-> LitratoLink needs access so you can save original-quality photos and videos to your device.
+> Potoos needs access so you can save original-quality photos and videos to your device.
 
 ---
 
@@ -1216,7 +1216,7 @@ Users must not be able to read or change records they do not own or do not have 
 
 ## 18. Privacy Architecture
 
-LitratoLink must protect private memories.
+Potoos must protect private memories.
 
 Privacy rules:
 
@@ -1231,7 +1231,7 @@ Privacy rules:
 
 Important limitation for V1:
 
-Because V1 uses LitratoLink-managed storage, the platform storage owner may technically control the storage location.
+Because V1 uses Potoos-managed storage, the platform storage owner may technically control the storage location.
 
 This is acceptable for V1 personal and small use, but if the app grows publicly, privacy and storage design should be reviewed.
 
@@ -1381,7 +1381,7 @@ Better:
 
 ## 23. Storage Full Behavior
 
-Because V1 uses LitratoLink-managed storage, storage may become full.
+Because V1 uses Potoos-managed storage, storage may become full.
 
 If storage is full:
 
@@ -1804,7 +1804,7 @@ Confirmed decisions:
 * Backend: Supabase
 * Database: Supabase Postgres
 * Authentication: Google Login only for V1
-* Storage: LitratoLink-managed Google Drive / Google One-backed storage
+* Storage: Potoos-managed Google Drive / Google One-backed storage
 * Push notifications: FCM/APNs delivery with Supabase backend control
 * App type: Private cloud sharing
 * Media: Photos and videos
@@ -1823,7 +1823,7 @@ Confirmed decisions:
 
 The main architecture rule is:
 
-**LitratoLink must always protect original quality and private album access.**
+**Potoos must always protect original quality and private album access.**
 
 Every technical decision must support:
 
@@ -1842,7 +1842,7 @@ If a technical choice makes the app harder to use, less private, or lowers quali
 
 The next recommended document is:
 
-**LitratoLink Database Design Document v1.0**
+**Potoos Database Design Document v1.0**
 
 This next document should define:
 

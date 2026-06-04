@@ -1,8 +1,8 @@
-# LitratoLink Flutter Project Structure Guide v1.1
+# Potoos Flutter Project Structure Guide v1.1
 
 ## 1. Purpose
 
-This guide explains the LitratoLink Flutter structure in a beginner-friendly way.
+This guide explains the Potoos Flutter structure in a beginner-friendly way.
 
 Use this document when you need to answer:
 
@@ -12,7 +12,7 @@ Use this document when you need to answer:
 * Where should backend calls live?
 * Which files are only UI, and which files are logic?
 
-The app UI should follow `litratolink_mobile_ui.html` as the source of truth.
+The app UI should follow `potoos_mobile_ui.html` as the source of truth.
 
 Do not redesign the UI while implementing Flutter. Match the HTML mockup's:
 
@@ -28,11 +28,11 @@ Backend behavior should follow the Master Product Plan.
 
 ## 2. App Summary
 
-**App Name:** LitratoLink
+**App Name:** Potoos
 **Tagline:** Share Memories in Original Quality
 **App Type:** Private cloud sharing app
 
-LitratoLink allows users to:
+Potoos allows users to:
 
 * Log in with Google
 * Create private albums
@@ -91,7 +91,7 @@ Sensitive actions must go through Supabase Edge Functions.
 Recommended root folder:
 
 ```text
-LitratoLink/
+Potoos/
   app/
   supabase/
   docs/
@@ -341,7 +341,7 @@ Responsibilities:
 
 App title:
 
-**LitratoLink**
+**Potoos**
 
 ---
 
@@ -425,7 +425,7 @@ Bundle the fonts under `app/assets/fonts/` and declare them in `pubspec.yaml`. G
 
 ## 14. UI Matching Rule
 
-`litratolink_mobile_ui.html` is the source of truth for Flutter UI.
+`potoos_mobile_ui.html` is the source of truth for Flutter UI.
 
 When implementing a screen:
 
@@ -446,7 +446,7 @@ Do not:
 
 ## 15. Screens Found in the HTML Mockup
 
-The current `docs/ui-reference/litratolink_mobile_ui.html` includes these UI screens:
+The current `docs/ui-reference/potoos_mobile_ui.html` includes these UI screens:
 
 1. Welcome
 2. Home / My Albums
@@ -551,7 +551,7 @@ Stores app constants.
 Examples:
 
 ```text
-appName = LitratoLink
+appName = Potoos
 appTagline = Share Memories in Original Quality
 defaultUploadLimit = none
 ```
@@ -835,7 +835,7 @@ Allows user to log in.
 Content:
 
 ```text
-LitratoLink
+Potoos
 Share Memories in Original Quality
 Continue with Google
 ```
@@ -1752,7 +1752,7 @@ Build screens in this order:
 Show:
 
 ```text
-LitratoLink
+Potoos
 Share Memories in Original Quality
 ```
 
@@ -1765,7 +1765,7 @@ Loading indicator.
 Show:
 
 ```text
-LitratoLink
+Potoos
 Share Memories in Original Quality
 [Continue with Google]
 ```
@@ -2096,7 +2096,7 @@ These are for later phases.
 
 Because Sprint 1 must answer the most important technical question:
 
-**Can LitratoLink upload and download original-quality files privately?**
+**Can Potoos upload and download original-quality files privately?**
 
 If this does not work, other features do not matter yet.
 
@@ -2211,7 +2211,7 @@ The app must prove original-quality upload and download.
 
 The next recommended document is:
 
-**LitratoLink Sprint 1 Build Prompt Pack v1.0**
+**Potoos Sprint 1 Build Prompt Pack v1.0**
 
 This document should contain ready-to-copy prompts for Codex.
 

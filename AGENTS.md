@@ -1,29 +1,29 @@
 # AGENTS.md
 
-Operating guide for AI agents working on LitratoLink. Read this first, then
+Operating guide for AI agents working on Potoos. Read this first, then
 `docs/CLAUDE_CODE_HANDOFF.md` for the full handoff.
 
 ## Project
 
-LitratoLink is a Flutter Web PWA for private, invite-only photo/video albums
+Potoos is a Flutter Web PWA for private, invite-only photo/video albums
 with original-quality upload and download. Live beta:
-`https://akircyno.github.io/litratolink/`
+`https://akircyno.github.io/potoos/`
 
-- Working name: **LitratoLink** (planned future brand **Potoos** — not started)
+- Current brand: **Potoos** (mascot **Poto**)
 - Stack: Flutter Web PWA, Supabase (Auth + Postgres + RLS + Edge Functions),
   Google Drive (server-side storage), GitHub Pages deploy via GitHub Actions.
 
 ## Paths
 
-- Root repo: `C:\dev\LitratoLink`
-- Flutter app: `C:\dev\LitratoLink\app`
-- UI source of truth: `docs/ui-reference/litratolink_mobile_ui.html`
+- Root repo: `C:\dev\Potoos`
+- Flutter app: `C:\dev\Potoos\app`
+- UI source of truth: `docs/ui-reference/potoos_mobile_ui.html`
 - Web runtime config: `app/env.properties` (NOT `.env` — see Hosted Config)
 
 ## Hard Rules
 
 - Do **not** redesign the UI. Match the HTML mockup.
-- Do **not** start the Potoos rename until explicitly asked.
+- Do **not** reintroduce old predecessor naming or URLs.
 - Never commit secrets: service role keys, Google client secrets, refresh
   tokens, or real env files. Flutter may only use the client-safe Supabase URL
   and anon/publishable key.
@@ -35,7 +35,7 @@ with original-quality upload and download. Live beta:
 
 ## Build & Verify
 
-Run from `C:\dev\LitratoLink\app`:
+Run from `C:\dev\Potoos\app`:
 
 ```powershell
 flutter test
@@ -53,7 +53,7 @@ py -m http.server 8080 --directory build\web   # http://localhost:8080
 ## Git Workflow
 
 ```powershell
-cd C:\dev\LitratoLink
+cd C:\dev\Potoos
 git status --short
 git add <specific files only>
 git commit -m "<message>"
@@ -71,7 +71,7 @@ config therefore ships as the non-hidden asset `app/env.properties`:
 
 If the hosted app shows "Add Supabase URL and anon key before signing in," the
 config asset is 404ing. Verify a deploy:
-`https://akircyno.github.io/litratolink/assets/env.properties` must return 200
+`https://akircyno.github.io/potoos/assets/env.properties` must return 200
 with non-empty `SUPABASE_URL` and `SUPABASE_ANON_KEY`. Never reintroduce a
 dot-prefixed config asset for the hosted build.
 

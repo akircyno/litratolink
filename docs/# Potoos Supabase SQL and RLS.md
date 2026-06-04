@@ -1,18 +1,18 @@
-# LitratoLink Supabase SQL and RLS Planning Document v1.0
+# Potoos Supabase SQL and RLS Planning Document v1.0
 
 ## 1. Document Purpose
 
-This document explains the planned Supabase database setup for LitratoLink.
+This document explains the planned Supabase database setup for Potoos.
 
 This document is based on:
 
-* LitratoLink Master Product Plan v1.0
-* LitratoLink System Architecture Document v1.0
-* LitratoLink Database Design Document v1.0
-* LitratoLink UI/UX Flow Document v1.0
-* LitratoLink Development Roadmap v1.0
-* LitratoLink Codex Development Instructions v1.0
-* LitratoLink API and Edge Functions Specification v1.0
+* Potoos Master Product Plan v1.0
+* Potoos System Architecture Document v1.0
+* Potoos Database Design Document v1.0
+* Potoos UI/UX Flow Document v1.0
+* Potoos Development Roadmap v1.0
+* Potoos Codex Development Instructions v1.0
+* Potoos API and Edge Functions Specification v1.0
 
 The goal of this document is to prepare the actual Supabase implementation.
 
@@ -36,7 +36,7 @@ This is still a planning document. Actual SQL can be created after this.
 
 ## 2. Database Platform
 
-LitratoLink will use:
+Potoos will use:
 
 **Supabase Postgres**
 
@@ -57,7 +57,7 @@ The actual photos and videos will not be stored directly in Postgres.
 
 Original files will be stored in:
 
-**LitratoLink-managed Google Drive / Google One-backed storage**
+**Potoos-managed Google Drive / Google One-backed storage**
 
 Postgres will only store file metadata and storage references.
 
@@ -1806,7 +1806,7 @@ Confirmed decisions:
 
 The next recommended document is:
 
-**LitratoLink App Store and TestFlight Preparation Document v1.0**
+**Potoos App Store and TestFlight Preparation Document v1.0**
 
 This document should define:
 

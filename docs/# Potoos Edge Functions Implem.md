@@ -1,19 +1,19 @@
-# LitratoLink Edge Functions Implementation Plan v1.0
+# Potoos Edge Functions Implementation Plan v1.0
 
 ## 1. Document Purpose
 
-This document explains how to build the first Supabase Edge Functions for LitratoLink.
+This document explains how to build the first Supabase Edge Functions for Potoos.
 
 This document is based on:
 
-* LitratoLink Master Product Plan v1.0
-* LitratoLink System Architecture Document v1.0
-* LitratoLink Database Design Document v1.0
-* LitratoLink API and Edge Functions Specification v1.0
-* LitratoLink Supabase SQL and RLS Planning Document v1.0
-* LitratoLink Actual SQL Migration Draft v1.0
-* LitratoLink First Sprint Task List v1.0
-* LitratoLink Google Drive API Proof Plan v1.0
+* Potoos Master Product Plan v1.0
+* Potoos System Architecture Document v1.0
+* Potoos Database Design Document v1.0
+* Potoos API and Edge Functions Specification v1.0
+* Potoos Supabase SQL and RLS Planning Document v1.0
+* Potoos Actual SQL Migration Draft v1.0
+* Potoos First Sprint Task List v1.0
+* Potoos Google Drive API Proof Plan v1.0
 
 The goal of this document is to guide the backend implementation for Sprint 1.
 
@@ -856,7 +856,7 @@ Later, this should be admin-only or disabled.
   "data": {
     "connected": true,
     "root_folder_found": true,
-    "root_folder_name": "LitratoLink Storage"
+    "root_folder_name": "Potoos Storage"
   }
 }
 ```
@@ -1540,7 +1540,7 @@ Review backup storage options, but do not change the plan until proof is fully t
 
 The next recommended document is:
 
-**LitratoLink Flutter Project Structure Guide v1.0**
+**Potoos Flutter Project Structure Guide v1.0**
 
 This document should define:
 

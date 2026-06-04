@@ -1,16 +1,16 @@
-# LitratoLink Codex Development Instructions v1.0
+# Potoos Codex Development Instructions v1.0
 
 ## 1. Document Purpose
 
-This document gives clear instructions for building the LitratoLink app using Codex or any AI coding assistant.
+This document gives clear instructions for building the Potoos app using Codex or any AI coding assistant.
 
 This document is based on:
 
-* LitratoLink Master Product Plan v1.0
-* LitratoLink System Architecture Document v1.0
-* LitratoLink Database Design Document v1.0
-* LitratoLink UI/UX Flow Document v1.0
-* LitratoLink Development Roadmap v1.0
+* Potoos Master Product Plan v1.0
+* Potoos System Architecture Document v1.0
+* Potoos Database Design Document v1.0
+* Potoos UI/UX Flow Document v1.0
+* Potoos Development Roadmap v1.0
 
 The goal of this document is to guide the development process step by step.
 
@@ -20,11 +20,11 @@ Codex must follow this document when creating code, editing files, planning feat
 
 ## 2. Project Summary
 
-**App Name:** LitratoLink
+**App Name:** Potoos
 **Tagline:** Share Memories in Original Quality
 **Product Type:** Private cloud sharing app
 
-LitratoLink allows users to create private albums, invite selected people, upload original-quality photos and videos, and download those files without losing quality.
+Potoos allows users to create private albums, invite selected people, upload original-quality photos and videos, and download those files without losing quality.
 
 The app must be simple, private, and easy to use.
 
@@ -34,7 +34,7 @@ The app must be simple, private, and easy to use.
 
 The most important rule:
 
-**LitratoLink must upload, store, and download original-quality photos and videos.**
+**Potoos must upload, store, and download original-quality photos and videos.**
 
 Codex must never create code that compresses, resizes, converts, or lowers the quality of the original uploaded file unless the user clearly asks for preview or thumbnail generation.
 
@@ -59,7 +59,7 @@ Codex must always follow these rules:
 9. Do not add payment system in V1.
 10. Do not add business or photographer mode in V1.
 
-LitratoLink is a private cloud sharing app, not a social media app.
+Potoos is a private cloud sharing app, not a social media app.
 
 ---
 
@@ -99,7 +99,7 @@ Supabase handles:
 
 Use:
 
-* LitratoLink-managed Google Drive / Google One-backed storage for V1
+* Potoos-managed Google Drive / Google One-backed storage for V1
 
 Important:
 
@@ -236,7 +236,7 @@ Rules:
 
 ## 10. Soft Delete Rules
 
-LitratoLink uses soft delete.
+Potoos uses soft delete.
 
 ### Delete Rule
 
@@ -553,7 +553,7 @@ Rules:
 
 ## 20. Google Drive Storage Rules
 
-V1 storage uses LitratoLink-managed Google Drive / Google One-backed storage.
+V1 storage uses Potoos-managed Google Drive / Google One-backed storage.
 
 Codex must treat Google Drive as a storage provider.
 
@@ -701,19 +701,19 @@ Use simple permission messages.
 ### Photo Access
 
 ```text
-LitratoLink needs photo access so you can upload original-quality photos and videos.
+Potoos needs photo access so you can upload original-quality photos and videos.
 ```
 
 ### Save to Photos
 
 ```text
-LitratoLink needs permission to save original-quality files to your Photos.
+Potoos needs permission to save original-quality files to your Photos.
 ```
 
 ### File Access
 
 ```text
-LitratoLink needs file access so you can choose and save files.
+Potoos needs file access so you can choose and save files.
 ```
 
 ### Notifications
@@ -1210,7 +1210,7 @@ Main promise:
 
 The next recommended document is:
 
-**LitratoLink API and Edge Functions Specification v1.0**
+**Potoos API and Edge Functions Specification v1.0**
 
 This document should define:
 

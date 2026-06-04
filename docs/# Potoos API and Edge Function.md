@@ -1,17 +1,17 @@
-# LitratoLink API and Edge Functions Specification v1.0
+# Potoos API and Edge Functions Specification v1.0
 
 ## 1. Document Purpose
 
-This document explains the backend API and Edge Functions needed for LitratoLink.
+This document explains the backend API and Edge Functions needed for Potoos.
 
 This document is based on:
 
-* LitratoLink Master Product Plan v1.0
-* LitratoLink System Architecture Document v1.0
-* LitratoLink Database Design Document v1.0
-* LitratoLink UI/UX Flow Document v1.0
-* LitratoLink Development Roadmap v1.0
-* LitratoLink Codex Development Instructions v1.0
+* Potoos Master Product Plan v1.0
+* Potoos System Architecture Document v1.0
+* Potoos Database Design Document v1.0
+* Potoos UI/UX Flow Document v1.0
+* Potoos Development Roadmap v1.0
+* Potoos Codex Development Instructions v1.0
 
 The goal of this document is to define:
 
@@ -33,7 +33,7 @@ This document is not final code. It is the guide for backend implementation.
 
 ## 2. Backend Style
 
-LitratoLink will use:
+Potoos will use:
 
 * Supabase Auth
 * Supabase Postgres
@@ -1643,7 +1643,7 @@ Never store them in the Flutter app.
 
 # 37. Important Technical Note About Google Drive Storage
 
-V1 plans to use LitratoLink-managed Google Drive / Google One-backed storage.
+V1 plans to use Potoos-managed Google Drive / Google One-backed storage.
 
 This must be tested early in a proof of concept.
 
@@ -1753,7 +1753,7 @@ Confirmed backend decisions:
 * Use Google Login for V1 authentication.
 * Use album membership for access control.
 * Use roles: Admin, Contributor, Viewer.
-* Use LitratoLink-managed Google Drive storage for V1.
+* Use Potoos-managed Google Drive storage for V1.
 * Upload must preserve original quality.
 * Download must use original files.
 * Save All must use original files.
@@ -1770,7 +1770,7 @@ Confirmed backend decisions:
 
 The next recommended document is:
 
-**LitratoLink Supabase SQL and RLS Planning Document v1.0**
+**Potoos Supabase SQL and RLS Planning Document v1.0**
 
 This document should define:
 

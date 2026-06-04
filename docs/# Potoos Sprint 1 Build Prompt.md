@@ -1,4 +1,4 @@
-# LitratoLink Sprint 1 Build Prompt Pack v1.0
+# Potoos Sprint 1 Build Prompt Pack v1.0
 
 ## 1. Document Purpose
 
@@ -6,7 +6,7 @@ This document contains ready-to-copy prompts for Codex or any AI coding assistan
 
 The goal is to help build **Sprint 1: Core Original Quality Proof** in the correct order.
 
-Sprint 1 must prove that LitratoLink can:
+Sprint 1 must prove that Potoos can:
 
 1. Log in with Google.
 2. Create a private album.
@@ -24,11 +24,11 @@ Sprint 1 must prove that LitratoLink can:
 Use this instruction in every coding session if needed:
 
 ```text
-You are helping me build LitratoLink.
+You are helping me build Potoos.
 
-LitratoLink is a private photo and video sharing app.
+Potoos is a private photo and video sharing app.
 
-App name: LitratoLink
+App name: Potoos
 Tagline: Share Memories in Original Quality
 
 Main rule:
@@ -105,11 +105,11 @@ Keep code clean and organized.
 Use this prompt first.
 
 ```text
-Create the initial project structure for LitratoLink.
+Create the initial project structure for Potoos.
 
 Root folder should be:
 
-litratolink/
+potoos/
   app/
   supabase/
   docs/
@@ -139,7 +139,7 @@ Inside docs/, prepare placeholder markdown files:
 19-sprint-1-build-prompt-pack.md
 
 Add a README.md with:
-- Project name: LitratoLink
+- Project name: Potoos
 - Tagline: Share Memories in Original Quality
 - Short description
 - Tech stack
@@ -312,7 +312,7 @@ After adding packages:
 ## 6. Prompt 4: Create Sprint 1 SQL Migration
 
 ```text
-Create the Sprint 1 Supabase SQL migration for LitratoLink.
+Create the Sprint 1 Supabase SQL migration for Potoos.
 
 This migration is for development only.
 
@@ -380,7 +380,7 @@ Do not create invites, notifications, trash, payments, or monetization tables ye
 ## 7. Prompt 5: Review SQL Migration for Security
 
 ```text
-Review the LitratoLink Sprint 1 SQL migration for security issues.
+Review the Potoos Sprint 1 SQL migration for security issues.
 
 Focus on:
 - RLS policies
@@ -418,7 +418,7 @@ Give:
 ## 8. Prompt 6: Create Edge Functions Folder and Shared Helpers
 
 ```text
-Create the Supabase Edge Functions structure for LitratoLink Sprint 1.
+Create the Supabase Edge Functions structure for Potoos Sprint 1.
 
 Use this folder structure:
 
@@ -504,7 +504,7 @@ Do not return raw Google tokens except only if needed for Sprint 1 download proo
 ## 9. Prompt 7: Build create-user-profile Function
 
 ```text
-Build the create-user-profile Supabase Edge Function for LitratoLink.
+Build the create-user-profile Supabase Edge Function for Potoos.
 
 Purpose:
 Create a user profile after Google Login.
@@ -552,7 +552,7 @@ Rules:
 ## 10. Prompt 8: Build create-album Function
 
 ```text
-Build the create-album Supabase Edge Function for LitratoLink.
+Build the create-album Supabase Edge Function for Potoos.
 
 Purpose:
 Create a private album and add creator as Admin.
@@ -597,7 +597,7 @@ Rules:
 ## 11. Prompt 9: Build Google Drive Connection Test Function
 
 ```text
-Build the test-google-drive-connection Supabase Edge Function for LitratoLink.
+Build the test-google-drive-connection Supabase Edge Function for Potoos.
 
 Purpose:
 Check if backend can connect to Google Drive.
@@ -619,7 +619,7 @@ Success response:
   "data": {
     "connected": true,
     "root_folder_found": true,
-    "root_folder_name": "LitratoLink Storage"
+    "root_folder_name": "Potoos Storage"
   }
 }
 
@@ -638,7 +638,7 @@ Rules:
 ## 12. Prompt 10: Build create-upload-session Function
 
 ```text
-Build the create-upload-session Supabase Edge Function for LitratoLink.
+Build the create-upload-session Supabase Edge Function for Potoos.
 
 Purpose:
 Prepare upload of one original photo or video.
@@ -700,7 +700,7 @@ Important rules:
 ## 13. Prompt 11: Build complete-upload Function
 
 ```text
-Build the complete-upload Supabase Edge Function for LitratoLink.
+Build the complete-upload Supabase Edge Function for Potoos.
 
 Purpose:
 Mark a Google Drive upload as completed.
@@ -741,7 +741,7 @@ Rules:
 ## 14. Prompt 12: Build get-download-access Function
 
 ```text
-Build the get-download-access Supabase Edge Function for LitratoLink.
+Build the get-download-access Supabase Edge Function for Potoos.
 
 Purpose:
 Allow active album members to download the original file.
@@ -788,7 +788,7 @@ Important:
 ## 15. Prompt 13: Build Flutter Environment and Supabase Initialization
 
 ```text
-Build Flutter environment loading and Supabase initialization for LitratoLink.
+Build Flutter environment loading and Supabase initialization for Potoos.
 
 Requirements:
 - Use flutter_dotenv for .env
@@ -815,13 +815,13 @@ After setup:
 ## 16. Prompt 14: Build App Theme and Basic Routes
 
 ```text
-Build the LitratoLink Flutter app shell.
+Build the Potoos Flutter app shell.
 
 Requirements:
 - Create app/app.dart
 - Create app/routes.dart
 - Create app/theme.dart
-- Use app name: LitratoLink
+- Use app name: Potoos
 - Use tagline: Share Memories in Original Quality
 - Use simple maroon-based theme
 - Add routes for:
@@ -843,7 +843,7 @@ Do not build future screens yet.
 ## 17. Prompt 15: Build Flutter Auth Feature
 
 ```text
-Build the Flutter Auth feature for LitratoLink Sprint 1.
+Build the Flutter Auth feature for Potoos Sprint 1.
 
 Requirements:
 - Use Supabase Auth with Google Login only
@@ -875,7 +875,7 @@ Rules:
 ## 18. Prompt 16: Build Edge Function Service in Flutter
 
 ```text
-Build core/services/edge_function_service.dart for LitratoLink.
+Build core/services/edge_function_service.dart for Potoos.
 
 Purpose:
 All Flutter calls to Supabase Edge Functions should go through this service.
@@ -1101,7 +1101,7 @@ Rules:
 ## 25. Prompt 23: Test Sprint 1 Core Flow
 
 ```text
-Test the LitratoLink Sprint 1 core flow.
+Test the Potoos Sprint 1 core flow.
 
 Flow:
 1. Open app.
@@ -1134,7 +1134,7 @@ Report:
 ## 26. Prompt 24: Test Original Quality
 
 ```text
-Test if LitratoLink keeps original quality.
+Test if Potoos keeps original quality.
 
 Use at least:
 - 1 iPhone photo
@@ -1170,7 +1170,7 @@ If quality does not match, investigate:
 ## 27. Prompt 25: Test RLS and Permissions
 
 ```text
-Test LitratoLink Sprint 1 database security.
+Test Potoos Sprint 1 database security.
 
 Create:
 - User A
@@ -1206,7 +1206,7 @@ Suggest fixes.
 ## 28. Prompt 26: Debug Upload Problems
 
 ```text
-Debug LitratoLink upload problem.
+Debug Potoos upload problem.
 
 Context:
 Upload should work like this:
@@ -1249,7 +1249,7 @@ Give a clear fix.
 ## 29. Prompt 27: Debug Download Problems
 
 ```text
-Debug LitratoLink download problem.
+Debug Potoos download problem.
 
 Context:
 Download should work like this:
@@ -1289,10 +1289,10 @@ Give a clear fix.
 
 ---
 
-## 30. Prompt 28: Review Code Against LitratoLink Rules
+## 30. Prompt 28: Review Code Against Potoos Rules
 
 ```text
-Review the current LitratoLink code against the project rules.
+Review the current Potoos code against the project rules.
 
 Check:
 1. Does the app preserve original quality?
@@ -1326,7 +1326,7 @@ Give:
 ## 31. Prompt 29: Create Commit After Setup
 
 ```text
-Create a clean Git commit for the LitratoLink setup.
+Create a clean Git commit for the Potoos setup.
 
 Before committing:
 - Check no .env files are committed
@@ -1335,7 +1335,7 @@ Before committing:
 - Check folder structure is clean
 
 Commit message:
-Initial LitratoLink Flutter and Supabase project setup
+Initial Potoos Flutter and Supabase project setup
 
 Include:
 - Root project structure
@@ -1349,7 +1349,7 @@ Include:
 ## 32. Prompt 30: Create Commit After Auth
 
 ```text
-Create a clean Git commit for LitratoLink authentication.
+Create a clean Git commit for Potoos authentication.
 
 Before committing:
 - Check Google Login works
@@ -1374,7 +1374,7 @@ Include:
 ## 33. Prompt 31: Create Commit After Album Core
 
 ```text
-Create a clean Git commit for LitratoLink album core.
+Create a clean Git commit for Potoos album core.
 
 Before committing:
 - Check user can create album
@@ -1401,7 +1401,7 @@ Include:
 ## 34. Prompt 32: Create Commit After Upload/Download Proof
 
 ```text
-Create a clean Git commit for LitratoLink original quality upload/download proof.
+Create a clean Git commit for Potoos original quality upload/download proof.
 
 Before committing:
 - Check one original photo uploads successfully
@@ -1434,7 +1434,7 @@ Include:
 ## 35. Prompt 33: Sprint 1 Final Review
 
 ```text
-Do a final review of LitratoLink Sprint 1.
+Do a final review of Potoos Sprint 1.
 
 Sprint 1 goal:
 Core Original Quality Proof.
@@ -1496,7 +1496,7 @@ Use the prompts in this order:
 23. Prompt 23: Test Sprint 1 Core Flow
 24. Prompt 24: Test Original Quality
 25. Prompt 25: Test RLS and Permissions
-26. Prompt 28: Review Code Against LitratoLink Rules
+26. Prompt 28: Review Code Against Potoos Rules
 27. Prompt 33: Sprint 1 Final Review
 
 Use debug prompts only when needed:
@@ -1519,7 +1519,7 @@ Do not build the full app immediately.
 
 Sprint 1 has one main question:
 
-**Can LitratoLink privately upload and download original-quality files?**
+**Can Potoos privately upload and download original-quality files?**
 
 Everything else comes after that.
 

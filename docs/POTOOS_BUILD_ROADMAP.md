@@ -22,7 +22,7 @@ Update the status column as each step is completed.
 |---|---|---|---|
 | 1.1 | Create `potoos.storage@gmail.com` — fresh Google Drive account | ✅ | No file migration needed, no users yet |
 | 1.2 | Update Supabase Edge Functions credentials to new storage account | ✅ | After 1.1 |
-| 1.3 | Rename GitHub repo `litratolink` → `potoos` | ✅ | Do after Supabase + Google OAuth updated |
+| 1.3 | GitHub repo is `potoos` | ✅ | Supabase + Google OAuth are aligned to the Potoos URL |
 | 1.4 | Add new GitHub Pages URL to Supabase auth redirect URLs | ✅ | Dashboard → Authentication → URL Config |
 | 1.5 | Update Google OAuth consent screen app name to "Potoos" | ✅ | Google Cloud Console |
 | 1.6 | Update `app/env.properties` web redirect URL to new GitHub Pages URL | ✅ | After 1.3 |
@@ -170,7 +170,7 @@ Update the status column as each step is completed.
 |---|---|---|---|
 | 14.1 | Screenshots — iPhone (6.9", 6.5") | ⬜ | Required sizes |
 | 14.2 | Screenshots — iPad (13", 12.9") | ⬜ | Required if iPad is supported |
-| 14.3 | App Store description (short + long) | ⬜ | See `docs/# LitratoLink App Store and TestFli.md` for draft |
+| 14.3 | App Store description (short + long) | ⬜ | See `docs/# Potoos App Store and TestFli.md` for draft |
 | 14.4 | App Store keywords | ⬜ | Max 100 characters |
 | 14.5 | App preview video (optional but recommended) | ⬜ | 15–30 seconds, use brand video |
 | 14.6 | Prepare demo Google account for App Review | ⬜ | **App Store required** — reviewers need to log in |
@@ -252,4 +252,4 @@ Update the status column as each step is completed.
 - PWA manifest updated to Potoos
 - ZIP fallback filename `potoos-album`
 - `flutter analyze` zero issues, all tests passing
-- Deployed to GitHub (`akircyno/litratolink` main branch)
+- Deployed to GitHub (`akircyno/potoos` main branch)

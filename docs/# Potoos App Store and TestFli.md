@@ -1,21 +1,21 @@
-# LitratoLink App Store and TestFlight Preparation Document v1.0
+# Potoos App Store and TestFlight Preparation Document v1.0
 
 ## 1. Document Purpose
 
-This document explains how to prepare LitratoLink for iOS testing and App Store release.
+This document explains how to prepare Potoos for iOS testing and App Store release.
 
 This document is based on:
 
-* LitratoLink Master Product Plan v1.0
-* LitratoLink System Architecture Document v1.0
-* LitratoLink Database Design Document v1.0
-* LitratoLink UI/UX Flow Document v1.0
-* LitratoLink Development Roadmap v1.0
-* LitratoLink Codex Development Instructions v1.0
-* LitratoLink API and Edge Functions Specification v1.0
-* LitratoLink Supabase SQL and RLS Planning Document v1.0
+* Potoos Master Product Plan v1.0
+* Potoos System Architecture Document v1.0
+* Potoos Database Design Document v1.0
+* Potoos UI/UX Flow Document v1.0
+* Potoos Development Roadmap v1.0
+* Potoos Codex Development Instructions v1.0
+* Potoos API and Edge Functions Specification v1.0
+* Potoos Supabase SQL and RLS Planning Document v1.0
 
-The goal of this document is to prepare LitratoLink for:
+The goal of this document is to prepare Potoos for:
 
 * iPhone testing
 * iPad testing
@@ -29,7 +29,7 @@ The goal of this document is to prepare LitratoLink for:
 
 ## 2. Release Strategy
 
-LitratoLink should not go directly to the public App Store.
+Potoos should not go directly to the public App Store.
 
 The recommended release order is:
 
@@ -45,7 +45,7 @@ This reduces risk and gives time to fix issues.
 
 ## 3. iOS Release Summary
 
-To release LitratoLink on iOS, the project needs:
+To release Potoos on iOS, the project needs:
 
 * Apple Developer account
 * App Store Connect access
@@ -79,9 +79,9 @@ Before paying, always check Apple’s latest official pricing.
 
 ## 4.3 Account Type
 
-For LitratoLink V1, an individual Apple Developer account is enough.
+For Potoos V1, an individual Apple Developer account is enough.
 
-If LitratoLink becomes a business later, the app can be moved or managed under an organization account if needed.
+If Potoos becomes a business later, the app can be moved or managed under an organization account if needed.
 
 ## 4.4 Recommendation
 
@@ -89,7 +89,7 @@ Start with an individual account for faster setup.
 
 Use organization account later only if:
 
-* LitratoLink becomes a real company
+* Potoos becomes a real company
 * Other developers need team access
 * Business branding is needed
 * Legal ownership must be under a company
@@ -117,7 +117,7 @@ It will be used for:
 
 ## 6.1 App Name
 
-**LitratoLink**
+**Potoos**
 
 ## 6.2 Tagline
 
@@ -149,25 +149,25 @@ The iOS app needs a unique bundle ID.
 
 Recommended format:
 
-`com.litratolink.app`
+`com.potoos.app`
 
 If using personal or developer domain later, it can be adjusted.
 
 Examples:
 
-* `com.litratolink.app`
-* `com.yourname.litratolink`
-* `com.litratolink.mobile`
+* `com.potoos.app`
+* `com.yourname.potoos`
+* `com.potoos.mobile`
 
 Recommended:
 
-`com.litratolink.app`
+`com.potoos.app`
 
 ---
 
 ## 8. App Icon
 
-LitratoLink needs an app icon before TestFlight and App Store release.
+Potoos needs an app icon before TestFlight and App Store release.
 
 ## 8.1 Icon Style
 
@@ -198,7 +198,7 @@ But before App Store release, use the final logo.
 
 Confirmed branding:
 
-* App name: LitratoLink
+* App name: Potoos
 * Tagline: Share Memories in Original Quality
 * Main color: Deep Maroon
 * Secondary color: Warm Cream
@@ -268,15 +268,15 @@ Possible screenshot captions:
 
 ## 11.1 Short Description
 
-LitratoLink helps you share original-quality photos and videos through private albums.
+Potoos helps you share original-quality photos and videos through private albums.
 
 ## 11.2 Long Description Draft
 
-LitratoLink is a private photo and video sharing app made for people who want to share memories without losing quality.
+Potoos is a private photo and video sharing app made for people who want to share memories without losing quality.
 
 Create private albums, invite selected people, upload original-quality photos and videos, and let receivers save files easily.
 
-LitratoLink is not social media.
+Potoos is not social media.
 
 There are no likes, no comments, no followers, and no public feed.
 
@@ -292,7 +292,7 @@ Main features:
 * Soft delete and restore
 * Simple and clean design
 
-LitratoLink is made for couples, families, friends, and small private groups who want a better way to share memories.
+Potoos is made for couples, families, friends, and small private groups who want a better way to share memories.
 
 ---
 
@@ -319,7 +319,7 @@ Do not use misleading keywords.
 
 ## 13. Privacy Policy
 
-LitratoLink needs a privacy policy before App Store release.
+Potoos needs a privacy policy before App Store release.
 
 ## 13.1 Privacy Policy Must Explain
 
@@ -336,7 +336,7 @@ The privacy policy should explain:
 * What third-party services are used
 * How users can request deletion or support
 
-## 13.2 Data LitratoLink May Collect
+## 13.2 Data Potoos May Collect
 
 Possible data:
 
@@ -365,7 +365,7 @@ Possible services:
 
 ## 13.4 Important Privacy Promise
 
-LitratoLink should clearly say:
+Potoos should clearly say:
 
 * Albums are private by default.
 * Only invited members can access albums.
@@ -383,7 +383,7 @@ Terms of Use should be prepared before public App Store release.
 
 The Terms of Use should explain:
 
-* What LitratoLink is
+* What Potoos is
 * User responsibilities
 * Upload rules
 * Prohibited content
@@ -408,19 +408,19 @@ The app needs clear permission messages.
 
 Use:
 
-**LitratoLink needs photo access so you can upload original-quality photos and videos.**
+**Potoos needs photo access so you can upload original-quality photos and videos.**
 
 ## 15.2 Save to Photos Permission
 
 Use:
 
-**LitratoLink needs permission to save original-quality files to your Photos.**
+**Potoos needs permission to save original-quality files to your Photos.**
 
 ## 15.3 File Access Permission
 
 Use:
 
-**LitratoLink needs file access so you can choose and save files.**
+**Potoos needs file access so you can choose and save files.**
 
 ## 15.4 Notification Permission
 
@@ -434,7 +434,7 @@ Use:
 
 App Store submission requires privacy details.
 
-LitratoLink should prepare answers about collected data.
+Potoos should prepare answers about collected data.
 
 ## 16.1 Possible Data Linked to User
 
@@ -450,7 +450,7 @@ Likely linked to user:
 
 ## 16.2 Possible Data Not Used for Tracking
 
-LitratoLink should not use data for advertising tracking in V1.
+Potoos should not use data for advertising tracking in V1.
 
 Recommended V1 rule:
 
@@ -523,7 +523,7 @@ Prepare:
 
 Use simple App Review notes:
 
-**LitratoLink is a private album sharing app. Please log in using the provided test account. A demo album is already available. You can test upload, download, Save All, invite, and member roles.**
+**Potoos is a private album sharing app. Please log in using the provided test account. A demo album is already available. You can test upload, download, Save All, invite, and member roles.**
 
 ---
 
@@ -640,7 +640,7 @@ Even though this document is for iOS, Android testing should continue.
 
 Reason:
 
-LitratoLink is cross-platform.
+Potoos is cross-platform.
 
 Test:
 
@@ -703,7 +703,7 @@ App Review notes should explain the app clearly.
 
 Recommended notes:
 
-**LitratoLink is a private photo and video sharing app. Users create private albums, invite selected people, upload original-quality files, and download them. The app has no public feed, no likes, no comments, and no followers.**
+**Potoos is a private photo and video sharing app. Users create private albums, invite selected people, upload original-quality files, and download them. The app has no public feed, no likes, no comments, and no followers.**
 
 Add:
 
@@ -741,7 +741,7 @@ Create a support email.
 
 Example:
 
-`support@litratolink.com`
+`support@potoos.app`
 
 If no custom domain yet, use a temporary Gmail, but a custom domain looks more professional.
 
@@ -751,7 +751,7 @@ If no custom domain yet, use a temporary Gmail, but a custom domain looks more p
 
 ## 26.1 App Name
 
-LitratoLink
+Potoos
 
 ## 26.2 Subtitle
 
@@ -763,7 +763,7 @@ Share photos and videos privately without losing quality.
 
 ## 26.4 Description
 
-LitratoLink is a private photo and video sharing app for people who want to keep memories in original quality.
+Potoos is a private photo and video sharing app for people who want to keep memories in original quality.
 
 Create albums, invite selected people, upload photos and videos, and let receivers save original files easily.
 
@@ -998,7 +998,7 @@ Do not submit to App Store if:
 
 ## 35. Final App Store Preparation Summary
 
-Before TestFlight, LitratoLink needs:
+Before TestFlight, Potoos needs:
 
 * Apple Developer account
 * iOS build
@@ -1011,7 +1011,7 @@ Before TestFlight, LitratoLink needs:
 * iOS permissions
 * Basic internal testing
 
-Before App Store release, LitratoLink needs:
+Before App Store release, Potoos needs:
 
 * Final app icon
 * Screenshots
@@ -1030,7 +1030,7 @@ Before App Store release, LitratoLink needs:
 
 The next recommended document is:
 
-**LitratoLink Privacy Policy and Terms Planning Document v1.0**
+**Potoos Privacy Policy and Terms Planning Document v1.0**
 
 This document should prepare the privacy and legal content needed for App Store release.
 

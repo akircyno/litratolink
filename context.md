@@ -1,6 +1,6 @@
 # context.md
 
-Project context for LitratoLink. Companion to `AGENTS.md`.
+Project context for Potoos. Companion to `AGENTS.md`.
 
 ## What It Is
 
@@ -9,12 +9,11 @@ share, and download memories in **original quality** — no compression. No publ
 feed, no likes/comments/followers. Access is role-based per album.
 
 - Tagline: *Original memories, safely shared.*
-- Current name: **LitratoLink**. Planned future brand: **Potoos** (mascot
-  **Poto**) — deferred, do not start.
+- Current brand: **Potoos** (mascot **Poto**).
 
 ## Problem It Solves
 
-Messaging and social apps compress photos/videos. LitratoLink targets moments
+Messaging and social apps compress photos/videos. Potoos targets moments
 where original quality matters: family albums, events, school projects, client
 shoots — shared only with invited people.
 

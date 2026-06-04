@@ -1,26 +1,26 @@
-# LitratoLink Privacy Policy and Terms Planning Document v1.0
+# Potoos Privacy Policy and Terms Planning Document v1.0
 
 ## 1. Document Purpose
 
-This document prepares the privacy policy and terms of use content for LitratoLink.
+This document prepares the privacy policy and terms of use content for Potoos.
 
 This document is based on:
 
-* LitratoLink Master Product Plan v1.0
-* LitratoLink System Architecture Document v1.0
-* LitratoLink Database Design Document v1.0
-* LitratoLink UI/UX Flow Document v1.0
-* LitratoLink Development Roadmap v1.0
-* LitratoLink Codex Development Instructions v1.0
-* LitratoLink API and Edge Functions Specification v1.0
-* LitratoLink Supabase SQL and RLS Planning Document v1.0
-* LitratoLink App Store and TestFlight Preparation Document v1.0
+* Potoos Master Product Plan v1.0
+* Potoos System Architecture Document v1.0
+* Potoos Database Design Document v1.0
+* Potoos UI/UX Flow Document v1.0
+* Potoos Development Roadmap v1.0
+* Potoos Codex Development Instructions v1.0
+* Potoos API and Edge Functions Specification v1.0
+* Potoos Supabase SQL and RLS Planning Document v1.0
+* Potoos App Store and TestFlight Preparation Document v1.0
 
 The goal of this document is to plan:
 
 * Privacy policy sections
 * Terms of use sections
-* What data LitratoLink collects
+* What data Potoos collects
 * Why data is collected
 * How albums work
 * How media files are stored
@@ -35,11 +35,11 @@ This is not final legal text. It is a planning guide before writing the official
 
 ## 2. App Summary
 
-**App Name:** LitratoLink
+**App Name:** Potoos
 **Tagline:** Share Memories in Original Quality
 **Product Type:** Private cloud sharing app
 
-LitratoLink allows users to:
+Potoos allows users to:
 
 * Create private albums
 * Invite selected people
@@ -49,7 +49,7 @@ LitratoLink allows users to:
 * Use Save All
 * Delete and restore their own uploaded files
 
-LitratoLink is not social media.
+Potoos is not social media.
 
 The app has:
 
@@ -64,7 +64,7 @@ The app has:
 
 ## 3. Privacy Direction
 
-LitratoLink should have a clear privacy promise.
+Potoos should have a clear privacy promise.
 
 Main privacy promise:
 
@@ -90,7 +90,7 @@ This document is only a planning document.
 
 Before public App Store release, the final Privacy Policy and Terms of Use should be reviewed carefully.
 
-If LitratoLink becomes a public or paid app, it is recommended to ask a legal professional to review the final documents.
+If Potoos becomes a public or paid app, it is recommended to ask a legal professional to review the final documents.
 
 ---
 
@@ -102,7 +102,7 @@ If LitratoLink becomes a public or paid app, it is recommended to ask a legal pr
 
 The Privacy Policy should explain:
 
-* What LitratoLink is
+* What Potoos is
 * What data is collected
 * Why data is collected
 * How data is used
@@ -119,15 +119,15 @@ The Privacy Policy should explain:
 
 Suggested opening direction:
 
-LitratoLink is a private photo and video sharing app. We help users create private albums, invite selected people, and share original-quality photos and videos.
+Potoos is a private photo and video sharing app. We help users create private albums, invite selected people, and share original-quality photos and videos.
 
 We respect the privacy of your memories. Albums are private by default and can only be accessed by invited members.
 
 ---
 
-## 7. Data LitratoLink May Collect
+## 7. Data Potoos May Collect
 
-LitratoLink may collect the following data:
+Potoos may collect the following data:
 
 ### 7.1 Account Data
 
@@ -297,9 +297,9 @@ Purpose:
 
 ---
 
-## 8. Data LitratoLink Should Not Collect in V1
+## 8. Data Potoos Should Not Collect in V1
 
-For V1, LitratoLink should not collect:
+For V1, Potoos should not collect:
 
 * Advertising ID
 * Precise location
@@ -317,9 +317,9 @@ These are not needed for the app’s purpose.
 
 ---
 
-## 9. How LitratoLink Uses Data
+## 9. How Potoos Uses Data
 
-LitratoLink uses data to:
+Potoos uses data to:
 
 1. Create and manage user accounts.
 2. Let users log in.
@@ -335,7 +335,7 @@ LitratoLink uses data to:
 12. Improve app reliability.
 13. Provide support.
 
-LitratoLink should not use user photos or videos for advertising.
+Potoos should not use user photos or videos for advertising.
 
 ---
 
@@ -394,7 +394,7 @@ Users cannot access albums where they are not members.
 
 ## 12. How Photos and Videos Are Stored
 
-For V1, LitratoLink uses LitratoLink-managed Google Drive / Google One-backed storage.
+For V1, Potoos uses Potoos-managed Google Drive / Google One-backed storage.
 
 The Privacy Policy should explain this in simple words:
 
@@ -412,7 +412,7 @@ Original-quality files are stored for the purpose of sharing them with invited a
 
 ## 13. Third-Party Services
 
-LitratoLink may use third-party services.
+Potoos may use third-party services.
 
 ### 13.1 Supabase
 
@@ -456,7 +456,7 @@ The final Privacy Policy must match the real services used in the app.
 
 ## 14. Google API and OAuth Privacy Planning
 
-Because LitratoLink uses Google Login and Google APIs, the Privacy Policy should clearly explain:
+Because Potoos uses Google Login and Google APIs, the Privacy Policy should clearly explain:
 
 * What Google data is accessed
 * Why it is accessed
@@ -473,7 +473,7 @@ For V1, Google Login should request only the basic information needed:
 
 Avoid requesting Google API scopes that are not needed.
 
-Storage API access should be handled carefully and only for the LitratoLink-managed storage setup.
+Storage API access should be handled carefully and only for the Potoos-managed storage setup.
 
 ---
 
@@ -572,17 +572,17 @@ This should be declared honestly in App Store privacy details.
 
 For V1, recommended rule:
 
-LitratoLink should not use data for tracking users across apps or websites.
+Potoos should not use data for tracking users across apps or websites.
 
 Recommended statement:
 
-LitratoLink does not use your photos, videos, or account data for advertising tracking.
+Potoos does not use your photos, videos, or account data for advertising tracking.
 
 ---
 
 ## 18. Data Sharing
 
-LitratoLink may share data only as needed to operate the app.
+Potoos may share data only as needed to operate the app.
 
 Examples:
 
@@ -705,19 +705,19 @@ Unless actually implemented.
 
 ## 24. Children and Age Planning
 
-LitratoLink should not target children in V1.
+Potoos should not target children in V1.
 
 Suggested statement:
 
-LitratoLink is not designed for children under the age required by local law.
+Potoos is not designed for children under the age required by local law.
 
-If LitratoLink later targets schools or families with children, privacy requirements must be reviewed carefully.
+If Potoos later targets schools or families with children, privacy requirements must be reviewed carefully.
 
 ---
 
 ## 25. International Users
 
-LitratoLink may be used by users in different countries.
+Potoos may be used by users in different countries.
 
 The Privacy Policy should use simple language.
 
@@ -731,7 +731,7 @@ Prepare a support contact.
 
 Recommended:
 
-* [support@litratolink.com](mailto:support@litratolink.com)
+* [support@potoos.app](mailto:support@potoos.app)
 
 Temporary:
 
@@ -766,7 +766,7 @@ The Terms of Use should explain:
 
 Suggested opening direction:
 
-By using LitratoLink, you agree to use the app responsibly. LitratoLink is a private photo and video sharing app that helps users share original-quality media through invite-only albums.
+By using Potoos, you agree to use the app responsibly. Potoos is a private photo and video sharing app that helps users share original-quality media through invite-only albums.
 
 ---
 
@@ -785,7 +785,7 @@ Users are responsible for:
 
 ## 30. Allowed Use
 
-Users may use LitratoLink to:
+Users may use Potoos to:
 
 * Create private albums
 * Upload photos and videos
@@ -798,7 +798,7 @@ Users may use LitratoLink to:
 
 ## 31. Prohibited Use
 
-Users must not use LitratoLink to:
+Users must not use Potoos to:
 
 * Upload illegal content
 * Upload harmful content
@@ -819,21 +819,21 @@ Suggested rule:
 
 Users keep ownership of the photos and videos they upload.
 
-LitratoLink only needs permission to store, process, display, and share the content inside the app according to the user’s album settings.
+Potoos only needs permission to store, process, display, and share the content inside the app according to the user’s album settings.
 
 Simple explanation:
 
-You own your content. LitratoLink stores and shares it only to provide the app service.
+You own your content. Potoos stores and shares it only to provide the app service.
 
 ---
 
-## 33. Content License to LitratoLink
+## 33. Content License to Potoos
 
 The Terms should include a limited license.
 
 Suggested meaning:
 
-When users upload files, they allow LitratoLink to:
+When users upload files, they allow Potoos to:
 
 * Store the files
 * Display previews
@@ -857,11 +857,11 @@ Explain:
 * Members can access albums based on their role.
 * Removed members lose access.
 * Users should only invite people they trust.
-* LitratoLink cannot control what invited members do after downloading files.
+* Potoos cannot control what invited members do after downloading files.
 
 Important point:
 
-If a member downloads a file, they may keep a copy outside LitratoLink.
+If a member downloads a file, they may keep a copy outside Potoos.
 
 Users should understand this.
 
@@ -871,13 +871,13 @@ Users should understand this.
 
 Explain:
 
-LitratoLink is designed to preserve original quality.
+Potoos is designed to preserve original quality.
 
 But the Terms should avoid overpromising.
 
 Suggested wording:
 
-LitratoLink is built to upload and download original files without intentional compression. However, file handling may depend on device, operating system, storage provider, connection, and selected file source.
+Potoos is built to upload and download original files without intentional compression. However, file handling may depend on device, operating system, storage provider, connection, and selected file source.
 
 This protects the app from unrealistic claims.
 
@@ -903,11 +903,11 @@ Explain:
 * Uploads may fail if storage is full.
 * Large files may take time.
 * Internet connection affects uploads and downloads.
-* LitratoLink may change storage systems in the future.
+* Potoos may change storage systems in the future.
 
 For V1:
 
-Storage is managed by LitratoLink.
+Storage is managed by Potoos.
 
 Users do not need their own Google One subscription.
 
@@ -917,7 +917,7 @@ Users do not need their own Google One subscription.
 
 Explain:
 
-LitratoLink may not always be available.
+Potoos may not always be available.
 
 Reasons:
 
@@ -933,7 +933,7 @@ Do not promise 100% uptime.
 
 ## 39. Account Suspension or Removal
 
-Terms should allow LitratoLink to remove or restrict users if needed.
+Terms should allow Potoos to remove or restrict users if needed.
 
 Reasons:
 
@@ -955,7 +955,7 @@ Since monetization is future-only, include a simple future note.
 
 Suggested wording:
 
-LitratoLink may offer paid features in the future. If paid features are added, pricing, billing, and cancellation terms will be explained clearly before users purchase.
+Potoos may offer paid features in the future. If paid features are added, pricing, billing, and cancellation terms will be explained clearly before users purchase.
 
 Do not add billing terms until payment is implemented.
 
@@ -963,7 +963,7 @@ Do not add billing terms until payment is implemented.
 
 ## 41. Changes to the App or Terms
 
-Terms should say that LitratoLink may update:
+Terms should say that Potoos may update:
 
 * Features
 * Terms
@@ -981,7 +981,7 @@ Terms should include simple limitation language.
 
 Meaning:
 
-LitratoLink will try to provide a reliable service, but it is not responsible for all possible losses, such as:
+Potoos will try to provide a reliable service, but it is not responsible for all possible losses, such as:
 
 * User internet problems
 * Device problems
@@ -1000,7 +1000,7 @@ Terms should include support contact.
 
 Recommended:
 
-* [support@litratolink.com](mailto:support@litratolink.com)
+* [support@potoos.app](mailto:support@potoos.app)
 
 ---
 
@@ -1010,7 +1010,7 @@ Recommended:
 
 ## 44. App Store Privacy Details Checklist
 
-Before App Store submission, confirm whether LitratoLink collects:
+Before App Store submission, confirm whether Potoos collects:
 
 ### Contact Info
 
@@ -1093,7 +1093,7 @@ Before App Store release, create public pages:
 
 Recommended domain later:
 
-* litratolink.com
+* potoos.app
 
 Temporary option:
 
@@ -1117,7 +1117,7 @@ Better long-term:
 
 Later, create:
 
-**LitratoLink Privacy Policy v1.0**
+**Potoos Privacy Policy v1.0**
 
 It should be written in final public-facing language.
 
@@ -1142,7 +1142,7 @@ It should include:
 
 Later, create:
 
-**LitratoLink Terms of Use v1.0**
+**Potoos Terms of Use v1.0**
 
 It should include:
 
@@ -1167,11 +1167,11 @@ It should include:
 
 Later, create:
 
-**LitratoLink Support Page**
+**Potoos Support Page**
 
 It should include:
 
-* What LitratoLink does
+* What Potoos does
 * How to contact support
 * How to request data deletion
 * How to report a problem
@@ -1183,18 +1183,18 @@ It should include:
 
 Confirmed privacy and terms planning decisions:
 
-* LitratoLink is a private album sharing app.
+* Potoos is a private album sharing app.
 * Albums are private by default.
 * Only invited members can access albums.
 * Users log in with Google in V1.
-* LitratoLink may collect name, email, profile photo, album data, media data, metadata, device tokens, and activity logs.
+* Potoos may collect name, email, profile photo, album data, media data, metadata, device tokens, and activity logs.
 * Photos and videos are stored only to provide the sharing service.
-* LitratoLink should not use user content for advertising.
-* LitratoLink should not sell user photos or videos.
+* Potoos should not use user content for advertising.
+* Potoos should not sell user photos or videos.
 * Deleted files are restorable by the uploader for 30 days.
 * Only original uploader can restore their own file.
 * Users keep ownership of their uploaded content.
-* LitratoLink needs limited permission to store and share content inside the app.
+* Potoos needs limited permission to store and share content inside the app.
 * App Store privacy details must match real app behavior.
 * Google OAuth setup will need Privacy Policy and Terms URLs.
 * Final public legal documents should be reviewed before public release.
@@ -1205,7 +1205,7 @@ Confirmed privacy and terms planning decisions:
 
 The next recommended document is:
 
-**LitratoLink MVP Checklist and Testing Plan v1.0**
+**Potoos MVP Checklist and Testing Plan v1.0**
 
 This document should define:
 

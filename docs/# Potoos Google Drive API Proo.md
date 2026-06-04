@@ -1,14 +1,14 @@
-# LitratoLink Google Drive API Proof Plan v1.0
+# Potoos Google Drive API Proof Plan v1.0
 
 ## 1. Document Purpose
 
-This document explains how to test the Google Drive API storage plan for LitratoLink.
+This document explains how to test the Google Drive API storage plan for Potoos.
 
-This document is based on all previous LitratoLink planning documents.
+This document is based on all previous Potoos planning documents.
 
 The goal of this document is to test the most important technical risk early:
 
-**Can LitratoLink upload and download original-quality photos and videos using Google Drive-backed storage?**
+**Can Potoos upload and download original-quality photos and videos using Google Drive-backed storage?**
 
 This document is not the full app plan.
 
@@ -18,7 +18,7 @@ This is only the proof plan for Google Drive storage.
 
 ## 2. Why This Proof Is Important
 
-LitratoLink depends on original-quality file sharing.
+Potoos depends on original-quality file sharing.
 
 The app is only useful if it can:
 
@@ -52,14 +52,14 @@ After photo proof works, test:
 
 V1 storage direction:
 
-**LitratoLink-managed Google Drive / Google One-backed storage**
+**Potoos-managed Google Drive / Google One-backed storage**
 
 This means:
 
 * Users do not need their own Google Drive.
 * Users do not need their own Google One subscription.
 * Users do not manage Drive folders.
-* LitratoLink handles storage behind the scenes.
+* Potoos handles storage behind the scenes.
 * Users only use the app.
 
 Important:
@@ -103,7 +103,7 @@ Create or prepare:
 
 Recommended project name:
 
-**LitratoLink**
+**Potoos**
 
 Purpose:
 
@@ -135,7 +135,7 @@ Prepare OAuth consent screen.
 
 Needed information:
 
-* App name: LitratoLink
+* App name: Potoos
 * User support email
 * Developer contact email
 * App logo later
@@ -164,7 +164,7 @@ Reason:
 
 It gives more limited file access than full Drive access.
 
-However, because V1 uses LitratoLink-managed storage, we must test if `drive.file` works well for the planned backend storage flow.
+However, because V1 uses Potoos-managed storage, we must test if `drive.file` works well for the planned backend storage flow.
 
 If it does not fit the managed storage approach, review the required scope carefully.
 
@@ -178,7 +178,7 @@ Do not request broad Google Drive permissions unless they are truly needed.
 
 V1 uses one managed storage account.
 
-This account owns the Drive storage used by LitratoLink.
+This account owns the Drive storage used by Potoos.
 
 Purpose:
 
@@ -189,7 +189,7 @@ Purpose:
 
 Important privacy note:
 
-Because files are stored in managed storage, LitratoLink controls the storage location.
+Because files are stored in managed storage, Potoos controls the storage location.
 
 For V1 testing, this is acceptable.
 
@@ -203,12 +203,12 @@ Create root folder in the managed Google Drive account.
 
 Recommended folder name:
 
-**LitratoLink Storage**
+**Potoos Storage**
 
 Inside it, create:
 
 ```text
-LitratoLink Storage/
+Potoos Storage/
   development/
   production/
 ```
@@ -1226,7 +1226,7 @@ Choose this only if:
 
 The next recommended document is:
 
-**LitratoLink First Sprint Task List v1.0**
+**Potoos First Sprint Task List v1.0**
 
 This document should break the first development sprint into small tasks.
 
