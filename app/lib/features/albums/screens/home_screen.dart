@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
@@ -815,6 +816,65 @@ class _ProfileTab extends ConsumerWidget {
 
         const SizedBox(height: AppSpacing.xl),
 
+        // ── Legal & Support ───────────────────────────────────────────────
+        Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+            border: Border.all(
+                color: AppColors.velvetMaroon.withValues(alpha: 0.08),
+                width: 0.8),
+            boxShadow: AppShadows.card,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Legal & Support',
+                style: TextStyle(
+                  fontFamily: AppTheme.headingFont,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.deepMaroon,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              _LegalRow(
+                icon: Icons.shield_outlined,
+                label: 'Privacy Policy',
+                onTap: () => launchUrl(
+                  Uri.parse(
+                      'https://akircyno.github.io/potoos/privacy.html'),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+              const _ThinDivider(),
+              _LegalRow(
+                icon: Icons.description_outlined,
+                label: 'Terms of Use',
+                onTap: () => launchUrl(
+                  Uri.parse(
+                      'https://akircyno.github.io/potoos/terms.html'),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+              const _ThinDivider(),
+              _LegalRow(
+                icon: Icons.mail_outline,
+                label: 'Contact support',
+                onTap: () => launchUrl(
+                  Uri.parse('mailto:prcmarketingteam@gmail.com'
+                      '?subject=Potoos%20Support'),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: AppSpacing.xl),
+
         // ── Delete account ────────────────────────────────────────────────
         _DeleteAccountButton(ref: ref),
       ],
@@ -909,6 +969,52 @@ class _DeleteAccountButtonState extends State<_DeleteAccountButton> {
         );
       }
     }
+  }
+}
+
+class _LegalRow extends StatelessWidget {
+  const _LegalRow({required this.icon, required this.label, required this.onTap});
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          children: [
+            Icon(icon, size: 16, color: AppColors.featherTaupe),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: AppColors.charcoalInk,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            const Icon(Icons.open_in_new,
+                size: 13, color: AppColors.featherTaupe),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ThinDivider extends StatelessWidget {
+  const _ThinDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(height: 0.6, color: AppColors.creamLine);
   }
 }
 
