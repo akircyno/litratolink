@@ -10,14 +10,19 @@ final fileServiceProvider = Provider<FileService>((ref) => const FileService());
 class FileService {
   const FileService();
 
-  Future<UploadFile?> pickOriginalMediaFile({bool includeVideos = false}) async {
+  // file_picker uses 0 to disable image compression; original bytes are required.
+  static const _noCompression = 0;
+
+  Future<UploadFile?> pickOriginalMediaFile(
+      {bool includeVideos = false}) async {
     final result = await FilePicker.pickFiles(
       allowMultiple: false,
       type: FileType.custom,
-      allowedExtensions: FileUtils.allowedMediaExtensions(includeVideos: includeVideos),
+      allowedExtensions:
+          FileUtils.allowedMediaExtensions(includeVideos: includeVideos),
       withData: true,
       withReadStream: false,
-      compressionQuality: 0,
+      compressionQuality: _noCompression,
     );
 
     final file = result?.files.singleOrNull;
@@ -43,14 +48,16 @@ class FileService {
     );
   }
 
-  Future<List<UploadFile>> pickOriginalMediaFiles({bool includeVideos = false}) async {
+  Future<List<UploadFile>> pickOriginalMediaFiles(
+      {bool includeVideos = false}) async {
     final result = await FilePicker.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
-      allowedExtensions: FileUtils.allowedMediaExtensions(includeVideos: includeVideos),
+      allowedExtensions:
+          FileUtils.allowedMediaExtensions(includeVideos: includeVideos),
       withData: true,
       withReadStream: false,
-      compressionQuality: 0,
+      compressionQuality: _noCompression,
     );
 
     if (result == null || result.files.isEmpty) return [];
@@ -72,7 +79,8 @@ class FileService {
     }
 
     if (files.isEmpty) {
-      throw const AppError('None of the selected files are supported. Choose photos or videos.');
+      throw const AppError(
+          'None of the selected files are supported. Choose photos or videos.');
     }
 
     return files;

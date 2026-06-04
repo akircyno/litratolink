@@ -1,7 +1,10 @@
 import { handleCors } from "../_shared/cors.ts";
 import { error, success } from "../_shared/response.ts";
 import { getUserFromRequest } from "../_shared/auth.ts";
-import { getOrCreateDriveFolder } from "../_shared/googleDrive.ts";
+import {
+  createResumableUploadSession,
+  getOrCreateDriveFolder,
+} from "../_shared/googleDrive.ts";
 import { canUploadToAlbum } from "../_shared/permissions.ts";
 import { createSafeStorageFilename, getAlbumOriginalsPath } from "../_shared/storagePaths.ts";
 import { supabaseAdmin } from "../_shared/supabaseAdmin.ts";
@@ -142,6 +145,13 @@ Deno.serve(async (req) => {
     const storageFilename = createSafeStorageFilename(mediaFile.id, originalFilename);
     const storagePath = `${storageDirectory}/${storageFilename}`;
 
+    const uploadUrl = await createResumableUploadSession({
+      filename: storageFilename,
+      mimeType,
+      parentFolderId: originalsFolder.id,
+      fileSizeBytes,
+    });
+
     const { error: updateError } = await supabaseAdmin
       .from("storage_objects")
       .update({
@@ -157,10 +167,12 @@ Deno.serve(async (req) => {
     return success({
       media_file_id: mediaFile.id,
       storage_object_id: storageObject.id,
-      upload_url: "upload-original-file",
-      upload_method: "POST",
+      upload_url: uploadUrl,
+      upload_method: "PUT",
+      upload_strategy: "google_drive_resumable",
+      chunk_size_bytes: 8 * 1024 * 1024,
       required_headers: {
-        "Content-Type": "application/json",
+        "Content-Type": mimeType,
       },
     }, 201);
   } catch (uploadError) {

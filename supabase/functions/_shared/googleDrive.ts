@@ -160,9 +160,13 @@ export async function getOrCreateDriveFolder(name: string, parentId: string) {
 
 export async function createResumableUploadSession(params: UploadSessionParams) {
   const accessToken = await getGoogleAccessToken();
+  const searchParams = new URLSearchParams({
+    uploadType: "resumable",
+    fields: "id,name,mimeType,parents,size,thumbnailLink",
+  });
 
   const response = await fetch(
-    "https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable",
+    `https://www.googleapis.com/upload/drive/v3/files?${searchParams.toString()}`,
     {
       method: "POST",
       headers: {

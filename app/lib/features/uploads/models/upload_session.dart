@@ -5,6 +5,8 @@ class UploadSession {
     required this.uploadUrl,
     required this.uploadMethod,
     required this.requiredHeaders,
+    required this.uploadStrategy,
+    required this.chunkSizeBytes,
   });
 
   final String mediaFileId;
@@ -12,16 +14,35 @@ class UploadSession {
   final String uploadUrl;
   final String uploadMethod;
   final Map<String, String> requiredHeaders;
+  final String uploadStrategy;
+  final int? chunkSizeBytes;
+
+  bool get isGoogleDriveResumable {
+    final uri = Uri.tryParse(uploadUrl);
+    return uploadStrategy == 'google_drive_resumable' &&
+        uploadMethod.toUpperCase() == 'PUT' &&
+        uri != null &&
+        uri.scheme == 'https' &&
+        uri.host == 'www.googleapis.com';
+  }
 
   factory UploadSession.fromJson(Map<String, dynamic> json) {
-    final headers = Map<String, dynamic>.from(json['required_headers'] as Map? ?? {});
+    final headers =
+        Map<String, dynamic>.from(json['required_headers'] as Map? ?? {});
+    final rawChunkSize =
+        int.tryParse(json['chunk_size_bytes']?.toString() ?? '');
 
     return UploadSession(
       mediaFileId: json['media_file_id']?.toString() ?? '',
       storageObjectId: json['storage_object_id']?.toString() ?? '',
       uploadUrl: json['upload_url']?.toString() ?? '',
       uploadMethod: json['upload_method']?.toString() ?? 'PUT',
-      requiredHeaders: headers.map((key, value) => MapEntry(key, value.toString())),
+      requiredHeaders:
+          headers.map((key, value) => MapEntry(key, value.toString())),
+      uploadStrategy:
+          json['upload_strategy']?.toString() ?? 'edge_function_proxy',
+      chunkSizeBytes:
+          rawChunkSize != null && rawChunkSize > 0 ? rawChunkSize : null,
     );
   }
 }

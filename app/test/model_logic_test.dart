@@ -8,6 +8,7 @@ import 'package:potoos/features/albums/models/album_member.dart';
 import 'package:potoos/features/albums/models/media_file.dart';
 import 'package:potoos/features/auth/data/auth_repository.dart';
 import 'package:potoos/features/downloads/models/downloaded_file.dart';
+import 'package:potoos/features/uploads/models/upload_session.dart';
 
 void main() {
   group('AppEnv', () {
@@ -77,6 +78,38 @@ void main() {
       );
 
       expect(file.sizeMatchesExpected, isFalse);
+    });
+  });
+
+  group('UploadSession', () {
+    test('detects Google Drive resumable upload sessions', () {
+      final session = UploadSession.fromJson({
+        'media_file_id': 'media-id',
+        'storage_object_id': 'storage-id',
+        'upload_url':
+            'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&upload_id=abc',
+        'upload_method': 'PUT',
+        'upload_strategy': 'google_drive_resumable',
+        'chunk_size_bytes': 8388608,
+        'required_headers': {'Content-Type': 'image/jpeg'},
+      });
+
+      expect(session.isGoogleDriveResumable, isTrue);
+      expect(session.chunkSizeBytes, 8388608);
+      expect(session.requiredHeaders['Content-Type'], 'image/jpeg');
+    });
+
+    test('keeps legacy edge proxy sessions available as fallback', () {
+      final session = UploadSession.fromJson({
+        'media_file_id': 'media-id',
+        'storage_object_id': 'storage-id',
+        'upload_url': 'upload-original-file',
+        'upload_method': 'POST',
+        'required_headers': {'Content-Type': 'application/json'},
+      });
+
+      expect(session.isGoogleDriveResumable, isFalse);
+      expect(session.uploadStrategy, 'edge_function_proxy');
     });
   });
 
