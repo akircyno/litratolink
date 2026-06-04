@@ -76,6 +76,33 @@ without deleting the whole album.
 
 ---
 
+## Monitoring & Analytics
+
+### Crash Reporting (Sentry)
+**Why:** Without crash reporting, you won't know about errors that beta testers and
+real users hit unless they report them manually. Sentry catches every unhandled
+exception with a full stack trace.
+
+**How:**
+- Code is already in the app (`sentry_flutter` package + `SentryFlutter.init` in main.dart)
+- Currently inert because `SENTRY_DSN` is empty in `env.properties`
+- To activate: go to sentry.io → create free account → New Project → Flutter →
+  copy DSN → add to `env.properties` as `SENTRY_DSN=<your dsn>`
+- Also add `SENTRY_DSN` as a secret in GitHub Actions so the deployed PWA reports too
+
+**Cost:** Free tier (5k errors/month — more than enough for beta)
+
+---
+
+### Analytics (Phase 9)
+**Why:** Understand how users actually use the app — which features they use,
+where they drop off, how often they upload vs download.
+
+**How:** Firebase Analytics (free) — `firebase_analytics` Flutter package.
+Track: album_created, upload_success, save_all_used, file_previewed.
+
+---
+
 ## Performance & PWA
 
 ### Mascot Asset Optimization (Sprite Sheet)

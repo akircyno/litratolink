@@ -105,8 +105,8 @@ Update the status column as each step is completed.
 | # | Task | Status | Notes |
 |---|---|---|---|
 | 8.1 | Thumbnail loading speed optimization | ⬜ | |
-| 8.2 | Upload retry logic on failure | ⬜ | |
-| 8.3 | Offline / no-connection state handling | ⬜ | Show friendly message, not blank screen |
+| 8.2 | Upload retry logic on failure | ✅ | Retry only skips already-completed files |
+| 8.3 | Offline / no-connection state handling | ✅ | AppError detects SocketException, timeout, DNS failure |
 | 8.4 | Large file warning on cellular connection | ⬜ | Warn before uploading video on mobile data |
 
 ---
@@ -125,8 +125,8 @@ Update the status column as each step is completed.
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| 10.1 | Set up Firebase Crashlytics or Sentry | ⬜ | Must be done before beta testing |
-| 10.2 | Verify crashes are appearing in dashboard | ⬜ | Trigger a test crash |
+| 10.1 | Set up Sentry | ⬜ | **V2** — code already in app, just needs DSN from sentry.io |
+| 10.2 | Verify crashes are appearing in dashboard | ⬜ | **V2** — trigger a test crash after DSN is set |
 
 ---
 
