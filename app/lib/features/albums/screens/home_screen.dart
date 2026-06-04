@@ -177,7 +177,7 @@ class _AlbumsTab extends ConsumerWidget {
                 loading: () => const Center(
                   child: Padding(
                     padding: EdgeInsets.all(24),
-                    child: CircularProgressIndicator(color: AppColors.softGold),
+                    child: CircularProgressIndicator(color: AppColors.brightGold),
                   ),
                 ),
                 error: (error, _) => AlbumEmptyState(
@@ -215,19 +215,20 @@ class _AlbumsTab extends ConsumerWidget {
             ),
           ],
         ),
-        Positioned(
-          right: 20,
-          bottom: 18,
-          child: FloatingActionButton(
-            tooltip: 'Create album',
-            backgroundColor: AppColors.maroon,
-            foregroundColor: AppColors.white,
-            shape: const CircleBorder(),
-            onPressed: () =>
-                Navigator.pushNamed(context, AppRoutes.createAlbum),
-            child: const Icon(Icons.add),
+        if (albums.isNotEmpty)
+          Positioned(
+            right: 20,
+            bottom: 18,
+            child: FloatingActionButton(
+              tooltip: 'Create album',
+              backgroundColor: AppColors.velvetMaroon,
+              foregroundColor: AppColors.white,
+              shape: const CircleBorder(),
+              onPressed: () =>
+                  Navigator.pushNamed(context, AppRoutes.createAlbum),
+              child: const Icon(Icons.add),
+            ),
           ),
-        ),
       ],
     );
   }
