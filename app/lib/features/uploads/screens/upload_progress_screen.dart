@@ -113,19 +113,18 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
               // ── Scrollable body ──────────────────────────────────────
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.md, AppSpacing.xl, AppSpacing.md, AppSpacing.lg),
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.md,
+                      AppSpacing.xl, AppSpacing.md, AppSpacing.lg),
                   child: Column(
                     children: [
                       // Poto — the hero
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 400),
                         switchInCurve: Curves.easeOutCubic,
-                        transitionBuilder: (child, animation) =>
-                            FadeTransition(
+                        transitionBuilder: (child, animation) => FadeTransition(
                           opacity: animation,
-                          child: ScaleTransition(
-                              scale: animation, child: child),
+                          child:
+                              ScaleTransition(scale: animation, child: child),
                         ),
                         child: PotoMascot(
                           key: ValueKey(expression),
@@ -178,20 +177,19 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
                         children: [
                           for (var i = 0; i < files.length; i++)
                             Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: AppSpacing.sm),
+                              padding:
+                                  const EdgeInsets.only(bottom: AppSpacing.sm),
                               child: _FileRow(
                                 file: files[i],
                                 progress: _progressFor(i, state),
                                 status: _statusFor(i, state),
                                 isDone: i < completedCount,
-                                isActive: i == state.currentFileIndex &&
-                                    isUploading,
+                                isActive:
+                                    i == state.currentFileIndex && isUploading,
                                 isWaiting: i > state.currentFileIndex ||
-                                    (state.currentFileIndex < 0 &&
-                                        !isComplete),
-                                isFailed: i == state.currentFileIndex &&
-                                    hasError,
+                                    (state.currentFileIndex < 0 && !isComplete),
+                                isFailed:
+                                    i == state.currentFileIndex && hasError,
                               ),
                             ),
                         ],
@@ -210,12 +208,9 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
                       ? () {
                           // Only retry the files that haven't completed yet —
                           // skip the ones already secured successfully
-                          final remaining = state.completedCount > 0
-                              ? files.sublist(state.completedCount)
-                              : files;
                           ref
                               .read(uploadControllerProvider.notifier)
-                              .upload(albumId: album.id, files: remaining);
+                              .retryFailed();
                         }
                       : () => Navigator.pushNamedAndRemoveUntil(
                             context,
@@ -233,7 +228,8 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
 
   double _progressFor(int i, UploadState state) {
     if (i < state.completedCount) return 1.0;
-    if (i == state.currentFileIndex && state.isUploading) {
+    if (i == state.currentFileIndex &&
+        (state.isUploading || state.errorMessage != null)) {
       final share = 1.0 / state.totalCount;
       final base = i / state.totalCount;
       final current = (state.progress - base).clamp(0.0, share);
@@ -287,14 +283,13 @@ class _Header extends StatelessWidget {
               height: 32,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: AppColors.white
-                    .withValues(alpha: canClose ? 0.14 : 0.06),
+                color:
+                    AppColors.white.withValues(alpha: canClose ? 0.14 : 0.06),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
                 Icons.close,
-                color: AppColors.white
-                    .withValues(alpha: canClose ? 1.0 : 0.3),
+                color: AppColors.white.withValues(alpha: canClose ? 1.0 : 0.3),
                 size: 17,
               ),
             ),
@@ -562,8 +557,7 @@ class _FileRow extends StatelessWidget {
 
           // Status badge
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
             decoration: BoxDecoration(
               color: isDone
                   ? AppColors.brightGold.withValues(alpha: 0.10)
@@ -607,8 +601,8 @@ class _BottomCTA extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
-        border:
-            const Border(top: BorderSide(color: AppColors.creamLine, width: 0.8)),
+        border: const Border(
+            top: BorderSide(color: AppColors.creamLine, width: 0.8)),
         boxShadow: [
           BoxShadow(
             color: AppColors.midnightBurgundy.withValues(alpha: 0.06),
@@ -617,8 +611,8 @@ class _BottomCTA extends StatelessWidget {
           ),
         ],
       ),
-      padding: EdgeInsets.fromLTRB(
-          AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.sm + bottomPad),
+      padding: EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md,
+          AppSpacing.sm + bottomPad),
       child: PressableScale(
         onTap: onAction,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),

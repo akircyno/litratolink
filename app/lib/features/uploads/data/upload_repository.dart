@@ -28,10 +28,31 @@ class UploadRepository {
   static const _defaultDriveChunkSizeBytes = 8 * 1024 * 1024;
   static const _driveChunkQuantumBytes = 256 * 1024;
   static const _maxChunkAttempts = 3;
+  static const _legacyProxyMaxBytes = 5 * 1024 * 1024;
+
+  Future<UploadSession> createUploadSession({
+    required String albumId,
+    required UploadFile file,
+  }) {
+    return edgeFunctionService.call<UploadSession>(
+      'create-upload-session',
+      body: {
+        'album_id': albumId,
+        'original_filename': file.name,
+        'mime_type': file.mimeType,
+        'file_size_bytes': file.sizeBytes,
+        'file_type': file.fileType,
+      },
+      parser: (data) =>
+          UploadSession.fromJson(Map<String, dynamic>.from(data as Map)),
+    );
+  }
 
   Future<CompletedUpload> uploadOriginalFile({
     required String albumId,
     required UploadFile file,
+    UploadSession? existingSession,
+    void Function(UploadSession session)? onSessionCreated,
     required void Function(double progress) onProgress,
   }) async {
     final bytes = file.bytes;
@@ -55,18 +76,14 @@ class UploadRepository {
       checksumHex: checksumHex,
     );
 
-    final session = await edgeFunctionService.call<UploadSession>(
-      'create-upload-session',
-      body: {
-        'album_id': albumId,
-        'original_filename': file.name,
-        'mime_type': file.mimeType,
-        'file_size_bytes': file.sizeBytes,
-        'file_type': file.fileType,
-      },
-      parser: (data) =>
-          UploadSession.fromJson(Map<String, dynamic>.from(data as Map)),
-    );
+    final session = existingSession ??
+        await createUploadSession(
+          albumId: albumId,
+          file: file,
+        );
+    if (existingSession == null) {
+      onSessionCreated?.call(session);
+    }
 
     onProgress(0.05);
 
@@ -77,6 +94,13 @@ class UploadRepository {
         bytes: bytes,
         checksumHex: checksumHex,
         onProgress: onProgress,
+      );
+    }
+
+    if (file.sizeBytes > _legacyProxyMaxBytes) {
+      throw const AppError(
+        'This upload needs the latest original-file uploader. Refresh Potoos and try again.',
+        code: 'UPLOAD_FAILED',
       );
     }
 
@@ -97,17 +121,12 @@ class UploadRepository {
   }) async {
     String providerFileId;
 
-    try {
-      providerFileId = await _uploadRawBytesToDrive(
-        session: session,
-        file: file,
-        bytes: bytes,
-        onProgress: (p) => onProgress(0.05 + p.clamp(0.0, 1.0) * 0.88),
-      );
-    } catch (_) {
-      await _markUploadFailed(session);
-      rethrow;
-    }
+    providerFileId = await _uploadRawBytesToDrive(
+      session: session,
+      file: file,
+      bytes: bytes,
+      onProgress: (p) => onProgress(0.05 + p.clamp(0.0, 1.0) * 0.88),
+    );
 
     onProgress(0.95);
 
@@ -134,6 +153,24 @@ class UploadRepository {
     );
     var offset = 0;
     Object? finalPayload;
+
+    final startingStatus = await _queryDriveUploadStatus(
+      session: session,
+      totalBytes: totalBytes,
+    );
+    if (startingStatus != null) {
+      if (startingStatus.statusCode == 200 ||
+          startingStatus.statusCode == 201) {
+        finalPayload = startingStatus.data;
+        offset = totalBytes;
+        onProgress(1);
+      } else if (startingStatus.statusCode == 404) {
+        throw _appErrorFromDriveStatus(404);
+      } else if (startingStatus.statusCode == 308) {
+        offset = (startingStatus.nextOffset ?? 0).clamp(0, totalBytes).toInt();
+        onProgress(offset / totalBytes);
+      }
+    }
 
     while (offset < totalBytes) {
       final chunkStart = offset;
@@ -350,21 +387,6 @@ class UploadRepository {
       'Upload reached storage but could not be confirmed. Check the album before retrying.',
       code: 'UPLOAD_FAILED',
     );
-  }
-
-  Future<void> _markUploadFailed(UploadSession session) async {
-    try {
-      await edgeFunctionService.call<void>(
-        'fail-upload',
-        body: {
-          'media_file_id': session.mediaFileId,
-          'storage_object_id': session.storageObjectId,
-        },
-        parser: (_) {},
-      );
-    } catch (_) {
-      // Best effort only; the visible upload error is more important.
-    }
   }
 
   Future<CompletedUpload> _uploadWithLegacyEdgeProxy({

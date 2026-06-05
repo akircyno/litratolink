@@ -74,7 +74,7 @@ Deno.serve(async (req) => {
     return error("FORBIDDEN", "You do not have permission to upload to this album.", 403);
   }
 
-  if (!["pending", "uploading"].includes(mediaFile.upload_status)) {
+  if (!["pending", "uploading", "failed"].includes(mediaFile.upload_status)) {
     return error("UPLOAD_FAILED", "This upload is no longer waiting for completion.", 400);
   }
 

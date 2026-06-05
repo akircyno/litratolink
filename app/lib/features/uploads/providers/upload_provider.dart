@@ -56,6 +56,11 @@ class UploadState {
 }
 
 class UploadController extends Notifier<UploadState> {
+  String? _albumId;
+  List<UploadFile> _files = const [];
+  List<UploadSession?> _sessions = const [];
+  List<CompletedUpload> _completedUploads = const [];
+
   @override
   UploadState build() => const UploadState();
 
@@ -63,10 +68,42 @@ class UploadController extends Notifier<UploadState> {
     required String albumId,
     required List<UploadFile> files,
   }) async {
+    _albumId = albumId;
+    _files = List.unmodifiable(files);
+    _sessions = List<UploadSession?>.filled(files.length, null);
+    _completedUploads = const [];
     state = UploadState(isUploading: true, totalCount: files.length);
-    final completed = <CompletedUpload>[];
 
-    for (var i = 0; i < files.length; i++) {
+    await _uploadFromIndex(0);
+  }
+
+  Future<void> retryFailed() async {
+    final albumId = _albumId;
+    if (albumId == null || _files.isEmpty || state.isUploading) return;
+
+    final failedIndex = state.currentFileIndex >= 0
+        ? state.currentFileIndex
+        : state.completedCount;
+
+    if (failedIndex < 0 || failedIndex >= _files.length) return;
+
+    state = state.copyWith(
+      isUploading: true,
+      currentFileIndex: failedIndex,
+      clearError: true,
+    );
+
+    await _uploadFromIndex(failedIndex);
+  }
+
+  Future<void> _uploadFromIndex(int startIndex) async {
+    final albumId = _albumId;
+    if (albumId == null) return;
+
+    final files = _files;
+    final completed = _completedUploads.toList();
+
+    for (var i = startIndex; i < files.length; i++) {
       state = state.copyWith(currentFileIndex: i);
 
       try {
@@ -74,15 +111,20 @@ class UploadController extends Notifier<UploadState> {
             await ref.read(uploadRepositoryProvider).uploadOriginalFile(
                   albumId: albumId,
                   file: files[i],
+                  existingSession: _sessions[i],
+                  onSessionCreated: (session) {
+                    _sessions[i] = session;
+                  },
                   onProgress: (p) {
                     final overall = (i + p.clamp(0.0, 1.0)) / files.length;
                     state = state.copyWith(progress: overall.clamp(0.0, 1.0));
                   },
                 );
         completed.add(result);
+        _completedUploads = List.unmodifiable(completed);
         state = state.copyWith(
           completedCount: i + 1,
-          completedUploads: List.unmodifiable(completed),
+          completedUploads: _completedUploads,
           progress: ((i + 1) / files.length).clamp(0.0, 1.0),
           clearError: true,
         );
