@@ -18,22 +18,33 @@ final mediaPreviewBytesProvider =
   return ref.watch(mediaPreviewRepositoryProvider).fetchPreview(mediaFileId);
 });
 
+final mediaFullResBytesProvider =
+    FutureProvider.autoDispose.family<Uint8List?, String>((ref, mediaFileId) {
+  if (mediaFileId.isEmpty) return Future.value(null);
+  return ref
+      .watch(mediaPreviewRepositoryProvider)
+      .fetchPreview(mediaFileId, large: true);
+});
+
 class MediaPreviewRepository {
   const MediaPreviewRepository(this.supabaseService, this.dio);
 
   final SupabaseService supabaseService;
   final Dio dio;
 
-  Future<Uint8List?> fetchPreview(String mediaFileId) async {
+  Future<Uint8List?> fetchPreview(String mediaFileId, {bool large = false}) async {
     if (!supabaseService.isConfigured) return null;
 
     final session = supabaseService.currentSession;
     if (session == null) return null;
 
     try {
+      final queryParams = <String, dynamic>{'media_file_id': mediaFileId};
+      if (large) queryParams['size'] = 'large';
+
       final response = await dio.get<List<int>>(
         '${supabaseService.env.supabaseUrl}/functions/v1/get-media-preview',
-        queryParameters: {'media_file_id': mediaFileId},
+        queryParameters: queryParams,
         options: Options(
           headers: {
             'Authorization': 'Bearer ${session.accessToken}',

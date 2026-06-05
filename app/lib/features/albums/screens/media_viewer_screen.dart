@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/app_toast.dart';
 import '../../../core/widgets/pressable_scale.dart';
 import '../../downloads/providers/download_provider.dart';
 import '../models/media_file.dart';
@@ -70,7 +71,9 @@ class _MediaViewerScreenState extends ConsumerState<MediaViewerScreen> {
 
   void _resetHideTimer() {
     _hideTimer?.cancel();
-    if (mounted && !_chromeVisible) setState(() => _chromeVisible = true);
+    // Always show chrome on any interaction.  Guard with _initialized so
+    // the initState call (before the first build) never triggers setState.
+    if (_initialized) setState(() => _chromeVisible = true);
     _hideTimer = Timer(const Duration(seconds: 2), () {
       if (mounted) setState(() => _chromeVisible = false);
     });
@@ -112,6 +115,19 @@ class _MediaViewerScreenState extends ConsumerState<MediaViewerScreen> {
   @override
   Widget build(BuildContext context) {
     if (!_initialized) return const SizedBox.shrink();
+
+    // Keep the autoDispose download provider alive while the viewer is open,
+    // and surface toast feedback on completion / error.
+    ref.listen<DownloadState>(downloadControllerProvider, (prev, next) {
+      if (next.isDownloading) return;
+      if (next.errorMessage != null && prev?.errorMessage != next.errorMessage) {
+        showAppToast(context,
+            message: next.errorMessage!, icon: Icons.error_outline, isError: true);
+      } else if (next.downloadedFile != null &&
+          prev?.downloadedFile != next.downloadedFile) {
+        showAppToast(context, message: 'Saved to your device');
+      }
+    });
 
     final topPad = MediaQuery.of(context).padding.top;
     final bottomPad = MediaQuery.of(context).padding.bottom;

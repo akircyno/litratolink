@@ -127,15 +127,24 @@ export async function fetchDriveFileContent(
   return response;
 }
 
-export async function downloadDriveThumbnailBytes(fileId: string): Promise<DriveThumbnailBytes | null> {
+export async function downloadDriveThumbnailBytes(
+  fileId: string,
+  large = false,
+): Promise<DriveThumbnailBytes | null> {
   const accessToken = await getGoogleAccessToken();
   const metadata = await getDriveFileMetadata(fileId);
 
   if (!metadata.thumbnailLink) {
-    return await downloadDriveThumbnailEndpointBytes(accessToken, fileId);
+    return await downloadDriveThumbnailEndpointBytes(accessToken, fileId, large);
   }
 
-  const response = await fetch(metadata.thumbnailLink, {
+  // Google CDN thumbnailLink ends with a size suffix like "=s220" or "=w220-h220".
+  // Replace it with a larger size when full-quality is requested.
+  const targetLink = large
+    ? metadata.thumbnailLink.replace(/=s\d+(-[a-z]\d+)*$/, "=s2000").replace(/=w\d+-h\d+$/, "=w2000-h2000")
+    : metadata.thumbnailLink;
+
+  const response = await fetch(targetLink, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -155,9 +164,11 @@ export async function downloadDriveThumbnailBytes(fileId: string): Promise<Drive
 async function downloadDriveThumbnailEndpointBytes(
   accessToken: string,
   fileId: string,
+  large = false,
 ): Promise<DriveThumbnailBytes | null> {
+  const sz = large ? "w2000" : "w1000";
   const response = await fetch(
-    `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w1000`,
+    `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=${sz}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

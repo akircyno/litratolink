@@ -19,10 +19,12 @@ Deno.serve(async (req) => {
     return error("UNAUTHENTICATED", "Please log in to continue.", 401);
   }
 
-  const mediaFileId = new URL(req.url).searchParams.get("media_file_id");
+  const url = new URL(req.url);
+  const mediaFileId = url.searchParams.get("media_file_id");
   if (!isUuid(mediaFileId)) {
     return error("INVALID_REQUEST", "Please send a valid file id.", 400);
   }
+  const large = url.searchParams.get("size") === "large";
 
   const { data: mediaFile, error: mediaError } = await supabaseAdmin
     .from("media_files")
@@ -66,7 +68,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const preview = await downloadDriveThumbnailBytes(storageObject.provider_file_id);
+    const preview = await downloadDriveThumbnailBytes(storageObject.provider_file_id, large);
     if (!preview) {
       return error("FILE_NOT_FOUND", "Preview is not ready yet.", 404);
     }

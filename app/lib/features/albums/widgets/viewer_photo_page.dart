@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'dart:typed_data';
+
+import '../data/media_preview_repository.dart';
 import '../models/media_file.dart';
 import 'media_preview_image.dart';
 
@@ -37,6 +40,10 @@ class _ViewerPhotoPageState extends ConsumerState<ViewerPhotoPage>
   double _scale = 1.0;
   double _dragY = 0.0;
   bool _draggingDown = false;
+
+  // Pointer tracking for swipe-down dismiss via Listener (avoids gesture-arena
+  // conflict with InteractiveViewer's ScaleGestureRecognizer).
+  final _activePointers = <int, Offset>{};
 
   @override
   void initState() {
@@ -95,11 +102,12 @@ class _ViewerPhotoPageState extends ConsumerState<ViewerPhotoPage>
       final size = renderBox.size;
       final cx = size.width / 2;
       final cy = size.height / 2;
-      // Scale centred on widget centre (spec: toggle 1x ↔ 2.5x)
+      // T(cx,cy) * S(s) * T(-cx,-cy) centred on widget centre.
+      // w must be 1.0 so the homogeneous coordinate stays valid.
       final matrix = Matrix4.identity()
-        ..translateByDouble(cx, cy, 0, 0)
+        ..translateByDouble(cx, cy, 0, 1.0)
         ..scaleByDouble(targetScale, targetScale, 1.0, 1.0)
-        ..translateByDouble(-cx, -cy, 0, 0);
+        ..translateByDouble(-cx, -cy, 0, 1.0);
       _animateTo(matrix);
       setState(() => _scale = targetScale);
       widget.onScaleChanged(targetScale);
@@ -116,23 +124,35 @@ class _ViewerPhotoPageState extends ConsumerState<ViewerPhotoPage>
     _animController.forward(from: 0);
   }
 
-  // ── Swipe-down dismiss (enabled only at 1x) ───────────────────────────────
+  // ── Swipe-down dismiss via Listener (at 1x, single finger) ──────────────
+  // Using Listener instead of GestureDetector.onVerticalDrag* avoids
+  // competing with InteractiveViewer's ScaleGestureRecognizer in the arena,
+  // which was preventing 2-finger pinch-to-zoom from working.
 
-  void _onVerticalDragStart(DragStartDetails _) {
-    if (_scale > 1.0) return;
-    setState(() {
-      _draggingDown = true;
-      _dragY = 0;
-    });
+  void _onPointerDown(PointerDownEvent e) {
+    _activePointers[e.pointer] = e.localPosition;
   }
 
-  void _onVerticalDragUpdate(DragUpdateDetails details) {
-    if (!_draggingDown) return;
-    setState(() => _dragY += details.delta.dy);
+  void _onPointerMove(PointerMoveEvent e) {
+    if (_scale > 1.0 || _activePointers.length != 1) return;
+    if (!_activePointers.containsKey(e.pointer)) return;
+    final dy = e.delta.dy;
+    final dx = e.delta.dx;
+    if (!_draggingDown) {
+      if (dy > 0 && dy.abs() > dx.abs()) {
+        setState(() {
+          _draggingDown = true;
+          _dragY = 0;
+        });
+      }
+      return;
+    }
+    setState(() => _dragY += dy);
     widget.onDragOffsetChanged(_dragY.abs());
   }
 
-  void _onVerticalDragEnd(DragEndDetails _) {
+  void _onPointerUp(PointerUpEvent e) {
+    _activePointers.remove(e.pointer);
     if (!_draggingDown) return;
     if (_dragY > 100) {
       widget.onDismiss();
@@ -145,36 +165,74 @@ class _ViewerPhotoPageState extends ConsumerState<ViewerPhotoPage>
     }
   }
 
+  void _onPointerCancel(PointerCancelEvent e) {
+    _activePointers.remove(e.pointer);
+    if (_draggingDown) {
+      setState(() {
+        _dragY = 0;
+        _draggingDown = false;
+      });
+      widget.onDragOffsetChanged(0);
+    }
+  }
+
   // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onDoubleTapDown: _onDoubleTapDown,
-      onDoubleTap: _onDoubleTap,
-      onTap: widget.onInteraction,
-      onVerticalDragStart: _onVerticalDragStart,
-      onVerticalDragUpdate: _onVerticalDragUpdate,
-      onVerticalDragEnd: _onVerticalDragEnd,
-      child: Transform.translate(
-        offset: Offset(0, _draggingDown ? _dragY : 0),
-        child: InteractiveViewer(
-          transformationController: _transformController,
-          minScale: 1.0,
-          maxScale: 5.0,
-          clipBehavior: Clip.none,
-          // When at 1x, disable pan so swipe-down gesture reaches GestureDetector
-          panEnabled: _scale > 1.0,
-          onInteractionUpdate: _onInteractionUpdate,
-          onInteractionEnd: _onInteractionEnd,
-          child: MediaPreviewImage(
-            mediaFileId: widget.file.id,
-            thumbnailUrl: widget.file.thumbnailUrl,
-            fallback: const ColoredBox(color: Colors.black),
-            fit: BoxFit.contain,
+    return Listener(
+      behavior: HitTestBehavior.translucent,
+      onPointerDown: _onPointerDown,
+      onPointerMove: _onPointerMove,
+      onPointerUp: _onPointerUp,
+      onPointerCancel: _onPointerCancel,
+      child: GestureDetector(
+        onDoubleTapDown: _onDoubleTapDown,
+        onDoubleTap: _onDoubleTap,
+        onTap: widget.onInteraction,
+        child: Transform.translate(
+          offset: Offset(0, _draggingDown ? _dragY : 0),
+          child: InteractiveViewer(
+            transformationController: _transformController,
+            minScale: 1.0,
+            maxScale: 5.0,
+            clipBehavior: Clip.none,
+            panEnabled: _scale > 1.0,
+            onInteractionUpdate: _onInteractionUpdate,
+            onInteractionEnd: _onInteractionEnd,
+            child: _FullResPhoto(file: widget.file),
           ),
         ),
       ),
+    );
+  }
+}
+
+// Progressively loads the full-resolution image on top of the thumbnail.
+// The thumbnail shows instantly; the large version replaces it once fetched.
+class _FullResPhoto extends ConsumerWidget {
+  const _FullResPhoto({required this.file});
+  final MediaFile file;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final fullRes = ref.watch(mediaFullResBytesProvider(file.id));
+    final Uint8List? bytes = fullRes.asData?.value;
+
+    if (bytes != null && bytes.isNotEmpty) {
+      return Image.memory(
+        bytes,
+        fit: BoxFit.contain,
+        gaplessPlayback: true,
+        filterQuality: FilterQuality.high,
+      );
+    }
+
+    return MediaPreviewImage(
+      mediaFileId: file.id,
+      thumbnailUrl: file.thumbnailUrl,
+      fallback: const ColoredBox(color: Colors.black),
+      fit: BoxFit.contain,
     );
   }
 }
