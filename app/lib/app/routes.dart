@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../features/albums/screens/album_details_screen.dart';
 import '../features/albums/screens/create_album_screen.dart';
 import '../features/albums/screens/home_screen.dart';
+import '../features/albums/screens/media_viewer_screen.dart';
 import '../features/albums/screens/members_screen.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/onboarding_screen.dart';
@@ -26,6 +27,7 @@ class AppRoutes {
   static const filePreview = '/file-preview';
   static const saveAll = '/save-all';
   static const members = '/members';
+  static const mediaViewer = '/media-viewer';
   static const profile = '/profile';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -53,6 +55,8 @@ class AppRoutes {
         page = const SaveAllScreen();
       case members:
         page = const MembersScreen();
+      case mediaViewer:
+        page = const MediaViewerScreen();
       case profile:
         page = const HomeScreen(initialIndex: 3);
       default:
@@ -62,6 +66,7 @@ class AppRoutes {
     return switch (settings.name) {
       splash || login || onboarding => _fadeRoute(page, settings),
       upload || saveAll || createAlbum => _slideUpRoute(page, settings),
+      mediaViewer => _heroRoute(page, settings),
       _ => _slideRightRoute(page, settings),
     };
   }
@@ -96,6 +101,18 @@ class AppRoutes {
         },
         transitionDuration: const Duration(milliseconds: 300),
         reverseTransitionDuration: const Duration(milliseconds: 260),
+      );
+
+  static Route<dynamic> _heroRoute(Widget page, RouteSettings settings) =>
+      PageRouteBuilder(
+        settings: settings,
+        pageBuilder: (_, __, ___) => page,
+        transitionsBuilder: (_, animation, __, child) => FadeTransition(
+          opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+          child: child,
+        ),
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
       );
 
   static Route<dynamic> _slideUpRoute(Widget page, RouteSettings settings) =>
