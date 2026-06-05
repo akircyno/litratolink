@@ -76,8 +76,8 @@ class AlbumRepository {
           coverIsVideo: coverFileIds[albumId]?.isVideo ?? false,
         );
       }).toList();
-    } catch (_) {
-      throw const AppError('Could not load your albums. Please try again.');
+    } catch (e) {
+      throw AppError('Could not load your albums. ($e)');
     }
   }
 
