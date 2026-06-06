@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
 import '../../../core/errors/app_error.dart';
+import '../../../core/utils/file_utils.dart';
 import '../../../core/widgets/app_screen.dart';
 import '../../../core/widgets/app_toast.dart';
 import '../../../core/widgets/pressable_scale.dart';
@@ -177,7 +178,7 @@ class _AlbumDetailsScreenState extends ConsumerState<AlbumDetailsScreen>
                 slivers: [
                   // ── Cover header ─────────────────────────────────────────────
                   SliverAppBar(
-                    expandedHeight: 220,
+                    expandedHeight: 200,
                     pinned: true,
                     stretch: true,
                     backgroundColor: album.coverColors.isNotEmpty
@@ -331,7 +332,7 @@ class _AlbumDetailsScreenState extends ConsumerState<AlbumDetailsScreen>
                             child: Text(
                               selectionMode
                                   ? '${selectedIds.length} selected'
-                                  : '$visibleFileCount ${visibleFileCount == 1 ? 'file' : 'files'}',
+                                  : pluralize(visibleFileCount, 'file', 'files'),
                               style: const TextStyle(
                                 color: AppColors.mutedInk,
                                 fontSize: 12,
@@ -794,17 +795,19 @@ class _CoverBackground extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         // Background: authenticated preview or gradient
-        if (coverIsVideo)
-          MediaVideoPreview(
-            mediaFileId: coverMediaFileId,
-            fallback: _CoverGradient(album: album),
-          )
-        else
-          MediaPreviewImage(
-            mediaFileId: coverMediaFileId,
-            thumbnailUrl: coverThumbnailUrl,
-            fallback: _CoverGradient(album: album),
-          ),
+        Hero(
+          tag: 'album-cover-${album.id}',
+          child: coverIsVideo
+              ? MediaVideoPreview(
+                  mediaFileId: coverMediaFileId,
+                  fallback: _CoverGradient(album: album),
+                )
+              : MediaPreviewImage(
+                  mediaFileId: coverMediaFileId,
+                  thumbnailUrl: coverThumbnailUrl,
+                  fallback: _CoverGradient(album: album),
+                ),
+        ),
         // Grid texture (gradient only, skip on preview)
         if (coverMediaFileId == null && coverThumbnailUrl == null)
           Positioned.fill(
@@ -824,13 +827,13 @@ class _CoverBackground extends StatelessWidget {
           left: 0,
           right: 0,
           child: SizedBox(
-            height: 110,
+            height: 60,
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Color(0x55000000)],
+                  colors: [Colors.transparent, Color(0x88000000)],
                 ),
               ),
             ),
@@ -838,7 +841,7 @@ class _CoverBackground extends StatelessWidget {
         ),
         // Album name + meta row
         Positioned(
-          bottom: 16,
+          bottom: 14,
           left: 16,
           right: 16,
           child: Column(
@@ -849,9 +852,9 @@ class _CoverBackground extends StatelessWidget {
                 style: const TextStyle(
                   fontFamily: AppTheme.headingFont,
                   color: AppColors.white,
-                  fontSize: 26,
+                  fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  letterSpacing: -0.4,
+                  letterSpacing: -0.3,
                   shadows: [
                     Shadow(
                         color: Colors.black26,
@@ -860,19 +863,13 @@ class _CoverBackground extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  _HeaderMeta(
-                      icon: Icons.photo_outlined,
-                      label:
-                          '$visibleFileCount ${visibleFileCount == 1 ? 'file' : 'files'}'),
-                  const SizedBox(width: 16),
-                  _HeaderMeta(
-                      icon: Icons.group_outlined,
-                      label:
-                          '$visibleMemberCount member${visibleMemberCount == 1 ? '' : 's'}'),
-                ],
+              const SizedBox(height: 4),
+              Text(
+                '${pluralize(visibleFileCount, 'file', 'files')} · ${pluralize(visibleMemberCount, 'member', 'members')}',
+                style: TextStyle(
+                  color: AppColors.warmCream.withValues(alpha: 0.75),
+                  fontSize: 12,
+                ),
               ),
             ],
           ),
@@ -1159,7 +1156,7 @@ class _UploadResumeBanner extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '$remainingCount file${remainingCount == 1 ? '' : 's'} remaining',
+                  '${pluralize(remainingCount, 'file', 'files')} remaining',
                   style: TextStyle(
                     color: AppColors.warmCream.withValues(alpha: 0.7),
                     fontSize: 11,
@@ -1194,28 +1191,3 @@ class _UploadResumeBanner extends StatelessWidget {
   }
 }
 
-class _HeaderMeta extends StatelessWidget {
-  const _HeaderMeta({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon,
-            color: AppColors.warmCream.withValues(alpha: 0.65), size: 12),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: AppColors.warmCream.withValues(alpha: 0.65),
-            fontSize: 11,
-          ),
-        ),
-      ],
-    );
-  }
-}

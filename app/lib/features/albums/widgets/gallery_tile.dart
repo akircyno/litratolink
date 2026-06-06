@@ -105,25 +105,6 @@ class GalleryTile extends StatelessWidget {
                   ),
                 ),
               ),
-            Positioned(
-              top: 4,
-              right: 4,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.softGold.withValues(alpha: 0.90),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Text(
-                  'OQ',
-                  style: TextStyle(
-                    color: AppColors.white,
-                    fontSize: 8,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
             if (selectionMode)
               Positioned(
                 top: 4,
@@ -153,22 +134,6 @@ class GalleryTile extends StatelessWidget {
                   ),
                 ),
               ),
-            Positioned(
-              left: 6,
-              right: 6,
-              bottom: 6,
-              child: Text(
-                file.originalFilename,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: AppColors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  shadows: [Shadow(color: Colors.black45, blurRadius: 4)],
-                ),
-              ),
-            ),
           ],
         ),
       ),

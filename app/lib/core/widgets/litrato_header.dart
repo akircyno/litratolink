@@ -8,6 +8,7 @@ class LitratoHeader extends StatelessWidget {
     this.subtitle,
     this.avatarInitials,
     this.avatarUrl,
+    this.userName,
     this.showAvatar = true,
     super.key,
   });
@@ -16,11 +17,12 @@ class LitratoHeader extends StatelessWidget {
   final String? subtitle;
   final String? avatarInitials;
   final String? avatarUrl;
+  final String? userName;
   final bool showAvatar;
 
   @override
   Widget build(BuildContext context) {
-    final greeting = _greeting();
+    final greeting = _greeting(userName);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
@@ -42,6 +44,7 @@ class LitratoHeader extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtitle ?? greeting,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: AppColors.warmCream.withValues(alpha: 0.60),
                     fontSize: 12,
@@ -56,11 +59,12 @@ class LitratoHeader extends StatelessWidget {
     );
   }
 
-  static String _greeting() {
+  static String _greeting(String? name) {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning.';
-    if (hour < 18) return 'Good afternoon.';
-    return 'Good evening.';
+    final suffix = name != null && name.isNotEmpty ? ', $name.' : '.';
+    if (hour < 12) return 'Good morning$suffix';
+    if (hour < 18) return 'Good afternoon$suffix';
+    return 'Good evening$suffix';
   }
 }
 

@@ -2,12 +2,14 @@ import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
 import '../../../core/errors/app_error.dart';
+import '../../../core/utils/file_utils.dart';
 import '../../../core/utils/quality_test_log.dart';
 import '../../../core/widgets/app_empty_state.dart';
 import '../../../core/widgets/app_screen.dart';
@@ -108,7 +110,7 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
             ? 'Download stopped.'
             : _isSaving
                 ? '$_savedCount of $totalFiles packed so far.'
-                : '$totalFiles ${totalFiles == 1 ? 'file' : 'files'} ready to save.';
+                : '${pluralize(totalFiles, 'file', 'files')} ready to save.';
 
     final String? statusSub = _isComplete
         ? 'Poto packed everything into one ZIP for you.'
@@ -314,14 +316,32 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
 
       final zipBytes = Uint8List.fromList(ZipEncoder().encode(archive));
       final zipName = '${safeZipName(album.name)}-files.zip';
-      final savedPath = await FilePicker.saveFile(
-        dialogTitle: 'Save all files',
-        fileName: zipName,
-        bytes: zipBytes,
-      );
 
-      if (savedPath == null && !kIsWeb) {
-        throw const AppError('Save All was cancelled.');
+      String savedPathForLog;
+      if (!kIsWeb &&
+          (defaultTargetPlatform == TargetPlatform.iOS ||
+              defaultTargetPlatform == TargetPlatform.android)) {
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [
+              XFile.fromData(zipBytes,
+                  mimeType: 'application/zip', name: zipName),
+            ],
+          ),
+        );
+        if (!mounted) return;
+        savedPathForLog = zipName;
+      } else {
+        final savedPath = await FilePicker.saveFile(
+          dialogTitle: 'Save all files',
+          fileName: zipName,
+          bytes: zipBytes,
+        );
+
+        if (savedPath == null && !kIsWeb) {
+          throw const AppError('Save All was cancelled.');
+        }
+        savedPathForLog = savedPath ?? zipName;
       }
 
       for (final original in savedOriginals) {
@@ -330,7 +350,7 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
           downloadedSizeBytes: original.sizeBytes,
           expectedSizeBytes: original.expectedSizeBytes,
           mimeType: original.mimeType,
-          savedPath: savedPath ?? zipName,
+          savedPath: savedPathForLog,
           checksumHex: QualityTestLog.sha256Hex(original.bytes),
         );
       }

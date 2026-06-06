@@ -1,3 +1,6 @@
+String pluralize(int count, String singular, String plural) =>
+    '$count ${count == 1 ? singular : plural}';
+
 class FileUtils {
   const FileUtils._();
 

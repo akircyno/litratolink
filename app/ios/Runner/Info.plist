@@ -42,7 +42,7 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Potoos needs photo access so you can upload original-quality photos and videos.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Potoos needs permission to save original-quality files to your Photos.</string>
+	<string>Potoos saves your photos to your Camera Roll.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Potoos needs camera access so you can take and upload photos directly.</string>
 	<key>NSUserNotificationsUsageDescription</key>

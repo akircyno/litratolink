@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
@@ -38,6 +39,45 @@ class FilePreviewScreen extends ConsumerWidget {
 
     final file = routeFile;
     final downloadState = ref.watch(downloadControllerProvider);
+
+    ref.listen<DownloadState>(downloadControllerProvider, (prev, next) {
+      if (next.downloadedFile?.savedToGallery == true &&
+          prev?.downloadedFile?.savedToGallery != true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Saved to your gallery'),
+            backgroundColor: AppColors.velvetMaroon,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      if (next.errorCode == 'photo_permission_denied' &&
+          prev?.errorCode != 'photo_permission_denied') {
+        showDialog<void>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Gallery Access Required'),
+            content: const Text(
+              'Potoos needs access to save files to your gallery. Open Settings to enable it.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Not Now'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                  openAppSettings();
+                },
+                child: const Text('Open Settings'),
+              ),
+            ],
+          ),
+        );
+      }
+    });
+
     final topPad = MediaQuery.of(context).padding.top;
     final bottomPad = MediaQuery.of(context).padding.bottom;
     final screenH = MediaQuery.of(context).size.height;

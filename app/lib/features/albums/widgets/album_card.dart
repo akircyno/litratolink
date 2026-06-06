@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../app/theme.dart';
+import '../../../core/utils/file_utils.dart';
 import '../../../core/widgets/app_card.dart';
 import '../models/album.dart';
 import 'media_preview_image.dart';
@@ -34,17 +35,19 @@ class AlbumCard extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   // Background: authenticated preview or gradient fallback
-                  if (album.coverIsVideo)
-                    MediaVideoPreview(
-                      mediaFileId: album.coverMediaFileId,
-                      fallback: _GradientCover(album: album),
-                    )
-                  else
-                    MediaPreviewImage(
-                      mediaFileId: album.coverMediaFileId,
-                      thumbnailUrl: album.coverThumbnailUrl,
-                      fallback: _GradientCover(album: album),
-                    ),
+                  Hero(
+                    tag: 'album-cover-${album.id}',
+                    child: album.coverIsVideo
+                        ? MediaVideoPreview(
+                            mediaFileId: album.coverMediaFileId,
+                            fallback: _GradientCover(album: album),
+                          )
+                        : MediaPreviewImage(
+                            mediaFileId: album.coverMediaFileId,
+                            thumbnailUrl: album.coverThumbnailUrl,
+                            fallback: _GradientCover(album: album),
+                          ),
+                  ),
 
                   // Dark scrim so text is always readable over photos
                   if (album.coverMediaFileId != null ||
@@ -121,7 +124,7 @@ class AlbumCard extends StatelessWidget {
                     color: AppColors.brightGold, size: 14),
                 const SizedBox(width: 4),
                 Text(
-                    '${album.fileCount} ${album.fileCount == 1 ? 'file' : 'files'}',
+                    pluralize(album.fileCount, 'file', 'files'),
                     style: const TextStyle(
                         color: AppColors.mutedInk, fontSize: 12)),
                 const SizedBox(width: 12),
@@ -129,7 +132,7 @@ class AlbumCard extends StatelessWidget {
                     color: AppColors.brightGold, size: 14),
                 const SizedBox(width: 4),
                 Text(
-                    '${album.memberCount} member${album.memberCount == 1 ? '' : 's'}',
+                    pluralize(album.memberCount, 'member', 'members'),
                     style: const TextStyle(
                         color: AppColors.mutedInk, fontSize: 12)),
                 const Spacer(),

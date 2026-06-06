@@ -6,6 +6,7 @@ import '../../../app/routes.dart';
 import '../../../app/theme.dart';
 import '../../../core/errors/app_error.dart';
 import '../../../core/services/file_service.dart';
+import '../../../core/utils/file_utils.dart';
 import '../../../core/widgets/poto_mascot.dart';
 import '../../../core/widgets/pressable_scale.dart';
 import '../../albums/models/album.dart';
@@ -411,7 +412,7 @@ class _FilesSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${files.length} ${files.length == 1 ? 'file' : 'files'} ready',
+                    '${pluralize(files.length, 'file', 'files')} ready',
                     style: const TextStyle(
                       fontFamily: AppTheme.headingFont,
                       fontSize: 16,

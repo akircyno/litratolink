@@ -23,6 +23,7 @@ import '../../../core/widgets/poto_mascot.dart';
 import '../../../core/widgets/pwa_install_banner.dart';
 import '../widgets/album_empty_state.dart';
 import '../../profile/providers/storage_provider.dart';
+import '../../../core/utils/file_utils.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({
@@ -149,6 +150,7 @@ class _AlbumsTab extends ConsumerWidget {
     final memberCount =
         albums.fold<int>(0, (total, album) => total + album.memberCount);
     final initials = _initialsFor(profile?.displayName);
+    final firstName = profile?.displayName?.trim().split(' ').first;
 
     return Stack(
       children: [
@@ -158,24 +160,27 @@ class _AlbumsTab extends ConsumerWidget {
             LitratoHeader(
               avatarInitials: initials,
               avatarUrl: profile?.avatarUrl,
+              userName: (firstName != null && firstName.isNotEmpty)
+                  ? firstName
+                  : null,
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Row(
                 children: [
                   MemoryStatCard(
-                      label: 'Files',
+                      label: fileCount == 1 ? 'file' : 'files',
                       value: '$fileCount',
                       icon: Icons.photo_library_outlined),
                   const SizedBox(width: 10),
                   MemoryStatCard(
-                      label: 'Albums',
+                      label: albums.length == 1 ? 'album' : 'albums',
                       value: '${albums.length}',
                       icon: Icons.auto_awesome_motion_outlined,
                       gold: true),
                   const SizedBox(width: 10),
                   MemoryStatCard(
-                      label: 'People',
+                      label: memberCount == 1 ? 'person' : 'people',
                       value: '$memberCount',
                       icon: Icons.group_outlined),
                 ],
@@ -626,7 +631,7 @@ class _InviteAlbumRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  '${album.memberCount} member${album.memberCount == 1 ? '' : 's'} · ${album.role}',
+                  '${pluralize(album.memberCount, 'member', 'members')} · ${album.role}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -969,20 +974,20 @@ class _ProfileTab extends ConsumerWidget {
         Row(
           children: [
             MemoryStatCard(
-              label: 'files',
+              label: fileCount == 1 ? 'file' : 'files',
               value: '$fileCount',
               icon: Icons.photo_outlined,
               gold: true,
             ),
             const SizedBox(width: AppSpacing.sm),
             MemoryStatCard(
-              label: 'albums',
+              label: albums.length == 1 ? 'album' : 'albums',
               value: '${albums.length}',
               icon: Icons.auto_awesome_motion_outlined,
             ),
             const SizedBox(width: AppSpacing.sm),
             MemoryStatCard(
-              label: 'people',
+              label: memberCount == 1 ? 'person' : 'people',
               value: '$memberCount',
               icon: Icons.group_outlined,
             ),
@@ -1041,7 +1046,7 @@ class _ProfileTab extends ConsumerWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '$adminCount Admin space${adminCount == 1 ? '' : 's'}',
+                          pluralize(adminCount, 'Admin space', 'Admin spaces'),
                           style: const TextStyle(
                             color: AppColors.featherTaupe,
                             fontSize: 12,

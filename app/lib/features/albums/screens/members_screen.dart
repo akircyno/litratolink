@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
 import '../../../core/errors/app_error.dart';
+import '../../../core/utils/file_utils.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_empty_state.dart';
 import '../../../core/widgets/app_screen.dart';
@@ -98,16 +99,6 @@ class MembersScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: AppSpacing.lg),
                     ],
-
-                    // ── Section heading ────────────────────────────────────
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 2, bottom: AppSpacing.sm),
-                      child: Text(
-                        'People in this space.',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
 
                     // ── Member list ────────────────────────────────────────
                     membersAsync.when(
@@ -354,7 +345,7 @@ class _Header extends StatelessWidget {
             children: [
               _MetaChip(
                 icon: Icons.group_outlined,
-                label: '$memberCount member${memberCount == 1 ? '' : 's'}',
+                label: pluralize(memberCount, 'member', 'members'),
               ),
               const SizedBox(width: 10),
               _MetaChip(

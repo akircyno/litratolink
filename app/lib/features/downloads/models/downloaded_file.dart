@@ -7,6 +7,7 @@ class DownloadedFile {
     required this.sizeBytes,
     required this.expectedSizeBytes,
     required this.savedPath,
+    this.savedToGallery = false,
   });
 
   final String filename;
@@ -14,6 +15,7 @@ class DownloadedFile {
   final int sizeBytes;
   final int expectedSizeBytes;
   final String savedPath;
+  final bool savedToGallery;
 
   bool get sizeMatchesExpected =>
       expectedSizeBytes <= 0 || sizeBytes == expectedSizeBytes;

@@ -16,18 +16,21 @@ class DownloadState {
     this.isDownloading = false,
     this.downloadedFile,
     this.errorMessage,
+    this.errorCode,
   });
 
   final double progress;
   final bool isDownloading;
   final DownloadedFile? downloadedFile;
   final String? errorMessage;
+  final String? errorCode;
 
   DownloadState copyWith({
     double? progress,
     bool? isDownloading,
     DownloadedFile? downloadedFile,
     String? errorMessage,
+    String? errorCode,
     bool clearError = false,
   }) {
     return DownloadState(
@@ -35,6 +38,7 @@ class DownloadState {
       isDownloading: isDownloading ?? this.isDownloading,
       downloadedFile: downloadedFile ?? this.downloadedFile,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
+      errorCode: clearError ? null : errorCode ?? this.errorCode,
     );
   }
 }
@@ -65,6 +69,7 @@ class DownloadController extends Notifier<DownloadState> {
       state = state.copyWith(
         isDownloading: false,
         errorMessage: AppError.messageFor(error),
+        errorCode: error is AppError ? error.code : null,
       );
     }
   }

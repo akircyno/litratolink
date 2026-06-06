@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../core/errors/app_error.dart';
 import '../../../core/services/edge_function_service.dart';
@@ -32,14 +35,27 @@ class DownloadRepository {
       onProgress: onProgress,
     );
 
-    final savedPath = await FilePicker.saveFile(
-      dialogTitle: 'Save file',
-      fileName: original.filename,
-      bytes: original.bytes,
-    );
+    final String savedPath;
+    final bool savedToGallery;
 
-    if (savedPath == null && !kIsWeb) {
-      throw const AppError('Download was cancelled.');
+    if (!kIsWeb && (Platform.isIOS || Platform.isAndroid)) {
+      await _requestGalleryPermission();
+      await _saveToGallery(original);
+      savedPath = original.filename;
+      savedToGallery = true;
+    } else {
+      final picked = await FilePicker.saveFile(
+        dialogTitle: 'Save file',
+        fileName: original.filename,
+        bytes: original.bytes,
+      );
+
+      if (picked == null && !kIsWeb) {
+        throw const AppError('Download was cancelled.');
+      }
+
+      savedPath = picked ?? original.filename;
+      savedToGallery = false;
     }
 
     QualityTestLog.downloadedFile(
@@ -47,7 +63,7 @@ class DownloadRepository {
       downloadedSizeBytes: original.sizeBytes,
       expectedSizeBytes: original.expectedSizeBytes,
       mimeType: original.mimeType,
-      savedPath: savedPath ?? original.filename,
+      savedPath: savedPath,
       checksumHex: QualityTestLog.sha256Hex(original.bytes),
     );
 
@@ -58,8 +74,41 @@ class DownloadRepository {
       mimeType: original.mimeType,
       sizeBytes: original.sizeBytes,
       expectedSizeBytes: original.expectedSizeBytes,
-      savedPath: savedPath ?? original.filename,
+      savedPath: savedPath,
+      savedToGallery: savedToGallery,
     );
+  }
+
+  Future<void> _requestGalleryPermission() async {
+    final permission =
+        Platform.isIOS ? Permission.photosAddOnly : Permission.storage;
+    final status = await permission.request();
+    if (status.isDenied || status.isPermanentlyDenied) {
+      throw const AppError(
+        'Gallery access is required to save files.',
+        code: 'photo_permission_denied',
+      );
+    }
+  }
+
+  Future<void> _saveToGallery(OriginalDownload original) async {
+    final isVideo = original.mimeType.startsWith('video/');
+    if (isVideo) {
+      final tmp = await Directory.systemTemp.createTemp('potoos_');
+      try {
+        final tmpFile = File('${tmp.path}/${original.filename}');
+        await tmpFile.writeAsBytes(original.bytes);
+        await ImageGallerySaver.saveFile(tmpFile.path);
+      } finally {
+        await tmp.delete(recursive: true);
+      }
+    } else {
+      await ImageGallerySaver.saveImage(
+        original.bytes,
+        name: original.filename.replaceAll(RegExp(r'\.[^.]+$'), ''),
+        quality: 100,
+      );
+    }
   }
 
   Future<OriginalDownload> downloadOriginalBytes({

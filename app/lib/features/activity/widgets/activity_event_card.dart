@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../app/theme.dart';
+import '../../../core/utils/file_utils.dart';
 import '../models/activity_event.dart';
 
 class ActivityEventCard extends StatelessWidget {
@@ -150,10 +151,9 @@ String _describe(ActivityEvent event, String currentUserId) {
   switch (event.eventType) {
     case 'file_uploaded':
       final count = (event.metadata['file_count'] as num?)?.toInt() ?? 1;
-      final noun = count == 1 ? 'file' : 'files';
       return isYou
-          ? 'You uploaded $count $noun to $album'
-          : '$firstName uploaded $count $noun to $album';
+          ? 'You uploaded ${pluralize(count, 'file', 'files')} to $album'
+          : '$firstName uploaded ${pluralize(count, 'file', 'files')} to $album';
 
     case 'member_joined':
       return isYou ? 'You joined $album' : '$firstName joined $album';
