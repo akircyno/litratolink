@@ -49,11 +49,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           SafeArea(
             child: IndexedStack(
               index: currentIndex,
-              children: const [
-                _AlbumsTab(),
-                _InvitesTab(),
-                _ActivityTab(),
-                _ProfileTab(),
+              children: [
+                const _AlbumsTab(),
+                const _InvitesTab(),
+                const _ActivityTab(),
+                _ProfileTab(
+                  onNavigateToInvites: () =>
+                      setState(() => currentIndex = 1),
+                ),
               ],
             ),
           ),
@@ -176,42 +179,21 @@ class _AlbumsTab extends ConsumerWidget {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Your Albums',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(fontSize: 16),
-                        ),
-                        const SizedBox(height: 2),
-                        const Text(
-                          'Only the people you choose can see these.',
-                          style: TextStyle(
-                              color: AppColors.mutedInk, fontSize: 11),
-                        ),
-                      ],
-                    ),
+                  Text(
+                    'Your Albums',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontSize: 16),
                   ),
-                  TextButton.icon(
-                    style: TextButton.styleFrom(
-                      backgroundColor: AppColors.maroon,
-                      foregroundColor: AppColors.white,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 6),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                    ),
-                    onPressed: () =>
-                        Navigator.pushNamed(context, AppRoutes.createAlbum),
-                    icon: const Icon(Icons.add, size: 12),
-                    label:
-                        const Text('New Album', style: TextStyle(fontSize: 12)),
+                  const SizedBox(height: 2),
+                  const Text(
+                    'Only the people you choose can see these.',
+                    style: TextStyle(
+                        color: AppColors.mutedInk, fontSize: 11),
                   ),
                 ],
               ),
@@ -878,7 +860,9 @@ class _ActivityTabState extends ConsumerState<_ActivityTab> {
 }
 
 class _ProfileTab extends ConsumerWidget {
-  const _ProfileTab();
+  const _ProfileTab({required this.onNavigateToInvites});
+
+  final VoidCallback onNavigateToInvites;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -1005,62 +989,125 @@ class _ProfileTab extends ConsumerWidget {
 
         // ── Admin spaces ────────────────────────────────────────────────
         if (adminCount > 0) ...[
-          Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md, vertical: 14),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-              border: Border.all(
-                  color: AppColors.velvetMaroon.withValues(alpha: 0.10),
-                  width: 0.8),
-              boxShadow: AppShadows.card,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: AppColors.brightGold.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+          PressableScale(
+            onTap: onNavigateToInvites,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md, vertical: 14),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                border: Border.all(
+                    color: AppColors.velvetMaroon.withValues(alpha: 0.10),
+                    width: 0.8),
+                boxShadow: AppShadows.card,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.brightGold.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    ),
+                    child: const Icon(Icons.admin_panel_settings_outlined,
+                        color: AppColors.brightGold, size: 18),
                   ),
-                  child: const Icon(Icons.admin_panel_settings_outlined,
+                  const SizedBox(width: AppSpacing.sm + 2),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'You manage',
+                          style: TextStyle(
+                            fontFamily: AppTheme.headingFont,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.charcoalInk,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '$adminCount Admin space${adminCount == 1 ? '' : 's'}',
+                          style: const TextStyle(
+                            color: AppColors.featherTaupe,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right,
                       color: AppColors.brightGold, size: 18),
-                ),
-                const SizedBox(width: AppSpacing.sm + 2),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'You manage',
-                        style: TextStyle(
-                          fontFamily: AppTheme.headingFont,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.charcoalInk,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '$adminCount Admin space${adminCount == 1 ? '' : 's'}',
-                        style: const TextStyle(
-                          color: AppColors.featherTaupe,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
         ],
 
         const SizedBox(height: AppSpacing.lg),
+
+        // ── Legal & Support ───────────────────────────────────────────────
+        Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+            border: Border.all(
+                color: AppColors.velvetMaroon.withValues(alpha: 0.08),
+                width: 0.8),
+            boxShadow: AppShadows.card,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Legal & Support',
+                style: TextStyle(
+                  fontFamily: AppTheme.headingFont,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.deepMaroon,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              _LegalRow(
+                icon: Icons.shield_outlined,
+                label: 'Privacy Policy',
+                onTap: () => launchUrl(
+                  Uri.parse('https://akircyno.github.io/potoos/privacy.html'),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+              const _ThinDivider(),
+              _LegalRow(
+                icon: Icons.description_outlined,
+                label: 'Terms of Use',
+                onTap: () => launchUrl(
+                  Uri.parse('https://akircyno.github.io/potoos/terms.html'),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+              const _ThinDivider(),
+              _LegalRow(
+                icon: Icons.mail_outline,
+                label: 'Contact support',
+                onTap: () => launchUrl(
+                  Uri.parse('mailto:prcmarketingteam@gmail.com'
+                      '?subject=Potoos%20Support'),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: AppSpacing.xl),
 
         // ── Log out ──────────────────────────────────────────────────────
         PressableScale(
@@ -1127,64 +1174,7 @@ class _ProfileTab extends ConsumerWidget {
           ),
         ),
 
-        const SizedBox(height: AppSpacing.xl),
-
-        // ── Legal & Support ───────────────────────────────────────────────
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-            border: Border.all(
-                color: AppColors.velvetMaroon.withValues(alpha: 0.08),
-                width: 0.8),
-            boxShadow: AppShadows.card,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Legal & Support',
-                style: TextStyle(
-                  fontFamily: AppTheme.headingFont,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.deepMaroon,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              _LegalRow(
-                icon: Icons.shield_outlined,
-                label: 'Privacy Policy',
-                onTap: () => launchUrl(
-                  Uri.parse('https://akircyno.github.io/potoos/privacy.html'),
-                  mode: LaunchMode.externalApplication,
-                ),
-              ),
-              const _ThinDivider(),
-              _LegalRow(
-                icon: Icons.description_outlined,
-                label: 'Terms of Use',
-                onTap: () => launchUrl(
-                  Uri.parse('https://akircyno.github.io/potoos/terms.html'),
-                  mode: LaunchMode.externalApplication,
-                ),
-              ),
-              const _ThinDivider(),
-              _LegalRow(
-                icon: Icons.mail_outline,
-                label: 'Contact support',
-                onTap: () => launchUrl(
-                  Uri.parse('mailto:prcmarketingteam@gmail.com'
-                      '?subject=Potoos%20Support'),
-                  mode: LaunchMode.externalApplication,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: AppSpacing.xl),
+        const SizedBox(height: AppSpacing.md),
 
         // ── Delete account ────────────────────────────────────────────────
         _DeleteAccountButton(ref: ref),
