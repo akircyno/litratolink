@@ -7,6 +7,7 @@ class LitratoHeader extends StatelessWidget {
     this.title = 'Potoos',
     this.subtitle,
     this.avatarInitials,
+    this.avatarUrl,
     this.showAvatar = true,
     super.key,
   });
@@ -14,6 +15,7 @@ class LitratoHeader extends StatelessWidget {
   final String title;
   final String? subtitle;
   final String? avatarInitials;
+  final String? avatarUrl;
   final bool showAvatar;
 
   @override
@@ -48,28 +50,7 @@ class LitratoHeader extends StatelessWidget {
               ],
             ),
           ),
-          if (showAvatar)
-            Container(
-              width: 34,
-              height: 34,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [AppColors.softGold, AppColors.garnetHighlight],
-                ),
-                border: Border.all(
-                    color: AppColors.brightGold.withValues(alpha: 0.45),
-                    width: 1.5),
-              ),
-              child: Text(
-                avatarInitials ?? '?',
-                style: const TextStyle(
-                    color: AppColors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
+          if (showAvatar) _Avatar(initials: avatarInitials, url: avatarUrl),
         ],
       ),
     );
@@ -80,6 +61,60 @@ class LitratoHeader extends StatelessWidget {
     if (hour < 12) return 'Good morning.';
     if (hour < 18) return 'Good afternoon.';
     return 'Good evening.';
+  }
+}
+
+class _Avatar extends StatelessWidget {
+  const _Avatar({this.initials, this.url});
+
+  final String? initials;
+  final String? url;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasPhoto = url != null && url!.trim().isNotEmpty;
+
+    return Container(
+      width: 34,
+      height: 34,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: const LinearGradient(
+          colors: [AppColors.softGold, AppColors.garnetHighlight],
+        ),
+        border: Border.all(
+            color: AppColors.brightGold.withValues(alpha: 0.45), width: 1.5),
+      ),
+      child: ClipOval(
+        child: hasPhoto
+            ? Image.network(
+                url!.trim(),
+                width: 34,
+                height: 34,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => _Initials(initials),
+              )
+            : _Initials(initials),
+      ),
+    );
+  }
+}
+
+class _Initials extends StatelessWidget {
+  const _Initials(this.text);
+  final String? text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        text ?? '?',
+        style: const TextStyle(
+            color: AppColors.white,
+            fontSize: 13,
+            fontWeight: FontWeight.w600),
+      ),
+    );
   }
 }
 

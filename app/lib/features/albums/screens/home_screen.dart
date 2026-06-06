@@ -22,6 +22,7 @@ import '../../../core/widgets/app_toast.dart';
 import '../../../core/widgets/poto_mascot.dart';
 import '../../../core/widgets/pwa_install_banner.dart';
 import '../widgets/album_empty_state.dart';
+import '../../profile/providers/storage_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({
@@ -154,7 +155,10 @@ class _AlbumsTab extends ConsumerWidget {
         ListView(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 86),
           children: [
-            LitratoHeader(avatarInitials: initials),
+            LitratoHeader(
+              avatarInitials: initials,
+              avatarUrl: profile?.avatarUrl,
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Row(
@@ -987,6 +991,11 @@ class _ProfileTab extends ConsumerWidget {
 
         const SizedBox(height: AppSpacing.md),
 
+        // ── Storage usage ────────────────────────────────────────────────
+        const _StorageBar(),
+
+        const SizedBox(height: AppSpacing.md),
+
         // ── Admin spaces ────────────────────────────────────────────────
         if (adminCount > 0) ...[
           PressableScale(
@@ -1332,4 +1341,161 @@ String _initialsFor(String? name) {
   }
   return '${parts.first.characters.first}${parts.last.characters.first}'
       .toUpperCase();
+}
+
+// ── Storage usage bar ─────────────────────────────────────────────────────────
+
+class _StorageBar extends ConsumerWidget {
+  const _StorageBar();
+
+  static const _capBytes = 50 * 1024 * 1024 * 1024; // 50 GB Early Access cap
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final storageAsync = ref.watch(userStorageUsedProvider);
+
+    return storageAsync.when(
+      loading: () => _StorageSkeleton(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (usedBytes) {
+        final fraction = (usedBytes / _capBytes).clamp(0.0, 1.0);
+        final usedGb = usedBytes / (1024 * 1024 * 1024);
+        final isCritical = fraction >= 0.95;
+        final isWarning = !isCritical && fraction >= 0.80;
+
+        final barColor = isCritical
+            ? const Color(0xFFD32F2F)
+            : isWarning
+                ? AppColors.brightGold
+                : AppColors.velvetMaroon;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+            border: Border.all(
+              color: AppColors.velvetMaroon.withValues(alpha: 0.08),
+              width: 0.8,
+            ),
+            boxShadow: AppShadows.card,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Storage',
+                    style: TextStyle(
+                      fontFamily: AppTheme.headingFont,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.deepMaroon,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      if (isCritical || isWarning)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 6),
+                          child: Text(
+                            isCritical ? 'Almost full' : 'Running low',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: barColor,
+                            ),
+                          ),
+                        ),
+                      Text(
+                        '${_formatGb(usedGb)} of 50 GB',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.featherTaupe,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: fraction,
+                  minHeight: 4,
+                  backgroundColor:
+                      AppColors.velvetMaroon.withValues(alpha: 0.09),
+                  valueColor: AlwaysStoppedAnimation<Color>(barColor),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  static String _formatGb(double gb) {
+    if (gb < 0.1) return '0.0 GB';
+    if (gb < 10) return gb.toStringAsFixed(1);
+    return gb.toStringAsFixed(0);
+  }
+}
+
+class _StorageSkeleton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(
+          color: AppColors.velvetMaroon.withValues(alpha: 0.08),
+          width: 0.8,
+        ),
+        boxShadow: AppShadows.card,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: 56,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: AppColors.velvetMaroon.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+              Container(
+                width: 80,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: AppColors.velvetMaroon.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: double.infinity,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.velvetMaroon.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

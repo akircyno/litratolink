@@ -240,18 +240,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                             spacing: 6,
                             runSpacing: 6,
                             children: [
-                              _Pill(
-                                icon: Icons.lock_outline,
-                                label: 'Just your people',
-                              ),
-                              _Pill(
-                                icon: Icons.high_quality_outlined,
-                                label: 'No compression, ever',
-                              ),
-                              _Pill(
-                                icon: Icons.group_outlined,
-                                label: 'By invite only',
-                              ),
+                              _Pill(label: 'Just your people'),
+                              _Pill(label: 'No compression, ever'),
+                              _Pill(label: 'By invite only'),
                             ],
                           ),
                         ],
@@ -313,9 +304,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
 }
 
 class _Pill extends StatelessWidget {
-  const _Pill({required this.icon, required this.label});
+  const _Pill({required this.label});
 
-  final IconData icon;
   final String label;
 
   @override
@@ -330,19 +320,12 @@ class _Pill extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: AppColors.brightGold, size: 11),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: AppColors.pearlCream.withValues(alpha: 0.65),
-              fontSize: 11,
-            ),
-          ),
-        ],
+      child: Text(
+        label,
+        style: TextStyle(
+          color: AppColors.pearlCream.withValues(alpha: 0.65),
+          fontSize: 11,
+        ),
       ),
     );
   }
