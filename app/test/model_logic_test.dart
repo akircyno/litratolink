@@ -304,6 +304,10 @@ void main() {
   });
 
   group('OAuth redirect helper', () {
+    test('asks Google to show the account chooser', () {
+      expect(googleOAuthQueryParams, {'prompt': 'select_account'});
+    });
+
     test('keeps GitHub Pages base path and removes hash route', () {
       final redirectTo = webOAuthRedirectTo(
         Uri.parse('https://akircyno.github.io/potoos/#/login'),

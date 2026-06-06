@@ -39,6 +39,7 @@ class AuthRepository {
       redirectTo: kIsWeb
           ? webOAuthRedirectTo(Uri.base)
           : 'io.supabase.flutter://callback',
+      queryParams: googleOAuthQueryParams,
     );
   }
 
@@ -72,6 +73,11 @@ class AuthRepository {
     }
   }
 }
+
+@visibleForTesting
+const googleOAuthQueryParams = {
+  'prompt': 'select_account',
+};
 
 @visibleForTesting
 String webOAuthRedirectTo(Uri currentUri) {
