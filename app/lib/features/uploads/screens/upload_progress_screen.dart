@@ -93,13 +93,11 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
                 ? 'Upload paused.'
                 : '$completedCount of $totalCount secured so far.';
 
-    final statusSub = isComplete
-        ? 'Stored without changes.'
-        : hasError
-            ? state.errorMessage ?? 'Something went wrong. Tap Try Again.'
-            : isPaused
-                ? 'Tap Resume on the album to continue.'
-                : 'Keep this screen open while uploading.';
+    final String? statusSub = hasError
+        ? state.errorMessage ?? 'Something went wrong. Tap Try Again.'
+        : isPaused
+            ? 'Tap Resume on the album to continue.'
+            : null;
 
     return PopScope(
       canPop: !isUploading,
@@ -162,18 +160,20 @@ class _UploadProgressScreenState extends ConsumerState<UploadProgressScreen> {
                           letterSpacing: -0.3,
                         ),
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        statusSub,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: hasError
-                              ? AppColors.velvetMaroon
-                              : AppColors.featherTaupe,
-                          fontSize: 13,
-                          height: 1.5,
+                      if (statusSub != null) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          statusSub,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: hasError
+                                ? AppColors.velvetMaroon
+                                : AppColors.featherTaupe,
+                            fontSize: 13,
+                            height: 1.5,
+                          ),
                         ),
-                      ),
+                      ],
 
                       const SizedBox(height: AppSpacing.xl),
 

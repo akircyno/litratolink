@@ -328,16 +328,6 @@ class _DropZone extends StatelessWidget {
               letterSpacing: -0.2,
             ),
           ),
-          const SizedBox(height: 6),
-          const Text(
-            'Photos and videos, exactly as captured.\nNothing gets compressed.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.featherTaupe,
-              fontSize: 13,
-              height: 1.55,
-            ),
-          ),
           const SizedBox(height: AppSpacing.lg),
           PressableScale(
             onTap: isPicking ? null : onPick,
@@ -471,37 +461,6 @@ class _FilesSection extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(height: AppSpacing.md),
-
-        // Quality promise card
-        Container(
-          padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md, vertical: 12),
-          decoration: BoxDecoration(
-            color: AppColors.brightGold.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            border: Border.all(
-                color: AppColors.brightGold.withValues(alpha: 0.22),
-                width: 0.8),
-          ),
-          child: Row(
-            children: const [
-              Icon(Icons.verified_outlined,
-                  color: AppColors.brightGold, size: 16),
-              SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Text(
-                  'Nothing gets compressed. Every file uploads in full quality.',
-                  style: TextStyle(
-                    color: AppColors.charcoalInk,
-                    fontSize: 12,
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }

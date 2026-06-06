@@ -10,7 +10,6 @@ import '../../../core/widgets/pressable_scale.dart';
 import '../../../core/widgets/litrato_header.dart';
 import '../../../core/widgets/memory_stat_card.dart';
 import '../../../core/widgets/notification_item.dart';
-import '../../../core/widgets/quality_promise_card.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../models/album.dart';
 import '../models/album_invite.dart';
@@ -125,12 +124,8 @@ class _AlbumsTab extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 86),
           children: [
             LitratoHeader(avatarInitials: initials),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
-              child: QualityPromiseCard(),
-            ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Row(
                 children: [
                   MemoryStatCard(
@@ -1015,56 +1010,7 @@ class _ProfileTab extends ConsumerWidget {
           const SizedBox(height: AppSpacing.sm),
         ],
 
-        // ── Storage guarantee ────────────────────────────────────────────
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-            border: Border.all(
-                color: AppColors.velvetMaroon.withValues(alpha: 0.10),
-                width: 0.8),
-            boxShadow: AppShadows.card,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Row(
-                children: [
-                  Icon(Icons.verified_outlined,
-                      color: AppColors.velvetMaroon, size: 16),
-                  SizedBox(width: 8),
-                  Text(
-                    'What Potoos promises you.',
-                    style: TextStyle(
-                      fontFamily: AppTheme.headingFont,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                      color: AppColors.deepMaroon,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              _GuaranteeRow(
-                icon: Icons.high_quality_outlined,
-                text: 'Every file stored without compression.',
-              ),
-              const SizedBox(height: 8),
-              _GuaranteeRow(
-                icon: Icons.lock_outline,
-                text: 'Albums are invite-only. Nothing is public.',
-              ),
-              const SizedBox(height: 8),
-              _GuaranteeRow(
-                icon: Icons.download_outlined,
-                text: 'Download any file at full quality.',
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: AppSpacing.xl),
+        const SizedBox(height: AppSpacing.lg),
 
         // ── Log out ──────────────────────────────────────────────────────
         PressableScale(
@@ -1346,27 +1292,4 @@ String _initialsFor(String? name) {
   }
   return '${parts.first.characters.first}${parts.last.characters.first}'
       .toUpperCase();
-}
-
-class _GuaranteeRow extends StatelessWidget {
-  const _GuaranteeRow({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 14, color: AppColors.maroon),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(text,
-              style: const TextStyle(
-                  color: AppColors.mutedInk, fontSize: 12, height: 1.4)),
-        ),
-      ],
-    );
-  }
 }

@@ -110,13 +110,13 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
                 ? '$_savedCount of $totalFiles packed so far.'
                 : '$totalFiles ${totalFiles == 1 ? 'file' : 'files'} ready to save.';
 
-    final statusSub = _isComplete
+    final String? statusSub = _isComplete
         ? 'Poto packed everything into one ZIP for you.'
         : hasError
             ? _errorMessage!
             : _isSaving
                 ? 'Keep this screen open while downloading.'
-                : 'Your files will be saved at full quality — no compression.';
+                : null;
 
     return PopScope(
       canPop: !_isSaving,
@@ -174,18 +174,20 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
                           letterSpacing: -0.3,
                         ),
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        statusSub,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: hasError
-                              ? AppColors.velvetMaroon
-                              : AppColors.featherTaupe,
-                          fontSize: 13,
-                          height: 1.5,
+                      if (statusSub != null) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          statusSub,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: hasError
+                                ? AppColors.velvetMaroon
+                                : AppColors.featherTaupe,
+                            fontSize: 13,
+                            height: 1.5,
+                          ),
                         ),
-                      ),
+                      ],
 
                       // Progress bar (saving or complete)
                       if (_isSaving || _isComplete) ...[
@@ -328,7 +330,7 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
           downloadedSizeBytes: original.sizeBytes,
           expectedSizeBytes: original.expectedSizeBytes,
           mimeType: original.mimeType,
-          savedPath: savedPath ?? 'Browser downloads: $zipName',
+          savedPath: savedPath ?? zipName,
           checksumHex: QualityTestLog.sha256Hex(original.bytes),
         );
       }

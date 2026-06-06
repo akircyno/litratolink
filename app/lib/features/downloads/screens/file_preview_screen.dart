@@ -11,7 +11,6 @@ import '../../albums/models/media_file.dart';
 import '../../albums/widgets/gallery_tile.dart';
 import '../../albums/widgets/media_preview_image.dart';
 import '../../albums/widgets/media_video_preview.dart';
-import '../models/downloaded_file.dart';
 import '../providers/download_provider.dart';
 
 class FilePreviewScreen extends ConsumerWidget {
@@ -102,12 +101,6 @@ class FilePreviewScreen extends ConsumerWidget {
 
                           // Meta rows
                           _MetaSection(file: file),
-
-                          // Quality check (after download)
-                          if (downloadState.downloadedFile != null) ...[
-                            const SizedBox(height: AppSpacing.md),
-                            _QualityResult(file: downloadState.downloadedFile!),
-                          ],
 
                           // Error message
                           if (downloadState.errorMessage != null) ...[
@@ -272,34 +265,6 @@ class _PreviewHero extends StatelessWidget {
           ),
 
           // Full-quality badge — top-right
-          Positioned(
-            top: topPad + 56,
-            right: 16,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.brightGold.withValues(alpha: 0.88),
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.verified_outlined,
-                      size: 10, color: AppColors.deepMaroon),
-                  SizedBox(width: 4),
-                  Text(
-                    'Full quality',
-                    style: TextStyle(
-                      color: AppColors.deepMaroon,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
           // Bottom scrim + uploader name
           Positioned(
             bottom: 0,
@@ -518,85 +483,6 @@ class _Divider extends StatelessWidget {
   }
 }
 
-// ── Quality result ────────────────────────────────────────────────────────────
-
-class _QualityResult extends StatelessWidget {
-  const _QualityResult({required this.file});
-
-  final DownloadedFile file;
-
-  static String _fmt(int bytes) {
-    if (bytes <= 0) return '?';
-    final mb = bytes / (1024 * 1024);
-    return mb < 1
-        ? '${(bytes / 1024).toStringAsFixed(1)} KB'
-        : '${mb.toStringAsFixed(1)} MB';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final ok = file.sizeMatchesExpected;
-    final iconColor = ok ? const Color(0xFF4A8C2A) : AppColors.velvetMaroon;
-    final bgColor = ok
-        ? AppColors.brightGold.withValues(alpha: 0.08)
-        : AppColors.maroonFaint;
-    final borderColor = ok
-        ? AppColors.brightGold.withValues(alpha: 0.22)
-        : AppColors.velvetMaroon.withValues(alpha: 0.18);
-
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        border: Border.all(color: borderColor, width: 0.8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                ok ? Icons.verified_outlined : Icons.warning_amber_outlined,
-                color: iconColor,
-                size: 16,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                ok ? 'File size verified.' : 'Size mismatch detected.',
-                style: TextStyle(
-                  color: iconColor,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            '${_fmt(file.sizeBytes)} downloaded · ${_fmt(file.expectedSizeBytes)} expected',
-            style: const TextStyle(
-              color: AppColors.featherTaupe,
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            file.savedPath,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: AppColors.featherTaupe,
-              fontSize: 11,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── Download bar ──────────────────────────────────────────────────────────────
 
 class _DownloadBar extends StatelessWidget {
   const _DownloadBar({
@@ -721,19 +607,6 @@ class _DownloadBar extends StatelessWidget {
               ),
             ),
           ),
-
-          // Quality promise
-          if (!isDone && !isDownloading) ...[
-            const SizedBox(height: 6),
-            const Text(
-              'Full quality — nothing compressed.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.featherTaupe,
-                fontSize: 11,
-              ),
-            ),
-          ],
         ],
       ),
     );

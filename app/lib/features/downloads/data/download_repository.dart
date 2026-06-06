@@ -47,7 +47,7 @@ class DownloadRepository {
       downloadedSizeBytes: original.sizeBytes,
       expectedSizeBytes: original.expectedSizeBytes,
       mimeType: original.mimeType,
-      savedPath: savedPath ?? 'Browser downloads',
+      savedPath: savedPath ?? original.filename,
       checksumHex: QualityTestLog.sha256Hex(original.bytes),
     );
 
@@ -58,7 +58,7 @@ class DownloadRepository {
       mimeType: original.mimeType,
       sizeBytes: original.sizeBytes,
       expectedSizeBytes: original.expectedSizeBytes,
-      savedPath: savedPath ?? 'Browser downloads',
+      savedPath: savedPath ?? original.filename,
     );
   }
 
