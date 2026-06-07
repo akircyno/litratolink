@@ -56,6 +56,31 @@
       return window.matchMedia('(display-mode: standalone)').matches
           || window.navigator.standalone === true;
     }
+
+    // iOS standalone PWAs sometimes paint the first frame before Flutter's
+    // glass pane finishes syncing to the real viewport size, leaving the UI
+    // visible but untappable until the page is reopened. Nudging the engine
+    // with a synthetic resize shortly after launch (and whenever the PWA is
+    // reopened or returns to the foreground) makes it recompute hit-test
+    // bounds against the actual viewport, so taps land where they're shown.
+    function _nudgeFlutterViewport() {
+      window.dispatchEvent(new Event('resize'));
+    }
+
+    window.addEventListener('load', function() {
+      setTimeout(_nudgeFlutterViewport, 80);
+      setTimeout(_nudgeFlutterViewport, 500);
+    });
+
+    window.addEventListener('pageshow', function() {
+      setTimeout(_nudgeFlutterViewport, 80);
+    });
+
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible') {
+        setTimeout(_nudgeFlutterViewport, 80);
+      }
+    });
   </script>
 </head>
 <body>
