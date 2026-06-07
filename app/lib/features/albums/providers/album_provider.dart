@@ -365,6 +365,19 @@ class InviteResponseController extends Notifier<InviteResponseState> {
   }
 }
 
+// ── Unique people count ───────────────────────────────────────────────────
+
+/// Distinct users across all albums the current user belongs to, excluding self.
+/// Re-evaluates whenever albumListProvider is invalidated (join, leave, invite, remove).
+final uniquePeopleCountProvider = FutureProvider.autoDispose<int>((ref) {
+  final profile = ref.watch(currentUserProfileProvider);
+  if (profile == null) return 0;
+
+  ref.watch(albumListProvider);
+
+  return ref.watch(albumRepositoryProvider).fetchUniquePeopleCount();
+});
+
 // ── Archived albums ───────────────────────────────────────────────────────
 
 final archivedAlbumsProvider = FutureProvider.autoDispose<List<Album>>((ref) {

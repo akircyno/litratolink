@@ -147,8 +147,7 @@ class _AlbumsTab extends ConsumerWidget {
     final archived = archivedAsync.asData?.value ?? const [];
     final fileCount =
         albums.fold<int>(0, (total, album) => total + album.fileCount);
-    final memberCount =
-        albums.fold<int>(0, (total, album) => total + album.memberCount);
+    final peopleCount = ref.watch(uniquePeopleCountProvider).asData?.value ?? 0;
     final initials = _initialsFor(profile?.displayName);
     final firstName = profile?.displayName?.trim().split(' ').first;
 
@@ -180,8 +179,8 @@ class _AlbumsTab extends ConsumerWidget {
                       gold: true),
                   const SizedBox(width: 10),
                   MemoryStatCard(
-                      label: memberCount == 1 ? 'person' : 'people',
-                      value: '$memberCount',
+                      label: peopleCount == 1 ? 'person' : 'people',
+                      value: '$peopleCount',
                       icon: Icons.group_outlined),
                 ],
               ),
@@ -880,8 +879,7 @@ class _ProfileTab extends ConsumerWidget {
     final albums = albumsAsync.asData?.value ?? const <Album>[];
     final fileCount =
         albums.fold<int>(0, (total, album) => total + album.fileCount);
-    final memberCount =
-        albums.fold<int>(0, (total, album) => total + album.memberCount);
+    final peopleCount = ref.watch(uniquePeopleCountProvider).asData?.value ?? 0;
     final adminCount = albums.where((album) => album.canManageMembers).length;
     final displayName = profile?.displayName?.isNotEmpty == true
         ? profile!.displayName!
@@ -987,8 +985,8 @@ class _ProfileTab extends ConsumerWidget {
             ),
             const SizedBox(width: AppSpacing.sm),
             MemoryStatCard(
-              label: memberCount == 1 ? 'person' : 'people',
-              value: '$memberCount',
+              label: peopleCount == 1 ? 'person' : 'people',
+              value: '$peopleCount',
               icon: Icons.group_outlined,
             ),
           ],

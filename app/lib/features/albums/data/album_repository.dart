@@ -318,6 +318,49 @@ class AlbumRepository {
     );
   }
 
+  /// Returns the number of distinct users across all albums the current user
+  /// belongs to, excluding the current user themselves.
+  Future<int> fetchUniquePeopleCount() async {
+    if (!supabaseService.isConfigured ||
+        supabaseService.currentSession == null) {
+      return 0;
+    }
+
+    final userId = supabaseService.currentSession!.user.id;
+
+    try {
+      final membershipRows = await supabaseService.client
+          .from('album_members')
+          .select('album_id')
+          .eq('user_id', userId)
+          .eq('is_active', true);
+
+      final albumIds = (membershipRows as List)
+          .map((r) => (r as Map)['album_id']?.toString())
+          .whereType<String>()
+          .toList();
+
+      if (albumIds.isEmpty) return 0;
+
+      final allMemberRows = await supabaseService.client
+          .from('album_members')
+          .select('user_id')
+          .inFilter('album_id', albumIds)
+          .eq('is_active', true)
+          .neq('user_id', userId);
+
+      final uniqueIds = <String>{};
+      for (final row in allMemberRows as List) {
+        final uid = (row as Map)['user_id']?.toString();
+        if (uid != null) uniqueIds.add(uid);
+      }
+
+      return uniqueIds.length;
+    } catch (_) {
+      return 0;
+    }
+  }
+
   Future<Map<String, int>> _countRowsByAlbum(
     String table,
     List<String> albumIds, {

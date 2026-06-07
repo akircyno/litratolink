@@ -12,6 +12,7 @@ import '../../../core/errors/app_error.dart';
 import '../../../core/utils/file_utils.dart';
 import '../../../core/utils/quality_test_log.dart';
 import '../../../core/widgets/app_empty_state.dart';
+import '../../../core/widgets/app_toast.dart';
 import '../../../core/widgets/app_screen.dart';
 import '../../../core/widgets/poto_mascot.dart';
 import '../../../core/widgets/pressable_scale.dart';
@@ -90,7 +91,9 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
       );
     }
 
-    final resolvedFiles = filesAsync.asData?.value ?? files;
+    final resolvedFiles = files.isNotEmpty
+        ? files
+        : (filesAsync.asData?.value ?? const <MediaFile>[]);
     final isLoadingFiles = filesAsync.isLoading && resolvedFiles.isEmpty;
     final totalFiles = resolvedFiles.length;
     final hasError = _errorMessage != null;
@@ -321,13 +324,11 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
       if (!kIsWeb &&
           (defaultTargetPlatform == TargetPlatform.iOS ||
               defaultTargetPlatform == TargetPlatform.android)) {
-        await SharePlus.instance.share(
-          ShareParams(
-            files: [
-              XFile.fromData(zipBytes,
-                  mimeType: 'application/zip', name: zipName),
-            ],
-          ),
+        await Share.shareXFiles(
+          [
+            XFile.fromData(zipBytes,
+                mimeType: 'application/zip', name: zipName),
+          ],
         );
         if (!mounted) return;
         savedPathForLog = zipName;
@@ -362,6 +363,15 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
         _activeIndex = files.length;
         _progress = 1;
       });
+
+      final savedCount = files.length;
+      showAppToast(
+        context,
+        message:
+            '$savedCount file${savedCount == 1 ? '' : 's'} saved to your gallery',
+      );
+      ref.read(albumSelectionModeProvider(album.id).notifier).setEnabled(false);
+      ref.read(selectedMediaIdsProvider(album.id).notifier).clear();
     } catch (error) {
       if (!mounted) return;
       setState(() {
