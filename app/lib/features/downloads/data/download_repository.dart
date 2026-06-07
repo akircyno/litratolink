@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../core/errors/app_error.dart';
 import '../../../core/services/edge_function_service.dart';
@@ -43,6 +44,10 @@ class DownloadRepository {
       await _saveToGallery(original);
       savedPath = original.filename;
       savedToGallery = true;
+    } else if (_shouldUseMobileWebShareSheet) {
+      await _shareOriginalToMobileSaveSheet(original);
+      savedPath = original.filename;
+      savedToGallery = true;
     } else {
       final picked = await FilePicker.saveFile(
         dialogTitle: 'Save file',
@@ -77,6 +82,44 @@ class DownloadRepository {
       savedPath: savedPath,
       savedToGallery: savedToGallery,
     );
+  }
+
+  bool get _shouldUseMobileWebShareSheet =>
+      kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
+
+  Future<void> _shareOriginalToMobileSaveSheet(
+    OriginalDownload original,
+  ) async {
+    final previousFallback = Share.downloadFallbackEnabled;
+    Share.downloadFallbackEnabled = false;
+
+    try {
+      final result = await Share.shareXFiles(
+        [
+          XFile.fromData(
+            original.bytes,
+            mimeType: original.mimeType,
+            name: original.filename,
+          ),
+        ],
+        subject: 'Save ${original.filename}',
+        fileNameOverrides: [original.filename],
+      );
+
+      if (result.status == ShareResultStatus.dismissed) {
+        throw const AppError('Save was cancelled.');
+      }
+    } on AppError {
+      rethrow;
+    } catch (_) {
+      throw const AppError(
+        'Could not open the phone save sheet. Open Potoos in Safari or Chrome and try again.',
+      );
+    } finally {
+      Share.downloadFallbackEnabled = previousFallback;
+    }
   }
 
   Future<void> _requestGalleryPermission() async {

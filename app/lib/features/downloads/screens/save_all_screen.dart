@@ -98,6 +98,7 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
     final totalFiles = resolvedFiles.length;
     final hasError = _errorMessage != null;
     final bottomPad = MediaQuery.of(context).padding.bottom;
+    final usesMobileSaveSheet = _shouldUseMobileWebShareSheet;
 
     final expression = _isComplete
         ? PotoExpression.happy
@@ -112,11 +113,15 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
         : hasError
             ? 'Download stopped.'
             : _isSaving
-                ? '$_savedCount of $totalFiles packed so far.'
+                ? usesMobileSaveSheet
+                    ? '$_savedCount of $totalFiles originals ready.'
+                    : '$_savedCount of $totalFiles packed so far.'
                 : '${pluralize(totalFiles, 'file', 'files')} ready to save.';
 
     final String? statusSub = _isComplete
-        ? 'Poto packed everything into one ZIP for you.'
+        ? usesMobileSaveSheet
+            ? 'Choose Save Image, Save Video, or Save to Photos in the phone share sheet.'
+            : 'Poto packed everything into one ZIP for you.'
         : hasError
             ? _errorMessage!
             : _isSaving
@@ -136,24 +141,21 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
                 albumName: album.name,
                 fileCount: totalFiles,
                 canClose: !_isSaving,
-                onClose: _isSaving
-                    ? null
-                    : () => Navigator.pop(context),
+                onClose: _isSaving ? null : () => Navigator.pop(context),
               ),
 
               // ── Scrollable body ──────────────────────────────────────
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.md, AppSpacing.xl, AppSpacing.md, AppSpacing.lg),
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.md,
+                      AppSpacing.xl, AppSpacing.md, AppSpacing.lg),
                   child: Column(
                     children: [
                       // Poto — the hero
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 400),
                         switchInCurve: Curves.easeOutCubic,
-                        transitionBuilder: (child, animation) =>
-                            FadeTransition(
+                        transitionBuilder: (child, animation) => FadeTransition(
                           opacity: animation,
                           child:
                               ScaleTransition(scale: animation, child: child),
@@ -240,7 +242,7 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
                                     bottom: AppSpacing.sm),
                                 child: _FileRow(
                                   file: resolvedFiles[i],
-                                  status: _statusFor(i),
+                                  status: _statusFor(i, usesMobileSaveSheet),
                                   rowState: _rowStateFor(i),
                                 ),
                               ),
@@ -258,6 +260,7 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
                 hasError: hasError,
                 isEmpty: resolvedFiles.isEmpty,
                 bottomPad: bottomPad,
+                usesMobileSaveSheet: usesMobileSaveSheet,
                 onSave: (_isSaving || resolvedFiles.isEmpty)
                     ? null
                     : () => _saveAll(album, resolvedFiles),
@@ -289,7 +292,8 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
 
     try {
       final repository = ref.read(downloadRepositoryProvider);
-      final archive = Archive();
+      final useMobileSaveSheet = _shouldUseMobileWebShareSheet;
+      final archive = useMobileSaveSheet ? null : Archive();
       final usedNames = <String>{};
       final savedOriginals = <OriginalDownload>[];
 
@@ -307,8 +311,10 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
           },
         );
         savedOriginals.add(original);
-        final zipFilename = uniqueZipFilename(original.filename, usedNames);
-        archive.addFile(ArchiveFile.bytes(zipFilename, original.bytes));
+        if (archive != null) {
+          final zipFilename = uniqueZipFilename(original.filename, usedNames);
+          archive.addFile(ArchiveFile.bytes(zipFilename, original.bytes));
+        }
 
         if (!mounted) return;
         setState(() {
@@ -317,22 +323,14 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
         });
       }
 
-      final zipBytes = Uint8List.fromList(ZipEncoder().encode(archive));
-      final zipName = '${safeZipName(album.name)}-files.zip';
-
       String savedPathForLog;
-      if (!kIsWeb &&
-          (defaultTargetPlatform == TargetPlatform.iOS ||
-              defaultTargetPlatform == TargetPlatform.android)) {
-        await Share.shareXFiles(
-          [
-            XFile.fromData(zipBytes,
-                mimeType: 'application/zip', name: zipName),
-          ],
-        );
-        if (!mounted) return;
-        savedPathForLog = zipName;
+      if (useMobileSaveSheet) {
+        await _shareOriginalsToMobileSaveSheet(savedOriginals);
+        savedPathForLog = 'phone save sheet';
       } else {
+        final zipBytes = Uint8List.fromList(ZipEncoder().encode(archive!));
+        final zipName = '${safeZipName(album.name)}-files.zip';
+
         final savedPath = await FilePicker.saveFile(
           dialogTitle: 'Save all files',
           fileName: zipName,
@@ -367,8 +365,9 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
       final savedCount = files.length;
       showAppToast(
         context,
-        message:
-            '$savedCount file${savedCount == 1 ? '' : 's'} saved to your gallery',
+        message: useMobileSaveSheet
+            ? 'Choose Save to Photos in the share sheet'
+            : '$savedCount file${savedCount == 1 ? '' : 's'} saved',
       );
       ref.read(albumSelectionModeProvider(album.id).notifier).setEnabled(false);
       ref.read(selectedMediaIdsProvider(album.id).notifier).clear();
@@ -382,9 +381,54 @@ class _SaveAllScreenState extends ConsumerState<SaveAllScreen> {
     }
   }
 
-  String _statusFor(int index) {
-    if (index < _savedCount) return 'Saved';
-    if (index == _activeIndex && _isSaving) return 'Saving...';
+  bool get _shouldUseMobileWebShareSheet =>
+      kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
+
+  Future<void> _shareOriginalsToMobileSaveSheet(
+    List<OriginalDownload> originals,
+  ) async {
+    if (originals.isEmpty) return;
+
+    final previousFallback = Share.downloadFallbackEnabled;
+    Share.downloadFallbackEnabled = false;
+
+    try {
+      final result = await Share.shareXFiles(
+        [
+          for (final original in originals)
+            XFile.fromData(
+              original.bytes,
+              mimeType: original.mimeType,
+              name: original.filename,
+            ),
+        ],
+        subject: 'Save Potoos originals',
+        fileNameOverrides: [
+          for (final original in originals) original.filename,
+        ],
+      );
+
+      if (result.status == ShareResultStatus.dismissed) {
+        throw const AppError('Save All was cancelled.');
+      }
+    } on AppError {
+      rethrow;
+    } catch (_) {
+      throw const AppError(
+        'Could not open the phone save sheet. Try fewer files, or open Potoos in Safari or Chrome and try again.',
+      );
+    } finally {
+      Share.downloadFallbackEnabled = previousFallback;
+    }
+  }
+
+  String _statusFor(int index, bool usesMobileSaveSheet) {
+    if (index < _savedCount) return usesMobileSaveSheet ? 'Ready' : 'Saved';
+    if (index == _activeIndex && _isSaving) {
+      return usesMobileSaveSheet ? 'Preparing...' : 'Saving...';
+    }
     return 'Queued';
   }
 
@@ -471,14 +515,13 @@ class _Header extends StatelessWidget {
               height: 32,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: AppColors.white
-                    .withValues(alpha: canClose ? 0.14 : 0.06),
+                color:
+                    AppColors.white.withValues(alpha: canClose ? 0.14 : 0.06),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
                 Icons.close,
-                color: AppColors.white
-                    .withValues(alpha: canClose ? 1.0 : 0.3),
+                color: AppColors.white.withValues(alpha: canClose ? 1.0 : 0.3),
                 size: 17,
               ),
             ),
@@ -550,9 +593,8 @@ class _OverallProgress extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color: isComplete
-                    ? AppColors.brightGold
-                    : AppColors.velvetMaroon,
+                color:
+                    isComplete ? AppColors.brightGold : AppColors.velvetMaroon,
               ),
             ),
           ],
@@ -695,8 +737,7 @@ class _FileRow extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
             decoration: BoxDecoration(
               color: isDone
                   ? AppColors.brightGold.withValues(alpha: 0.10)
@@ -727,6 +768,7 @@ class _BottomCTA extends StatelessWidget {
     required this.hasError,
     required this.isEmpty,
     required this.bottomPad,
+    required this.usesMobileSaveSheet,
     required this.onSave,
     required this.onBack,
   });
@@ -736,6 +778,7 @@ class _BottomCTA extends StatelessWidget {
   final bool hasError;
   final bool isEmpty;
   final double bottomPad;
+  final bool usesMobileSaveSheet;
   final VoidCallback? onSave;
   final VoidCallback onBack;
 
@@ -744,8 +787,8 @@ class _BottomCTA extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
-        border:
-            const Border(top: BorderSide(color: AppColors.creamLine, width: 0.8)),
+        border: const Border(
+            top: BorderSide(color: AppColors.creamLine, width: 0.8)),
         boxShadow: [
           BoxShadow(
             color: AppColors.midnightBurgundy.withValues(alpha: 0.06),
@@ -754,8 +797,8 @@ class _BottomCTA extends StatelessWidget {
           ),
         ],
       ),
-      padding: EdgeInsets.fromLTRB(
-          AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.sm + bottomPad),
+      padding: EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md,
+          AppSpacing.sm + bottomPad),
       child: isComplete
           ? Row(
               children: [
@@ -770,8 +813,8 @@ class _BottomCTA extends StatelessWidget {
                         color: AppColors.white,
                         borderRadius:
                             BorderRadius.circular(AppSpacing.radiusLg),
-                        border: Border.all(
-                            color: AppColors.creamLine, width: 1.5),
+                        border:
+                            Border.all(color: AppColors.creamLine, width: 1.5),
                       ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -840,8 +883,7 @@ class _BottomCTA extends StatelessWidget {
                       ? AppColors.velvetMaroon
                       : AppColors.creamLine,
                   borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                  boxShadow:
-                      onSave != null ? AppShadows.primaryButton : null,
+                  boxShadow: onSave != null ? AppShadows.primaryButton : null,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -860,12 +902,16 @@ class _BottomCTA extends StatelessWidget {
                     const SizedBox(width: AppSpacing.sm),
                     Text(
                       isSaving
-                          ? 'Packing files...'
+                          ? usesMobileSaveSheet
+                              ? 'Preparing originals...'
+                              : 'Packing files...'
                           : hasError
                               ? 'Try Again'
                               : isEmpty
                                   ? 'Nothing to save'
-                                  : 'Save All',
+                                  : usesMobileSaveSheet
+                                      ? 'Save to Photos'
+                                      : 'Save All',
                       style: TextStyle(
                         color: onSave != null
                             ? AppColors.pearlCream
