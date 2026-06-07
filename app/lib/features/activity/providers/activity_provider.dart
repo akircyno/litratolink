@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/errors/app_error.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../data/activity_repository.dart';
 import '../models/activity_event.dart';
@@ -73,7 +74,10 @@ class ActivityFeedNotifier extends Notifier<ActivityFeedState> {
         lastReadAt: lastReadAt,
       );
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: AppError.messageFor(e),
+      );
     }
   }
 

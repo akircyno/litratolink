@@ -44,12 +44,11 @@ class ActivityRepository {
         final createdAt =
             DateTime.tryParse(json['created_at']?.toString() ?? '') ??
                 DateTime.now();
-        final isUnread =
-            lastReadAt == null || createdAt.isAfter(lastReadAt);
+        final isUnread = lastReadAt == null || createdAt.isAfter(lastReadAt);
         return ActivityEvent.fromJson(json, isUnread: isUnread);
       }).toList();
-    } catch (e) {
-      throw AppError('Could not load activity. ($e)');
+    } catch (_) {
+      throw const AppError('Could not load activity. Please try again.');
     }
   }
 
@@ -84,8 +83,7 @@ class ActivityRepository {
           .maybeSingle();
 
       if (row == null) return null;
-      return DateTime.tryParse(
-          (row as Map)['last_read_at']?.toString() ?? '');
+      return DateTime.tryParse((row as Map)['last_read_at']?.toString() ?? '');
     } catch (_) {
       return null;
     }

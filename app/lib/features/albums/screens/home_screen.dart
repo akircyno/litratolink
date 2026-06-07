@@ -801,67 +801,70 @@ class _ActivityTabState extends ConsumerState<_ActivityTab> {
 
     return ListView(
       controller: _scrollController,
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 28),
       children: [
         const LitratoHeader(
           title: 'Activity',
           subtitle: "What's been happening.",
           showAvatar: false,
         ),
-        const SizedBox(height: 14),
-        if (feedState.isLoading)
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(24),
-              child: CircularProgressIndicator(
-                  color: AppColors.brightGold, strokeWidth: 2),
-            ),
-          )
-        else if (feedState.errorMessage != null)
-          AlbumEmptyState(
-            title: 'Activity unavailable',
-            message: feedState.errorMessage!,
-            expression: PotoExpression.error,
-            actionLabel: 'Try Again',
-            onAction: () =>
-                ref.read(activityFeedProvider.notifier).loadInitial(),
-          )
-        else if (feedState.events.isEmpty)
-          const AlbumEmptyState(
-            title: 'Nothing yet.',
-            message: 'Upload some photos to get started.',
-          )
-        else
-          Column(
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+          child: Column(
             children: [
-              for (final event in feedState.events) ...[
-                ActivityEventCard(
-                  event: event,
-                  currentUserId: currentUserId,
-                ),
-                const SizedBox(height: AppSpacing.sm),
-              ],
-              if (feedState.isLoadingMore)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Center(
+              if (feedState.isLoading)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
                     child: CircularProgressIndicator(
                         color: AppColors.brightGold, strokeWidth: 2),
                   ),
-                ),
-              if (!feedState.hasMore && feedState.events.isNotEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Center(
-                    child: Text(
-                      'You\'re all caught up.',
-                      style: TextStyle(
-                          color: AppColors.featherTaupe, fontSize: 12),
+                )
+              else if (feedState.errorMessage != null)
+                AlbumEmptyState(
+                  title: 'Activity unavailable',
+                  message: feedState.errorMessage!,
+                  expression: PotoExpression.error,
+                  actionLabel: 'Try Again',
+                  onAction: () =>
+                      ref.read(activityFeedProvider.notifier).loadInitial(),
+                )
+              else if (feedState.events.isEmpty)
+                const AlbumEmptyState(
+                  title: 'Nothing yet.',
+                  message: 'Upload some photos to get started.',
+                )
+              else ...[
+                for (final event in feedState.events) ...[
+                  ActivityEventCard(
+                    event: event,
+                    currentUserId: currentUserId,
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
+                if (feedState.isLoadingMore)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                          color: AppColors.brightGold, strokeWidth: 2),
                     ),
                   ),
-                ),
+                if (!feedState.hasMore && feedState.events.isNotEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(
+                      child: Text(
+                        'You\'re all caught up.',
+                        style: TextStyle(
+                            color: AppColors.featherTaupe, fontSize: 12),
+                      ),
+                    ),
+                  ),
+              ],
             ],
           ),
+        ),
       ],
     );
   }
