@@ -350,7 +350,8 @@ class _AlbumDetailsScreenState extends ConsumerState<AlbumDetailsScreen>
                             child: Text(
                               selectionMode
                                   ? '${selectedIds.length} selected'
-                                  : pluralize(visibleFileCount, 'file', 'files'),
+                                  : pluralize(
+                                      visibleFileCount, 'file', 'files'),
                               style: const TextStyle(
                                 color: AppColors.mutedInk,
                                 fontSize: 12,
@@ -428,64 +429,80 @@ class _AlbumDetailsScreenState extends ConsumerState<AlbumDetailsScreen>
                               .toList(growable: false);
 
                       return visibleFiles.isEmpty
-                        ? SliverToBoxAdapter(
-                            child: Padding(
+                          ? SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                    AppSpacing.md,
+                                    AppSpacing.sm,
+                                    AppSpacing.md,
+                                    0),
+                                child: AlbumEmptyState(
+                                  title: 'Nothing here yet.',
+                                  message: canUpload
+                                      ? 'Be the first to add something. Poto is ready when you are.'
+                                      : 'Files will show up when someone uploads.',
+                                  actionLabel: canUpload ? 'Upload' : null,
+                                  onAction: canUpload
+                                      ? () => _pushAndRefresh(
+                                            context,
+                                            routeName: AppRoutes.upload,
+                                            routeArguments: album,
+                                            album: album,
+                                          )
+                                      : null,
+                                ),
+                              ),
+                            )
+                          : SliverPadding(
                               padding: const EdgeInsets.fromLTRB(AppSpacing.md,
                                   AppSpacing.sm, AppSpacing.md, 0),
-                              child: AlbumEmptyState(
-                                title: 'Nothing here yet.',
-                                message: canUpload
-                                    ? 'Be the first to add something. Poto is ready when you are.'
-                                    : 'Files will show up when someone uploads.',
-                                actionLabel: canUpload ? 'Upload' : null,
-                                onAction: canUpload
-                                    ? () => _pushAndRefresh(
-                                          context,
-                                          routeName: AppRoutes.upload,
-                                          routeArguments: album,
-                                          album: album,
-                                        )
-                                    : null,
-                              ),
-                            ),
-                          )
-                        : SliverPadding(
-                            padding: const EdgeInsets.fromLTRB(
-                                AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0),
-                            sliver: SliverGrid.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 2,
-                                mainAxisSpacing: 2,
-                                childAspectRatio: 1,
-                              ),
-                              itemCount: visibleFiles.length,
-                              itemBuilder: (context, index) {
-                                final file = visibleFiles[index];
-                                return GalleryTile(
-                                  file: file,
-                                  selectionMode: selectionMode,
-                                  selected: selectedIds.contains(file.id),
-                                  onTap: selectionMode
-                                      ? () => _toggleSelectedFile(
-                                            ref,
-                                            albumId: album.id,
-                                            fileId: file.id,
-                                          )
-                                      : () => _pushAndRefresh(
-                                            context,
-                                            routeName: AppRoutes.mediaViewer,
-                                            routeArguments: MediaViewerArgs(
-                                              files: visibleFiles,
-                                              initialIndex: index,
+                              sliver: SliverGrid.builder(
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 2,
+                                  mainAxisSpacing: 2,
+                                  childAspectRatio: 1,
+                                ),
+                                itemCount: visibleFiles.length,
+                                itemBuilder: (context, index) {
+                                  final file = visibleFiles[index];
+                                  return GalleryTile(
+                                    file: file,
+                                    selectionMode: selectionMode,
+                                    selected: selectedIds.contains(file.id),
+                                    onTap: selectionMode
+                                        ? () => _toggleSelectedFile(
+                                              ref,
+                                              albumId: album.id,
+                                              fileId: file.id,
+                                            )
+                                        : () => _pushAndRefresh(
+                                              context,
+                                              routeName: AppRoutes.mediaViewer,
+                                              routeArguments: MediaViewerArgs(
+                                                files: visibleFiles,
+                                                initialIndex: index,
+                                              ),
+                                              album: album,
                                             ),
-                                            album: album,
-                                          ),
-                                );
-                              },
-                            ),
-                          );
+                                    onLongPress: selectionMode
+                                        ? () => _toggleSelectedFile(
+                                              ref,
+                                              albumId: album.id,
+                                              fileId: file.id,
+                                            )
+                                        : () => _showFileActionsSheet(
+                                              context,
+                                              ref,
+                                              album,
+                                              file,
+                                              canRemove: canRemoveFiles,
+                                            ),
+                                  );
+                                },
+                              ),
+                            );
                     },
                   ),
 
@@ -512,9 +529,8 @@ class _AlbumDetailsScreenState extends ConsumerState<AlbumDetailsScreen>
                 child: _UploadResumeBanner(
                   remainingCount: uploadState.remainingCount,
                   onResume: () {
-                    final args = ref
-                        .read(uploadControllerProvider.notifier)
-                        .pausedArgs;
+                    final args =
+                        ref.read(uploadControllerProvider.notifier).pausedArgs;
                     if (args == null) return;
                     Navigator.pushNamed(
                       context,
@@ -583,6 +599,15 @@ class _AlbumDetailsScreenState extends ConsumerState<AlbumDetailsScreen>
     required String fileId,
   }) {
     ref.read(selectedMediaIdsProvider(albumId).notifier).toggle(fileId);
+  }
+
+  void _startSelectionWithFile(
+    WidgetRef ref, {
+    required String albumId,
+    required String fileId,
+  }) {
+    ref.read(albumSelectionModeProvider(albumId).notifier).setEnabled(true);
+    ref.read(selectedMediaIdsProvider(albumId).notifier).select(fileId);
   }
 
   Future<void> _refreshAlbum(WidgetRef ref, Album album) async {
@@ -721,6 +746,76 @@ class _AlbumDetailsScreenState extends ConsumerState<AlbumDetailsScreen>
     );
   }
 
+  void _showFileActionsSheet(
+    BuildContext context,
+    WidgetRef ref,
+    Album album,
+    MediaFile file, {
+    required bool canRemove,
+  }) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.warmCream,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetCtx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.creamLine,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                if (canRemove) ...[
+                  _FileActionSheetButton(
+                    icon: Icons.delete_outline,
+                    label: 'Delete',
+                    description: 'Remove this file from the album.',
+                    isDestructive: true,
+                    onTap: () {
+                      Navigator.pop(sheetCtx);
+                      unawaited(
+                        _showRemoveFilesDialog(context, ref, album, [file]),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
+                _FileActionSheetButton(
+                  icon: Icons.check_circle_outline,
+                  label: 'Select',
+                  description: 'Select this file and choose more.',
+                  onTap: () {
+                    Navigator.pop(sheetCtx);
+                    _startSelectionWithFile(
+                      ref,
+                      albumId: album.id,
+                      fileId: file.id,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _showArchiveDialog(
       BuildContext context, WidgetRef ref, Album album) async {
     final confirmed = await showDialog<bool>(
@@ -824,12 +919,14 @@ class _AlbumDetailsScreenState extends ConsumerState<AlbumDetailsScreen>
     final fileIds = filesToRemove.map((f) => f.id).toList(growable: false);
 
     ({List<String> deletedIds, List<String> failedIds})? result;
+    String? errorMessage;
     try {
       result = await ref.read(albumRepositoryProvider).removeMediaFiles(
             albumId: album.id,
             fileIds: fileIds,
           );
-    } catch (_) {
+    } catch (error) {
+      errorMessage = AppError.messageFor(error);
       result = null;
     }
 
@@ -850,12 +947,16 @@ class _AlbumDetailsScreenState extends ConsumerState<AlbumDetailsScreen>
       ref.read(albumSelectionModeProvider(album.id).notifier).setEnabled(false);
       showAppToast(
         context,
-        message: '${deletedIds.length} ${pluralize(deletedIds.length, 'file', 'files')} removed',
+        message:
+            '${deletedIds.length} ${pluralize(deletedIds.length, 'file', 'files')} removed',
       );
     } else {
       showAppToast(
         context,
-        message: 'Some files could not be removed. Try again.',
+        message: errorMessage ??
+            (deletedIds.isEmpty
+                ? 'Could not remove the selected files. Try again.'
+                : 'Some files could not be removed. Try again.'),
         isError: true,
       );
     }
@@ -1141,6 +1242,81 @@ class _ActionPill extends StatelessWidget {
 
 const _destructiveRed = Color(0xFFFF3B30);
 
+class _FileActionSheetButton extends StatelessWidget {
+  const _FileActionSheetButton({
+    required this.icon,
+    required this.label,
+    required this.description,
+    required this.onTap,
+    this.isDestructive = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final String description;
+  final VoidCallback onTap;
+  final bool isDestructive;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDestructive ? _destructiveRed : AppColors.velvetMaroon;
+
+    return PressableScale(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 56),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          border: Border.all(color: AppColors.creamLine),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: isDestructive ? 0.10 : 0.08),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+              ),
+              child: Icon(icon, color: color, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: color,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      color: AppColors.featherTaupe,
+                      fontSize: 11,
+                      height: 1.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _SelectionBar extends StatelessWidget {
   const _SelectionBar({
     required this.selectedCount,
@@ -1194,8 +1370,9 @@ class _SelectionBar extends StatelessWidget {
                 child: Icon(
                   Icons.delete_outline,
                   size: 18,
-                  color:
-                      onRemove != null ? _destructiveRed : AppColors.featherTaupe,
+                  color: onRemove != null
+                      ? _destructiveRed
+                      : AppColors.featherTaupe,
                 ),
               ),
             ),
@@ -1316,8 +1493,7 @@ class _UploadResumeBanner extends StatelessWidget {
           GestureDetector(
             onTap: onResume,
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
                 color: AppColors.brightGold,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
@@ -1337,4 +1513,3 @@ class _UploadResumeBanner extends StatelessWidget {
     );
   }
 }
-

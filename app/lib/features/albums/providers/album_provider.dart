@@ -120,6 +120,10 @@ class SelectedMediaIds extends Notifier<Set<String>> {
     state = <String>{...state}..removeAll(fileIds);
   }
 
+  void select(String fileId) {
+    state = <String>{...state}..add(fileId);
+  }
+
   void toggle(String fileId) {
     final nextSelection = <String>{...state};
     if (!nextSelection.add(fileId)) {
@@ -317,8 +321,7 @@ final pendingInvitesProvider =
 });
 
 final inviteResponseControllerProvider =
-    NotifierProvider.autoDispose<InviteResponseController,
-        InviteResponseState>(
+    NotifierProvider.autoDispose<InviteResponseController, InviteResponseState>(
   InviteResponseController.new,
 );
 

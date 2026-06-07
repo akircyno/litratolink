@@ -26,6 +26,7 @@ class GalleryTile extends StatelessWidget {
   const GalleryTile({
     required this.file,
     required this.onTap,
+    this.onLongPress,
     this.selectionMode = false,
     this.selected = false,
     super.key,
@@ -33,6 +34,7 @@ class GalleryTile extends StatelessWidget {
 
   final MediaFile file;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
   final bool selectionMode;
   final bool selected;
 
@@ -55,89 +57,90 @@ class GalleryTile extends StatelessWidget {
     return Hero(
       tag: 'media-${file.id}',
       child: Material(
-      color: AppColors.white,
-      borderRadius: BorderRadius.circular(0),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: file.isVideo
-                  ? MediaVideoPreview(
-                      mediaFileId: file.id,
-                      fallback: fallback,
-                    )
-                  : MediaPreviewImage(
-                      mediaFileId: file.id,
-                      thumbnailUrl: file.thumbnailUrl,
-                      fallback: fallback,
-                    ),
-            ),
-            const Positioned.fill(child: _GalleryScrim()),
-            if (!selectionMode)
-              Positioned(
-                top: 4,
-                left: 4,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: file.isVideo
-                        ? Colors.black.withValues(alpha: 0.55)
-                        : AppColors.maroon.withValues(alpha: 0.75),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (file.isVideo) ...[
-                        const Icon(Icons.play_arrow,
-                            size: 8, color: AppColors.white),
-                        const SizedBox(width: 2),
-                      ],
-                      Text(
-                        fileFormatLabel(file),
-                        style: const TextStyle(
-                            color: AppColors.white, fontSize: 9),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            if (selectionMode)
-              Positioned(
-                top: 4,
-                left: 4,
-                child: Container(
-                  width: 18,
-                  height: 18,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: selected
-                        ? AppColors.maroon
-                        : AppColors.white.withValues(alpha: 0.80),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.white, width: 1),
-                  ),
-                  child: selected
-                      ? const Icon(Icons.check,
-                          color: AppColors.white, size: 12)
-                      : null,
-                ),
-              ),
-            if (selected)
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(0),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          child: Stack(
+            children: [
               Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.maroon, width: 3),
+                child: file.isVideo
+                    ? MediaVideoPreview(
+                        mediaFileId: file.id,
+                        fallback: fallback,
+                      )
+                    : MediaPreviewImage(
+                        mediaFileId: file.id,
+                        thumbnailUrl: file.thumbnailUrl,
+                        fallback: fallback,
+                      ),
+              ),
+              const Positioned.fill(child: _GalleryScrim()),
+              if (!selectionMode)
+                Positioned(
+                  top: 4,
+                  left: 4,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: file.isVideo
+                          ? Colors.black.withValues(alpha: 0.55)
+                          : AppColors.maroon.withValues(alpha: 0.75),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (file.isVideo) ...[
+                          const Icon(Icons.play_arrow,
+                              size: 8, color: AppColors.white),
+                          const SizedBox(width: 2),
+                        ],
+                        Text(
+                          fileFormatLabel(file),
+                          style: const TextStyle(
+                              color: AppColors.white, fontSize: 9),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-          ],
+              if (selectionMode)
+                Positioned(
+                  top: 4,
+                  left: 4,
+                  child: Container(
+                    width: 18,
+                    height: 18,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? AppColors.maroon
+                          : AppColors.white.withValues(alpha: 0.80),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.white, width: 1),
+                    ),
+                    child: selected
+                        ? const Icon(Icons.check,
+                            color: AppColors.white, size: 12)
+                        : null,
+                  ),
+                ),
+              if (selected)
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.maroon, width: 3),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }
